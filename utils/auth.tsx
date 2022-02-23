@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 
 /* FIREBASE */
+import { User, UserCredential } from '@firebase/auth-types';
 import { auth } from './firebase';
 import {
  createUserWithEmailAndPassword,
@@ -11,29 +12,29 @@ import {
 } from 'firebase/auth';
 
 
-const AuthContext = React.createContext(null!);
+const AuthContext = React.createContext<any>(null);
 
 export function useAuth() {
  return useContext(AuthContext);
 }
 
-export function AuthProvider({ children }) {
- const [currentUser, setCurrentUser] = useState();
+export function AuthProvider({ children } : {children: React.ReactNode}) : JSX.Element {
+ const [currentUser, setCurrentUser] = useState<any>(null);
  const [loading, setLoading] = useState(true);
 
- function signup(email, password) {
+ function signup(email:string, password:string) {
   return createUserWithEmailAndPassword(auth, email, password);
  }
 
- function login(email, password) {
+ function login(email:string, password:string) {
   return signInWithEmailAndPassword(auth, email, password);
  }
 
- function logout() {
+ function logout(): Promise<void> {
   return signOut(auth);
  }
 
- function resetPassword( email ) {
+ function resetPassword( email:string ) {
   return sendPasswordResetEmail(auth, email)
  }
 
