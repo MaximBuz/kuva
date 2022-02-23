@@ -1,5 +1,6 @@
 import MenuItem from './MenuItem';
 import styled from 'styled-components';
+import { useRouter } from 'next/router';
 
 const LeftMenuWrapper = styled.div`
  position: absolute;
@@ -13,6 +14,7 @@ const LeftMenuWrapper = styled.div`
 `;
 
 function LeftMenu(props: any) {
+ const Router = useRouter();
  return (
   <LeftMenuWrapper>
    {props.items &&
@@ -24,7 +26,6 @@ function LeftMenu(props: any) {
       return <MenuItem key={index} icon={item.icon} text={item.text} url={newLink} active={item.active} />;
      }
     })}
-
   </LeftMenuWrapper>
  );
 }

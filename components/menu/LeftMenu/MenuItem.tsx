@@ -52,7 +52,7 @@ function MenuItem(props: any) {
     return (
         <Link href={props.url} passHref>
             <MenuItemWrapper>
-                <MenuItemIcon /* active={props.active} */>{props.icon}</MenuItemIcon>
+                <MenuItemIcon active={props.active}>{props.icon}</MenuItemIcon>
                 <MenuItemText>{props.text}</MenuItemText>
             </MenuItemWrapper>
         </Link>        

@@ -18,7 +18,7 @@ import moment from 'moment';
 // Auth
 import { useAuth } from '../utils/auth';
 import withAuth from '../utils/withAuth';
-import { useFirestoreQueryData } from '@react-query-firebase/firestore';
+import { useFirestoreQueryData, useFirestoreQuery } from '@react-query-firebase/firestore';
 
 // Components
 import ProjectCard from '../components/cards/ProjectCard';
@@ -29,8 +29,11 @@ const Home: NextPage = () => {
 
  // Data
  const projectsRef = query(collection(firestore, 'projects'), where('user', '==', currentUser.uid));
- const projects = useFirestoreQueryData(['projects'], projectsRef);
- console.log(projects.data);
+ const projectsSnap = useFirestoreQuery(['projects'], projectsRef);
+ const projects = [];
+ projectsSnap?.data?.forEach((doc) => projects.push({id: doc.id, data: doc.data()}))
+
+
 
  // Handling archived / unarchived state
  const [archived, setArchived] = useState(false);
@@ -39,8 +42,8 @@ const Home: NextPage = () => {
  const [openModal, setOpenModal] = useState(false);
 
  // filtering into archived and unarchived
- const activeProjects = projects.data?.filter((project) => !project.archived);
- const archivedProjects = projects.data?.filter((project) => project.archived);
+ const activeProjects = projects?.filter((project) => !project.archived);
+ const archivedProjects = projects?.filter((project) => project.archived);
 
  // Count Projects
  let projectCount = activeProjects?.length;
@@ -88,12 +91,12 @@ const Home: NextPage = () => {
          <ProjectCard
           key={index}
           id={project.id}
-          projectKey={project.key}
-          projectTitle={project.title}
-          timeStamp={moment(new Date(project.timestamp.seconds * 1000))
+          projectKey={project.data.key}
+          projectTitle={project.data.title}
+          timeStamp={moment(new Date(project.data.timestamp.seconds * 1000))
            .fromNow()
            .toString()}
-          projectSummary={project.description}
+          projectSummary={project.data.description}
          />
         );
        })
@@ -103,12 +106,12 @@ const Home: NextPage = () => {
          <ProjectCard
           key={index}
           id={project.id}
-          projectKey={project.key}
-          projectTitle={project.title}
-          timeStamp={moment(new Date(project.timestamp.seconds * 1000))
+          projectKey={project.data.key}
+          projectTitle={project.data.title}
+          timeStamp={moment(new Date(project.data.timestamp.seconds * 1000))
            .fromNow()
            .toString()}
-          projectSummary={project.description}
+          projectSummary={project.data.description}
          />
         );
        })}
