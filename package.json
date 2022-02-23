@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@iconscout/react-unicons": "^1.1.6",
     "@react-query-firebase/firestore": "^0.4.2",
     "@types/styled-components": "^5.1.23",
     "firebase": "^9.6.7",

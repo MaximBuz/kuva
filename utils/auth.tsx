@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 
 /* FIREBASE */
-import { User, UserCredential } from '@firebase/auth-types';
 import { auth } from './firebase';
 import {
  createUserWithEmailAndPassword,

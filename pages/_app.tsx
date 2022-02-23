@@ -6,6 +6,10 @@ import { useState } from 'react'
 
 /* REACT QUERY */
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
+import { ReactQueryDevtools } from "react-query/devtools";
+
+/* AUTH */
+import { AuthProvider } from '../utils/auth'
 
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -14,8 +18,11 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
        <Hydrate state={pageProps.dehydratedState}>
+        <AuthProvider>
          <Component {...pageProps} />
+        </AuthProvider>
        </Hydrate>
+       <ReactQueryDevtools initialIsOpen={false} position={"bottom-right"} />
      </QueryClientProvider>
   )
 }
