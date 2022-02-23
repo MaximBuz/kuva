@@ -5,7 +5,7 @@ import Head from 'next/head';
 import { useState } from 'react';
 
 // Styling
-import { UilPlusCircle } from "@iconscout/react-unicons";
+import { UilPlusCircle } from '@iconscout/react-unicons';
 import styled from 'styled-components';
 
 // Firestore
@@ -30,10 +30,8 @@ const Home: NextPage = () => {
  // Data
  const projectsRef = query(collection(firestore, 'projects'), where('user', '==', currentUser.uid));
  const projectsSnap = useFirestoreQuery(['projects'], projectsRef);
- const projects = [];
- projectsSnap?.data?.forEach((doc) => projects.push({id: doc.id, data: doc.data()}))
-
-
+ const projects: any[] = [];
+ projectsSnap?.data?.forEach((doc) => projects.push({ id: doc.id, data: doc.data() }));
 
  // Handling archived / unarchived state
  const [archived, setArchived] = useState(false);
@@ -121,7 +119,7 @@ const Home: NextPage = () => {
        setOpenModal(!openModal);
       }}
      >
-      <UilPlusCircle className="add-icon" size="50" color="#51515170" />
+      <UilPlusCircle className='add-icon' size='50' color='#51515170' />
      </CreateNewCard>
     )}
    </ProjectsWrapper>
