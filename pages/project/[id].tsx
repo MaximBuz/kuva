@@ -106,29 +106,38 @@ const TasksPage: NextPage = () => {
 
  const [tasksCompleted, setTasksCompleted] = useState([]);
  const countCompleted = tasksCompleted.length;
-
+ 
  // Query tasks
- const tasks: any = [];
  const tasksRef = query(collection(firestore, 'tasks'), where('user', '==', currentUser.uid));
- const tasksSnap = useFirestoreQuery(
-  ['tasks'],
-  tasksRef,
-  { subscribe: true },
-  {
-   onSuccess(snapshot) {
-    snapshot.forEach((doc) => tasks.push({ id: doc.id, data: doc.data() }));
-    setTasksSelected(
-     tasks?.filter((element: any) => element.data.column === 'selected-for-development-column')
-    );
-    // Population of In Progress Column
-    setTasksInProgress(tasks?.filter((element: any) => element.data.column === 'in-progress-column'));
-    // Population of In Review Column
-    setTasksInReview(tasks?.filter((element: any) => element.data.column === 'in-review-column'));
-    // Population of Completed Column
-    setTasksCompleted(tasks?.filter((element: any) => element.data.column === 'completed-column'));
-   },
-  }
- );
+ const tasksSnap = useFirestoreQuery(['tasks'], tasksRef);
+ const tasks: any = [];
+ tasksSnap?.data?.forEach((doc) => tasks.push({ id: doc.id, data: doc.data() }));
+
+
+ useEffect(() => {
+  // Population of Selected for development Column
+  setTasksSelected(
+   tasks?.filter((element: any) => element.data.column === 'selected-for-development-column')
+  );
+  // Population of In Progress Column
+  setTasksInProgress(tasks?.filter((element: any) => element.data.column === 'in-progress-column'));
+  // Population of In Review Column
+  setTasksInReview(tasks?.filter((element: any) => element.data.column === 'in-review-column'));
+  // Population of Completed Column
+  setTasksCompleted(tasks?.filter((element: any) => element.data.column === 'completed-column'));
+ }, []);
+
+ /* 
+ 
+
+
+
+  Hier Bug fixen, lädt nicht beim ersten aufmachen der seite!!!
+ 
+
+
+  
+ */
 
  // Drag and drop functionality (TODO: Move to seperate file, way to big a function)
  const onDragEnd = (result: any) => {
