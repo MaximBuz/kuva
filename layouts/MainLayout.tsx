@@ -4,6 +4,9 @@ import TopMenu from '../components/menu/TopMenu/TopMenu';
 import logo from '../public/kuva_logo.png';
 import styled from 'styled-components';
 
+/* TOASTS */
+import {ToastContainer} from "react-toastify"
+
 import Image from 'next/image';
 
 export default function MainLayout(props: any) {
@@ -18,7 +21,7 @@ export default function MainLayout(props: any) {
       src={logo}
       alt="logo"
       // style={{
-      //   width: 150,
+        //   width: 150,
       //   height: 150,
       //   objectFit: "cover"
       // }}

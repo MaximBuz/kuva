@@ -8,9 +8,12 @@ import { collection } from 'firebase/firestore';
 import { firestore } from '../../utils/firebase';
 import { Timestamp } from 'firebase/firestore';
 
+import { useQueryClient } from 'react-query';
+
 // Auth
 import { useAuth } from '../../utils/auth';
 import withAuth from '../../utils/withAuth';
+import { toast } from 'react-toastify';
 
 const GreyBackground = styled.div`
  position: fixed;
@@ -160,8 +163,17 @@ export default function Modal({ closeModal }: { closeModal: Function }) {
  const projectSummary = useRef(null);
 
  // setting up mutation
+ const queryClient = useQueryClient();
  const ref = collection(firestore, 'projects');
- const mutation = useFirestoreCollectionMutation(ref);
+ const mutation = useFirestoreCollectionMutation(ref, {
+   onSuccess() {
+     queryClient.invalidateQueries(['projects']);
+     toast.success("Added new project!")
+   },
+   onError() {
+    toast.error("Failed to add new project!")
+  }
+ });
 
  //  handling error and loading state
  const [error, setError] = useState<string>('');
@@ -187,6 +199,7 @@ export default function Modal({ closeModal }: { closeModal: Function }) {
    console.log('catchblock');
    setError('Failed to sign in');
   }
+  closeModal()
   setLoading(false);
  }
 
@@ -227,7 +240,7 @@ export default function Modal({ closeModal }: { closeModal: Function }) {
        ></textarea>
       </Section>
 
-      <button type='submit' value='Submit'>
+      <button type='submit' value='Submit' disabled={loading}>
        Create New Project
       </button>
 
