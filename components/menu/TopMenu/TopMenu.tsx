@@ -11,7 +11,7 @@ const TopMenuWrapper = styled.div`
  align-items: center;
  justify-content: flex-end;
  gap: 30px;
- right: 60px;
+ right: 30px;
  top: 12px;
 `;
 
