@@ -94,13 +94,6 @@ const TasksPage: NextPage = () => {
  const router = useRouter();
  const { id: projectId } = router.query;
 
- // Query tasks
- const tasksRef = query(collection(firestore, 'tasks'), where('user', '==', currentUser.uid));
- const tasksSnap = useFirestoreQuery(['tasks'], tasksRef);
- const tasks: any = [];
- tasksSnap?.data?.forEach((doc) => tasks.push({ id: doc.id, data: doc.data() }));
- console.log(tasks);
-
  // Initialize states for all columns
  const [tasksSelected, setTasksSelected] = useState([]);
  const countSelected = tasksSelected?.length;
@@ -114,18 +107,28 @@ const TasksPage: NextPage = () => {
  const [tasksCompleted, setTasksCompleted] = useState([]);
  const countCompleted = tasksCompleted.length;
 
- useEffect(() => {
-  // Population of Selected for development Column
-  setTasksSelected(
-   tasks?.filter((element: any) => element.data.column === 'selected-for-development-column')
-  );
-  // Population of In Progress Column
-  setTasksInProgress(tasks?.filter((element: any) => element.data.column === 'in-progress-column'));
-  // Population of In Review Column
-  setTasksInReview(tasks?.filter((element: any) => element.data.column === 'in-review-column'));
-  // Population of Completed Column
-  setTasksCompleted(tasks?.filter((element: any) => element.data.column === 'completed-column'));
- }, []);
+ // Query tasks
+ const tasks: any = [];
+ const tasksRef = query(collection(firestore, 'tasks'), where('user', '==', currentUser.uid));
+ const tasksSnap = useFirestoreQuery(
+  ['tasks'],
+  tasksRef,
+  { subscribe: true },
+  {
+   onSuccess(snapshot) {
+    snapshot.forEach((doc) => tasks.push({ id: doc.id, data: doc.data() }));
+    setTasksSelected(
+     tasks?.filter((element: any) => element.data.column === 'selected-for-development-column')
+    );
+    // Population of In Progress Column
+    setTasksInProgress(tasks?.filter((element: any) => element.data.column === 'in-progress-column'));
+    // Population of In Review Column
+    setTasksInReview(tasks?.filter((element: any) => element.data.column === 'in-review-column'));
+    // Population of Completed Column
+    setTasksCompleted(tasks?.filter((element: any) => element.data.column === 'completed-column'));
+   },
+  }
+ );
 
  // Drag and drop functionality (TODO: Move to seperate file, way to big a function)
  const onDragEnd = (result: any) => {
