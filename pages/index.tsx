@@ -23,6 +23,7 @@ import { useFirestoreQueryData, useFirestoreQuery } from '@react-query-firebase/
 // Components
 import ProjectCard from '../components/cards/ProjectCard';
 import CounterBlob from '../components/misc/CounterBlob';
+import Modal from '../components/modals/NewProjectModal';
 
 const Home: NextPage = () => {
  const { currentUser } = useAuth();
@@ -124,7 +125,7 @@ const Home: NextPage = () => {
     )}
    </ProjectsWrapper>
 
-   {/* {openModal && <Modal closeModal={setOpenModal} />} */}
+   {openModal && <Modal closeModal={setOpenModal} />}
   </Wrapper>
  );
 };

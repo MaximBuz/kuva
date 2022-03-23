@@ -10,6 +10,7 @@ export default function MainLayout(props: any) {
  const { identifier } = props.match ? props.match.params : '';
  return (
   <>
+   <div id="portal"></div>
    <TopMenu projectId={identifier} />
    <LeftMenu items={props.menuContent} projectId={identifier} />
    <LogoWrapper>
