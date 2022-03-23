@@ -73,6 +73,7 @@ const ColumnTitleRow = styled.div`
  justify-content: space-between;
  align-items: center;
  padding: 10px;
+ gap: 10px;
  min-height: 40px;
  h2 {
   font-size: 20px;
@@ -98,6 +99,7 @@ const TasksPage: NextPage = () => {
  const tasksSnap = useFirestoreQuery(['tasks'], tasksRef);
  const tasks: any = [];
  tasksSnap?.data?.forEach((doc) => tasks.push({ id: doc.id, data: doc.data() }));
+ console.log(tasks);
 
  // Initialize states for all columns
  const [tasksSelected, setTasksSelected] = useState([]);
@@ -113,15 +115,17 @@ const TasksPage: NextPage = () => {
  const countCompleted = tasksCompleted.length;
 
  useEffect(() => {
-   // Population of Selected for development Column
-   setTasksSelected(tasks?.filter((element: any) => element.data.column === 'selected-for-development-column'));
-   // Population of In Progress Column
-   setTasksInProgress(tasks?.filter((element: any) => element.data.column === 'in-progress-column'));
-   // Population of In Review Column
-   setTasksInReview(tasks?.filter((element: any) => element.data.column === 'in-review-column'));
-   // Population of Completed Column
-   setTasksCompleted(tasks?.filter((element: any) => element.data.column === 'completed-column'));
- }, [tasks])
+  // Population of Selected for development Column
+  setTasksSelected(
+   tasks?.filter((element: any) => element.data.column === 'selected-for-development-column')
+  );
+  // Population of In Progress Column
+  setTasksInProgress(tasks?.filter((element: any) => element.data.column === 'in-progress-column'));
+  // Population of In Review Column
+  setTasksInReview(tasks?.filter((element: any) => element.data.column === 'in-review-column'));
+  // Population of Completed Column
+  setTasksCompleted(tasks?.filter((element: any) => element.data.column === 'completed-column'));
+ }, []);
 
  // Drag and drop functionality (TODO: Move to seperate file, way to big a function)
  const onDragEnd = (result: any) => {
@@ -227,25 +231,25 @@ const TasksPage: NextPage = () => {
      startDestinationTasks = [...tasksSelected];
      temp.column = destination.droppableId;
      temp.status = 'Selected for Development';
-    //  dispatch(updateTaskInitiate(temp)); hier mutation reinhauen
+     //  dispatch(updateTaskInitiate(temp)); hier mutation reinhauen
      break;
     case 'in-progress-column':
      startDestinationTasks = [...tasksInProgress];
      temp.column = destination.droppableId;
      temp.status = 'In Progress';
-    //  dispatch(updateTaskInitiate(temp)); hier mutation reinhauen
+     //  dispatch(updateTaskInitiate(temp)); hier mutation reinhauen
      break;
     case 'in-review-column':
      startDestinationTasks = [...tasksInReview];
      temp.column = destination.droppableId;
      temp.status = 'In Review';
-    //  dispatch(updateTaskInitiate(temp)); hier mutation reinhauen
+     //  dispatch(updateTaskInitiate(temp)); hier mutation reinhauen
      break;
     case 'completed-column':
      startDestinationTasks = [...tasksCompleted];
      temp.column = destination.droppableId;
      temp.status = 'Completed';
-    //  dispatch(updateTaskInitiate(temp)); hier mutation reinhauen
+     //  dispatch(updateTaskInitiate(temp)); hier mutation reinhauen
      break;
     default:
      break;
@@ -306,29 +310,29 @@ const TasksPage: NextPage = () => {
          isDraggingOver={snapshot.isDraggingOver}
         >
          {tasksSelected
-          .sort((a:any, b:any) => {
+          .sort((a: any, b: any) => {
            if (a.taskPriority === 'high') return -1;
            if (a.taskPriority === 'medium' && b.taskPriority === 'high') return 1;
            if (a.taskPriority === 'medium' && b.taskPriority === 'low') return -1;
            return 1;
           })
-          .map((task:any, index:any) => {
+          .map((task: any, index: any) => {
            return (
             <TaskCard
              onClick={() => {
               setOpenModal(task.id);
              }}
-             key={task.id}
              index={index}
-             id={task.id}
-             identifier={task.identifier}
-             authorId={task.userId}
-             title={task.taskTitle}
-             timestamp={task.timeStamp}
-             summary={task.taskSummary}
-             description={task.taskDescription}
-             priority={task.taskPriority}
-             status={task.status}
+             id={task.data.id}
+             identifier={task.data.identifier}
+             authorId={task.data.userId}
+             title={task.data.title}
+             timestamp={task.data.timestamp}
+             summary={task.data.taskSummary}
+             description={task.data.description}
+             priority={task.data.priority}
+             status={task.data.status}
+             key={index}
             />
            );
           })}
@@ -344,7 +348,7 @@ const TasksPage: NextPage = () => {
        <CounterBlob count={countInProgress} />
       </ColumnTitleRow>
       <Droppable droppableId={'in-progress-column'}>
-       {(provided:any, snapshot:any) => (
+       {(provided: any, snapshot: any) => (
         <div
          style={{
           display: 'flex',
@@ -355,22 +359,22 @@ const TasksPage: NextPage = () => {
          ref={provided.innerRef}
          isDraggingOver={snapshot.isDraggingOver}
         >
-         {tasksInProgress.map((task:any, index:any) => {
+         {tasksInProgress.map((task: any, index: any) => {
           return (
            <TaskCard
             onClick={() => {
-             setOpenModal(task.id);
+             setOpenModal(task.data.id);
             }}
             index={index}
-            id={task.id}
-            identifier={task.identifier}
-            authorId={task.userId}
-            title={task.taskTitle}
-            timestamp={task.timeStamp}
-            summary={task.taskSummary}
-            description={task.taskDescription}
-            priority={task.taskPriority}
-            status={task.status}
+            id={task.data.id}
+            identifier={task.data.identifier}
+            authorId={task.data.userId}
+            title={task.data.title}
+            timestamp={task.data.timestamp}
+            summary={task.data.taskSummary}
+            description={task.data.description}
+            priority={task.data.priority}
+            status={task.data.status}
             key={index}
            />
           );
@@ -387,7 +391,7 @@ const TasksPage: NextPage = () => {
        <CounterBlob count={countInReview} />
       </ColumnTitleRow>
       <Droppable droppableId={'in-review-column'}>
-       {(provided:any, snapshot:any) => (
+       {(provided: any, snapshot: any) => (
         <div
          style={{
           display: 'flex',
@@ -398,22 +402,22 @@ const TasksPage: NextPage = () => {
          ref={provided.innerRef}
          isDraggingOver={snapshot.isDraggingOver}
         >
-         {tasksInReview.map((task:any, index:any) => {
+         {tasksInReview.map((task: any, index: any) => {
           return (
            <TaskCard
             onClick={() => {
              setOpenModal(task.id);
             }}
             index={index}
-            id={task.id}
-            identifier={task.identifier}
-            authorId={task.userId}
-            title={task.taskTitle}
-            timestamp={task.timeStamp}
-            summary={task.taskSummary}
-            description={task.taskDescription}
-            priority={task.taskPriority}
-            status={task.status}
+            id={task.data.id}
+            identifier={task.data.identifier}
+            authorId={task.data.userId}
+            title={task.data.title}
+            timestamp={task.data.timestamp}
+            summary={task.data.taskSummary}
+            description={task.data.description}
+            priority={task.data.priority}
+            status={task.data.status}
             key={index}
            />
           );
@@ -430,7 +434,7 @@ const TasksPage: NextPage = () => {
        <CounterBlob count={countCompleted} />
       </ColumnTitleRow>
       <Droppable droppableId={'completed-column'}>
-       {(provided:any, snapshot:any) => (
+       {(provided: any, snapshot: any) => (
         <div
          style={{
           display: 'flex',
@@ -441,22 +445,22 @@ const TasksPage: NextPage = () => {
          ref={provided.innerRef}
          isDraggingOver={snapshot.isDraggingOver}
         >
-         {tasksCompleted.map((task:any, index:any) => {
+         {tasksCompleted.map((task: any, index: any) => {
           return (
            <TaskCard
             onClick={() => {
              setOpenModal(task.id);
             }}
             index={index}
-            id={task.id}
-            identifier={task.identifier}
-            authorId={task.userId}
-            title={task.taskTitle}
-            timestamp={task.timeStamp}
-            summary={task.taskSummary}
-            description={task.taskDescription}
-            priority={task.taskPriority}
-            status={task.status}
+            id={task.data.id}
+            identifier={task.data.identifier}
+            authorId={task.data.userId}
+            title={task.data.title}
+            timestamp={task.data.timestamp}
+            summary={task.data.taskSummary}
+            description={task.data.description}
+            priority={task.data.priority}
+            status={task.data.status}
             key={index}
            />
           );
