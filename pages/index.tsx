@@ -11,6 +11,7 @@ import styled from 'styled-components';
 // Firestore
 import { firestore } from '../utils/firebase';
 import { collection, query, where } from 'firebase/firestore';
+import { useFirestoreQueryData, useFirestoreQuery } from '@react-query-firebase/firestore';
 
 // Misc
 import moment from 'moment';
@@ -18,7 +19,6 @@ import moment from 'moment';
 // Auth
 import { useAuth } from '../utils/auth';
 import withAuth from '../utils/withAuth';
-import { useFirestoreQueryData, useFirestoreQuery } from '@react-query-firebase/firestore';
 
 // Components
 import ProjectCard from '../components/cards/ProjectCard';
