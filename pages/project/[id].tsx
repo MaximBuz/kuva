@@ -210,18 +210,6 @@ const TasksPage: NextPage = () => {
   getTasks();
  }, []);
 
- /*
-
-
-
-
-  Hier Bug fixen, lädt nicht beim ersten aufmachen der seite!!!
-
-
-
-
- */
-
  // Drag and drop functionality (TODO: Move to seperate file, way to big a function)
  const onDragEnd = (result: {
   draggableId: string;
