@@ -82,89 +82,89 @@ const ColumnTitleRow = styled.div`
  }
 `;
 
-const SelectedList = memo(function SelectedList({tasks, setOpenModal}:any) {
-  return tasks.map((task: any, index: number) => (
-     <TaskCard
-      onClick={() => {
-       setOpenModal(task.id);
-      }}
-      index={index}
-      id={task.id}
-      identifier={task.data.identifier}
-      authorId={task.data.userId}
-      title={task.data.title}
-      timestamp={task.data.timestamp}
-      summary={task.data.taskSummary}
-      description={task.data.description}
-      priority={task.data.priority}
-      status={task.data.status}
-      key={index}
-     />
-  ));
-})
+const SelectedList = memo(function SelectedList({ tasks, setOpenModal }: any) {
+ return tasks.map((task: any, index: number) => (
+  <TaskCard
+   onClick={() => {
+    setOpenModal(task.id);
+   }}
+   index={index}
+   id={task.id}
+   identifier={task.data.identifier}
+   authorId={task.data.userId}
+   title={task.data.title}
+   timestamp={task.data.timestamp}
+   summary={task.data.taskSummary}
+   description={task.data.description}
+   priority={task.data.priority}
+   status={task.data.status}
+   key={index}
+  />
+ ));
+});
 
-const InProgressList = memo(function InProgressList({tasks, setOpenModal}:any) {
-  return tasks.map((task: any, index: number) => (
-     <TaskCard
-      onClick={() => {
-       setOpenModal(task.id);
-      }}
-      index={index}
-      id={task.id}
-      identifier={task.data.identifier}
-      authorId={task.data.userId}
-      title={task.data.title}
-      timestamp={task.data.timestamp}
-      summary={task.data.taskSummary}
-      description={task.data.description}
-      priority={task.data.priority}
-      status={task.data.status}
-      key={index}
-     />
-  ));
-})
+const InProgressList = memo(function InProgressList({ tasks, setOpenModal }: any) {
+ return tasks.map((task: any, index: number) => (
+  <TaskCard
+   onClick={() => {
+    setOpenModal(task.id);
+   }}
+   index={index}
+   id={task.id}
+   identifier={task.data.identifier}
+   authorId={task.data.userId}
+   title={task.data.title}
+   timestamp={task.data.timestamp}
+   summary={task.data.taskSummary}
+   description={task.data.description}
+   priority={task.data.priority}
+   status={task.data.status}
+   key={index}
+  />
+ ));
+});
 
-const InReviewList = memo(function InProgressList({tasks, setOpenModal}:any) {
-  return tasks.map((task: any, index: number) => (
-     <TaskCard
-      onClick={() => {
-       setOpenModal(task.id);
-      }}
-      index={index}
-      id={task.id}
-      identifier={task.data.identifier}
-      authorId={task.data.userId}
-      title={task.data.title}
-      timestamp={task.data.timestamp}
-      summary={task.data.taskSummary}
-      description={task.data.description}
-      priority={task.data.priority}
-      status={task.data.status}
-      key={index}
-     />
-  ));
-})
+const InReviewList = memo(function InProgressList({ tasks, setOpenModal }: any) {
+ return tasks.map((task: any, index: number) => (
+  <TaskCard
+   onClick={() => {
+    setOpenModal(task.id);
+   }}
+   index={index}
+   id={task.id}
+   identifier={task.data.identifier}
+   authorId={task.data.userId}
+   title={task.data.title}
+   timestamp={task.data.timestamp}
+   summary={task.data.taskSummary}
+   description={task.data.description}
+   priority={task.data.priority}
+   status={task.data.status}
+   key={index}
+  />
+ ));
+});
 
-const CompletedList = memo(function CompletedList({tasks, setOpenModal}:any) {
-  return tasks.map((task: any, index: number) => (
-     <TaskCard
-      onClick={() => {
-       setOpenModal(task.id);
-      }}
-      index={index}
-      id={task.id}
-      identifier={task.data.identifier}
-      authorId={task.data.userId}
-      title={task.data.title}
-      timestamp={task.data.timestamp}
-      summary={task.data.taskSummary}
-      description={task.data.description}
-      priority={task.data.priority}
-      status={task.data.status}
-      key={index}
-     />
-  ));
-})
+const CompletedList = memo(function CompletedList({ tasks, setOpenModal }: any) {
+ return tasks.map((task: any, index: number) => (
+  <TaskCard
+   onClick={() => {
+    setOpenModal(task.id);
+   }}
+   index={index}
+   id={task.id}
+   identifier={task.data.identifier}
+   authorId={task.data.userId}
+   title={task.data.title}
+   timestamp={task.data.timestamp}
+   summary={task.data.taskSummary}
+   description={task.data.description}
+   priority={task.data.priority}
+   status={task.data.status}
+   key={index}
+  />
+ ));
+});
 
 const TasksPage: NextPage = () => {
  // Auth
@@ -191,22 +191,20 @@ const TasksPage: NextPage = () => {
  const countCompleted = tasksCompleted.length;
 
  // Query tasks
- const tasksRef = query(collection(firestore, 'tasks'), where('user', '==', currentUser.uid));
- const tasksSnap = useFirestoreQuery(['tasks'], tasksRef);
  const tasks: any = [];
+ const tasksRef = query(collection(firestore, 'tasks'), where('user', '==', currentUser.uid));
+ const tasksSnap = useFirestoreQuery(['tasks'], tasksRef, { subscribe: false });
  tasksSnap?.data?.forEach((doc) => tasks.push({ id: doc.id, data: doc.data() }));
 
  useEffect(() => {
   // Population of Selected for development Column
-  setTasksSelected(
-   tasks?.filter((element: any) => element.data.column === 'selected-for-development-column')
-  );
+  setTasksSelected(tasks?.filter((task: any) => task.data.column === 'selected-for-development-column'));
   // Population of In Progress Column
-  setTasksInProgress(tasks?.filter((element: any) => element.data.column === 'in-progress-column'));
+  setTasksInProgress(tasks?.filter((task: any) => task.data.column === 'in-progress-column'));
   // Population of In Review Column
-  setTasksInReview(tasks?.filter((element: any) => element.data.column === 'in-review-column'));
+  setTasksInReview(tasks?.filter((task: any) => task.data.column === 'in-review-column'));
   // Population of Completed Column
-  setTasksCompleted(tasks?.filter((element: any) => element.data.column === 'completed-column'));
+  setTasksCompleted(tasks?.filter((task: any) => task.data.column === 'completed-column'));
  }, []);
 
  /*
@@ -248,30 +246,30 @@ const TasksPage: NextPage = () => {
    // determine in which column the task order is being changed
    switch (source.droppableId) {
     case 'selected-for-development-column': {
-      let newSelectedTasks = [...tasksSelected];
-      newSelectedTasks.splice(destination.index, 0, newSelectedTasks.splice(source.index, 1)[0]); // reordering the array
-      setTasksSelected(newSelectedTasks);
-      break;
+     let newSelectedTasks = [...tasksSelected];
+     newSelectedTasks.splice(destination.index, 0, newSelectedTasks.splice(source.index, 1)[0]); // reordering the array
+     setTasksSelected(newSelectedTasks);
+     break;
     }
     case 'in-progress-column': {
-      let newTasksInProgress = [...tasksInProgress];
-      // reordering the array
-      let [insert] = newTasksInProgress.splice(source.index, 1)
-      newTasksInProgress.splice(destination.index, 0, insert); 
-      setTasksInProgress(newTasksInProgress);
-      break;
+     let newTasksInProgress = [...tasksInProgress];
+     // reordering the array
+     let [insert] = newTasksInProgress.splice(source.index, 1);
+     newTasksInProgress.splice(destination.index, 0, insert);
+     setTasksInProgress(newTasksInProgress);
+     break;
     }
     case 'in-review-column': {
-      let newTasksInReview = [...tasksInReview];
-      newTasksInReview.splice(destination.index, 0, newTasksInReview.splice(source.index, 1)[0]); // reordering the array
-      setTasksInReview(newTasksInReview);
-      break;
+     let newTasksInReview = [...tasksInReview];
+     newTasksInReview.splice(destination.index, 0, newTasksInReview.splice(source.index, 1)[0]); // reordering the array
+     setTasksInReview(newTasksInReview);
+     break;
     }
     case 'completed-column': {
-      let newTasksCompleted = [...tasksCompleted];
-      newTasksCompleted.splice(destination.index, 0, newTasksCompleted.splice(source.index, 1)[0]); // reordering the array
-      setTasksCompleted(newTasksCompleted);
-      break;
+     let newTasksCompleted = [...tasksCompleted];
+     newTasksCompleted.splice(destination.index, 0, newTasksCompleted.splice(source.index, 1)[0]); // reordering the array
+     setTasksCompleted(newTasksCompleted);
+     break;
     }
     default:
      break;
@@ -403,7 +401,7 @@ const TasksPage: NextPage = () => {
          }}
          ref={provided.innerRef}
          {...provided.droppableProps}
-        //  isDraggingOver={snapshot.isDraggingOver}
+         //  isDraggingOver={snapshot.isDraggingOver}
         >
          <SelectedList tasks={tasksSelected} setOpenModal={setOpenModal} />
          {provided.placeholder}
@@ -427,7 +425,7 @@ const TasksPage: NextPage = () => {
          }}
          ref={provided.innerRef}
          {...provided.droppableProps}
-        //  isDraggingOver={snapshot.isDraggingOver}
+         //  isDraggingOver={snapshot.isDraggingOver}
         >
          <InProgressList tasks={tasksInProgress} setOpenModal={setOpenModal} />
          {provided.placeholder}
@@ -451,7 +449,7 @@ const TasksPage: NextPage = () => {
          }}
          ref={provided.innerRef}
          {...provided.droppableProps}
-        //  isDraggingOver={snapshot.isDraggingOver}
+         //  isDraggingOver={snapshot.isDraggingOver}
         >
          <InReviewList tasks={tasksInReview} setOpenModal={setOpenModal} />
          {provided.placeholder}
@@ -475,7 +473,7 @@ const TasksPage: NextPage = () => {
          }}
          ref={provided.innerRef}
          {...provided.droppableProps}
-        //  isDraggingOver={snapshot.isDraggingOver}
+         //  isDraggingOver={snapshot.isDraggingOver}
         >
          <CompletedList tasks={tasksCompleted} setOpenModal={setOpenModal} />
          {provided.placeholder}
