@@ -14,7 +14,7 @@ import withAuth from '../../utils/withAuth';
 
 // Firestore
 import { firestore } from '../../utils/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useFirestoreQueryData, useFirestoreQuery } from '@react-query-firebase/firestore';
 
 const FilterSection = styled.div`
@@ -191,20 +191,23 @@ const TasksPage: NextPage = () => {
  const countCompleted = tasksCompleted.length;
 
  // Query tasks
- const tasks: any = [];
  const tasksRef = query(collection(firestore, 'tasks'), where('user', '==', currentUser.uid));
- const tasksSnap = useFirestoreQuery(['tasks'], tasksRef, { subscribe: false });
- tasksSnap?.data?.forEach((doc) => tasks.push({ id: doc.id, data: doc.data() }));
-
+ const tasks: any = [];
+ 
  useEffect(() => {
-  // Population of Selected for development Column
-  setTasksSelected(tasks?.filter((task: any) => task.data.column === 'selected-for-development-column'));
-  // Population of In Progress Column
-  setTasksInProgress(tasks?.filter((task: any) => task.data.column === 'in-progress-column'));
-  // Population of In Review Column
-  setTasksInReview(tasks?.filter((task: any) => task.data.column === 'in-review-column'));
-  // Population of Completed Column
-  setTasksCompleted(tasks?.filter((task: any) => task.data.column === 'completed-column'));
+   const getTasks = async () => {
+     const tasksSnap = await getDocs(tasksRef)
+     tasksSnap.forEach((doc) => tasks.push({ id: doc.id, data: doc.data() }));
+     // Population of Selected for development Column
+     setTasksSelected(tasks?.filter((task: any) => task.data.column === 'selected-for-development-column'));
+     // Population of In Progress Column
+     setTasksInProgress(tasks?.filter((task: any) => task.data.column === 'in-progress-column'));
+     // Population of In Review Column
+     setTasksInReview(tasks?.filter((task: any) => task.data.column === 'in-review-column'));
+     // Population of Completed Column
+     setTasksCompleted(tasks?.filter((task: any) => task.data.column === 'completed-column'));
+  }
+  getTasks();
  }, []);
 
  /*
