@@ -1,13 +1,12 @@
 import TaskCard from '../../components/cards/TaskCard';
 import CounterBlob from '../../components/misc/CounterBlob';
 
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { NextPage } from 'next';
 
 import styled from 'styled-components';
-import { NextPage } from 'next';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 // Auth
 import { useAuth } from '../../utils/auth';
@@ -43,7 +42,7 @@ const ColumnsWrapper = styled.div`
  flex-direction: row;
  justify-content: flex-start;
  gap: 15px;
- overflow-x: scroll;
+ /* overflow-x: scroll; */
  /* Hide scrollbar for IE, Edge and Firefox */
  -ms-overflow-style: none;
  scrollbar-width: none;
@@ -83,6 +82,90 @@ const ColumnTitleRow = styled.div`
  }
 `;
 
+const SelectedList = memo(function SelectedList({tasks, setOpenModal}:any) {
+  return tasks.map((task: any, index: number) => (
+     <TaskCard
+      onClick={() => {
+       setOpenModal(task.id);
+      }}
+      index={index}
+      id={task.id}
+      identifier={task.data.identifier}
+      authorId={task.data.userId}
+      title={task.data.title}
+      timestamp={task.data.timestamp}
+      summary={task.data.taskSummary}
+      description={task.data.description}
+      priority={task.data.priority}
+      status={task.data.status}
+      key={index}
+     />
+  ));
+})
+
+const InProgressList = memo(function InProgressList({tasks, setOpenModal}:any) {
+  return tasks.map((task: any, index: number) => (
+     <TaskCard
+      onClick={() => {
+       setOpenModal(task.id);
+      }}
+      index={index}
+      id={task.id}
+      identifier={task.data.identifier}
+      authorId={task.data.userId}
+      title={task.data.title}
+      timestamp={task.data.timestamp}
+      summary={task.data.taskSummary}
+      description={task.data.description}
+      priority={task.data.priority}
+      status={task.data.status}
+      key={index}
+     />
+  ));
+})
+
+const InReviewList = memo(function InProgressList({tasks, setOpenModal}:any) {
+  return tasks.map((task: any, index: number) => (
+     <TaskCard
+      onClick={() => {
+       setOpenModal(task.id);
+      }}
+      index={index}
+      id={task.id}
+      identifier={task.data.identifier}
+      authorId={task.data.userId}
+      title={task.data.title}
+      timestamp={task.data.timestamp}
+      summary={task.data.taskSummary}
+      description={task.data.description}
+      priority={task.data.priority}
+      status={task.data.status}
+      key={index}
+     />
+  ));
+})
+
+const CompletedList = memo(function CompletedList({tasks, setOpenModal}:any) {
+  return tasks.map((task: any, index: number) => (
+     <TaskCard
+      onClick={() => {
+       setOpenModal(task.id);
+      }}
+      index={index}
+      id={task.id}
+      identifier={task.data.identifier}
+      authorId={task.data.userId}
+      title={task.data.title}
+      timestamp={task.data.timestamp}
+      summary={task.data.taskSummary}
+      description={task.data.description}
+      priority={task.data.priority}
+      status={task.data.status}
+      key={index}
+     />
+  ));
+})
+
 const TasksPage: NextPage = () => {
  // Auth
  const { currentUser } = useAuth();
@@ -106,13 +189,12 @@ const TasksPage: NextPage = () => {
 
  const [tasksCompleted, setTasksCompleted] = useState([]);
  const countCompleted = tasksCompleted.length;
- 
+
  // Query tasks
  const tasksRef = query(collection(firestore, 'tasks'), where('user', '==', currentUser.uid));
  const tasksSnap = useFirestoreQuery(['tasks'], tasksRef);
  const tasks: any = [];
  tasksSnap?.data?.forEach((doc) => tasks.push({ id: doc.id, data: doc.data() }));
-
 
  useEffect(() => {
   // Population of Selected for development Column
@@ -127,20 +209,32 @@ const TasksPage: NextPage = () => {
   setTasksCompleted(tasks?.filter((element: any) => element.data.column === 'completed-column'));
  }, []);
 
- /* 
- 
+ /*
+
 
 
 
   Hier Bug fixen, lädt nicht beim ersten aufmachen der seite!!!
- 
 
 
-  
+
+
  */
 
  // Drag and drop functionality (TODO: Move to seperate file, way to big a function)
- const onDragEnd = (result: any) => {
+ const onDragEnd = (result: {
+  draggableId: string;
+  type: string;
+  reason: string;
+  source: {
+   droppableId: string;
+   index: number;
+  };
+  destination: {
+   droppableId: string;
+   index: number;
+  };
+ }) => {
   const { destination, source, draggableId } = result;
 
   // check if item has been dropped
@@ -152,46 +246,36 @@ const TasksPage: NextPage = () => {
   //handle item drop in the same column (no status change, only index change)
   if (source.droppableId === destination.droppableId) {
    // determine in which column the task order is being changed
-   let newTaskArr: any = [];
    switch (source.droppableId) {
-    case 'selected-for-development-column':
-     newTaskArr = [...tasksSelected];
-     break;
-    case 'in-progress-column':
-     newTaskArr = [...tasksInProgress];
-     break;
-    case 'in-review-column':
-     newTaskArr = [...tasksInReview];
-     break;
-    case 'completed-column':
-     newTaskArr = [...tasksCompleted];
-     break;
+    case 'selected-for-development-column': {
+      let newSelectedTasks = [...tasksSelected];
+      newSelectedTasks.splice(destination.index, 0, newSelectedTasks.splice(source.index, 1)[0]); // reordering the array
+      setTasksSelected(newSelectedTasks);
+      break;
+    }
+    case 'in-progress-column': {
+      let newTasksInProgress = [...tasksInProgress];
+      // reordering the array
+      let [insert] = newTasksInProgress.splice(source.index, 1)
+      newTasksInProgress.splice(destination.index, 0, insert); 
+      setTasksInProgress(newTasksInProgress);
+      break;
+    }
+    case 'in-review-column': {
+      let newTasksInReview = [...tasksInReview];
+      newTasksInReview.splice(destination.index, 0, newTasksInReview.splice(source.index, 1)[0]); // reordering the array
+      setTasksInReview(newTasksInReview);
+      break;
+    }
+    case 'completed-column': {
+      let newTasksCompleted = [...tasksCompleted];
+      newTasksCompleted.splice(destination.index, 0, newTasksCompleted.splice(source.index, 1)[0]); // reordering the array
+      setTasksCompleted(newTasksCompleted);
+      break;
+    }
     default:
      break;
    }
-   // change the task order within that column
-   let temp = newTaskArr.splice(source.index, 1);
-   newTaskArr.splice(destination.index, 0, ...temp);
-
-   // persist in current state
-   switch (source.droppableId) {
-    case 'selected-for-development-column':
-     setTasksSelected(newTaskArr);
-     break;
-    case 'in-progress-column':
-     setTasksInProgress(newTaskArr);
-     break;
-    case 'in-review-column':
-     setTasksInReview(newTaskArr);
-     break;
-    case 'completed-column':
-     setTasksCompleted(newTaskArr);
-     break;
-    default:
-     break;
-   }
-   // TODO: State persistance with database (save the index to the task document)
-   return;
   }
 
   // Handle item drop in a different column ( with status and index change )
@@ -317,37 +401,11 @@ const TasksPage: NextPage = () => {
           flexDirection: 'column',
           height: '100%',
          }}
-         {...provided.droppableProps}
          ref={provided.innerRef}
-         isDraggingOver={snapshot.isDraggingOver}
+         {...provided.droppableProps}
+        //  isDraggingOver={snapshot.isDraggingOver}
         >
-         {tasksSelected
-          .sort((a: any, b: any) => {
-           if (a.taskPriority === 'high') return -1;
-           if (a.taskPriority === 'medium' && b.taskPriority === 'high') return 1;
-           if (a.taskPriority === 'medium' && b.taskPriority === 'low') return -1;
-           return 1;
-          })
-          .map((task: any, index: any) => {
-           return (
-            <TaskCard
-             onClick={() => {
-              setOpenModal(task.id);
-             }}
-             index={index}
-             id={task.data.id}
-             identifier={task.data.identifier}
-             authorId={task.data.userId}
-             title={task.data.title}
-             timestamp={task.data.timestamp}
-             summary={task.data.taskSummary}
-             description={task.data.description}
-             priority={task.data.priority}
-             status={task.data.status}
-             key={index}
-            />
-           );
-          })}
+         <SelectedList tasks={tasksSelected} setOpenModal={setOpenModal} />
          {provided.placeholder}
         </div>
        )}
@@ -367,30 +425,11 @@ const TasksPage: NextPage = () => {
           flexDirection: 'column',
           height: '100%',
          }}
-         {...provided.droppableProps}
          ref={provided.innerRef}
-         isDraggingOver={snapshot.isDraggingOver}
+         {...provided.droppableProps}
+        //  isDraggingOver={snapshot.isDraggingOver}
         >
-         {tasksInProgress.map((task: any, index: any) => {
-          return (
-           <TaskCard
-            onClick={() => {
-             setOpenModal(task.data.id);
-            }}
-            index={index}
-            id={task.data.id}
-            identifier={task.data.identifier}
-            authorId={task.data.userId}
-            title={task.data.title}
-            timestamp={task.data.timestamp}
-            summary={task.data.taskSummary}
-            description={task.data.description}
-            priority={task.data.priority}
-            status={task.data.status}
-            key={index}
-           />
-          );
-         })}
+         <InProgressList tasks={tasksInProgress} setOpenModal={setOpenModal} />
          {provided.placeholder}
         </div>
        )}
@@ -410,30 +449,11 @@ const TasksPage: NextPage = () => {
           flexDirection: 'column',
           height: '100%',
          }}
-         {...provided.droppableProps}
          ref={provided.innerRef}
-         isDraggingOver={snapshot.isDraggingOver}
+         {...provided.droppableProps}
+        //  isDraggingOver={snapshot.isDraggingOver}
         >
-         {tasksInReview.map((task: any, index: any) => {
-          return (
-           <TaskCard
-            onClick={() => {
-             setOpenModal(task.id);
-            }}
-            index={index}
-            id={task.data.id}
-            identifier={task.data.identifier}
-            authorId={task.data.userId}
-            title={task.data.title}
-            timestamp={task.data.timestamp}
-            summary={task.data.taskSummary}
-            description={task.data.description}
-            priority={task.data.priority}
-            status={task.data.status}
-            key={index}
-           />
-          );
-         })}
+         <InReviewList tasks={tasksInReview} setOpenModal={setOpenModal} />
          {provided.placeholder}
         </div>
        )}
@@ -453,30 +473,11 @@ const TasksPage: NextPage = () => {
           flexDirection: 'column',
           height: '100%',
          }}
-         {...provided.droppableProps}
          ref={provided.innerRef}
-         isDraggingOver={snapshot.isDraggingOver}
+         {...provided.droppableProps}
+        //  isDraggingOver={snapshot.isDraggingOver}
         >
-         {tasksCompleted.map((task: any, index: any) => {
-          return (
-           <TaskCard
-            onClick={() => {
-             setOpenModal(task.id);
-            }}
-            index={index}
-            id={task.data.id}
-            identifier={task.data.identifier}
-            authorId={task.data.userId}
-            title={task.data.title}
-            timestamp={task.data.timestamp}
-            summary={task.data.taskSummary}
-            description={task.data.description}
-            priority={task.data.priority}
-            status={task.data.status}
-            key={index}
-           />
-          );
-         })}
+         <CompletedList tasks={tasksCompleted} setOpenModal={setOpenModal} />
          {provided.placeholder}
         </div>
        )}

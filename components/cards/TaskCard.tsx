@@ -116,7 +116,7 @@ function TaskCard({
   onClick }: Props) {
  return (
   <div onClick={onClick}>
-   <Draggable draggableId={id} index={index}>
+   <Draggable draggableId={id} index={index} key={id}>
     {(provided: any, snapshot: any) => (
      <Card {...provided.draggableProps} ref={provided.innerRef} isDragging={snapshot.isDragging}>
       <TopRow>
