@@ -4,6 +4,12 @@ import { useState } from 'react';
 import image from '../../public/dropDown.png';
 
 import styled from 'styled-components';
+import { toast } from 'react-toastify';
+import { useFirestoreCollectionMutation } from '@react-query-firebase/firestore';
+import { firestore } from '../../utils/firebase';
+import { collection } from 'firebase/firestore';
+import { useQueryClient } from 'react-query';
+import Link from 'next/link';
 
 const GreyBackground = styled.div`
  position: fixed;
@@ -152,15 +158,24 @@ const Section = styled.div`
 
 const initialState = {};
 
-function Modal({ closeModal, projectId, currentUser }: { closeModal: Function; projectId: string; currentUser: any }) {
+function Modal({
+ closeModal,
+ projectId,
+ currentUser,
+}: {
+ closeModal: Function;
+ projectId: any;
+ currentUser: any;
+}) {
  //holding the input values provided by user
  const [state, setState] = useState(initialState);
 
  // Find collaborators of the project to assign task to them
-//  const collaborators = projects.filter((project) => project.id === projectId)[0].collaborators;
+ //  const collaborators = projects.filter((project) => project.id === projectId)[0].collaborators;
 
  const userID = currentUser.uid;
  const userName = currentUser.displayName;
+ console.log(currentUser);
 
  const handleInputChange = (e) => {
   let { name, value } = e.target;
@@ -175,13 +190,44 @@ function Modal({ closeModal, projectId, currentUser }: { closeModal: Function; p
   });
  };
 
- /* STOP!! Change this to TASKS handler!! */
- const handleSubmit = async (e:any) => {
+ // setting up mutation
+ const queryClient = useQueryClient();
+ const ref = collection(firestore, 'tasks');
+ const mutation = useFirestoreCollectionMutation(ref, {
+  onSuccess() {
+   queryClient.invalidateQueries(['tasks']);
+   toast.success(() => (
+    <Link passHref href={`/backlog`}>
+     Click to view new task in Backlog
+    </Link>
+   )); // Link einfügen um zum backlog zu kommen
+  },
+  onError() {
+   toast.error('Failed to add new task!');
+  },
+ });
+
+ //  handling error and loading state
+ const [error, setError] = useState<string>('');
+ const [loading, setLoading] = useState<boolean>(false);
+
+ //  submitting the form
+ async function handleSubmit(e: any) {
   e.preventDefault();
+  try {
+   console.log('tryblock');
+   setError('');
+   setLoading(true);
+   mutation.mutate({
+    ...state,
+   });
+  } catch {
+   console.log('catchblock');
+   setError('Failed to submit form');
+  }
   closeModal();
-  // history.push('backlog');
-  // await dispatch(addTaskInitiate(state));
- };
+  setLoading(false);
+ }
 
  return ReactDom.createPortal(
   <>
@@ -269,7 +315,7 @@ function Modal({ closeModal, projectId, currentUser }: { closeModal: Function; p
        ></textarea>
       </Section>
 
-      <button type='submit' value='Submit'>
+      <button type='submit' value='Submit' disabled={loading}>
        Add Task to Backlog
       </button>
      </Form>
