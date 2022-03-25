@@ -1,11 +1,14 @@
+// Components
 import TaskCard from '../../components/cards/TaskCard';
 import CounterBlob from '../../components/misc/CounterBlob';
+import styled from 'styled-components';
 
+// React and Next
 import { memo, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { NextPage } from 'next';
 
-import styled from 'styled-components';
+// Drag and Drop
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 // Auth
@@ -15,8 +18,6 @@ import withAuth from '../../utils/withAuth';
 // Firestore
 import { firestore } from '../../utils/firebase';
 import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
-import { useFirestoreQueryData, useFirestoreQuery, useFirestoreCollectionMutation, useFirestoreDocumentMutation } from '@react-query-firebase/firestore';
-import { useQueryClient } from 'react-query';
 
 const FilterSection = styled.div`
  display: flex;
@@ -178,7 +179,6 @@ const TasksPage: NextPage = () => {
  const router = useRouter();
  const { id: projectId } = router.query;
 
-
  // Initialize states for all columns
  const [tasksSelected, setTasksSelected] = useState([]);
  const countSelected = tasksSelected?.length;
@@ -195,20 +195,20 @@ const TasksPage: NextPage = () => {
  // Query tasks
  const tasksRef = query(collection(firestore, 'tasks'), where('user', '==', currentUser.uid));
  const tasks: any = [];
- 
+
  useEffect(() => {
-   const getTasks = async () => {
-     const tasksSnap = await getDocs(tasksRef)
-     tasksSnap.forEach((doc) => tasks.push({ id: doc.id, data: doc.data() }));
-     // Population of Selected for development Column
-     setTasksSelected(tasks?.filter((task: any) => task.data.column === 'selected-for-development-column'));
-     // Population of In Progress Column
-     setTasksInProgress(tasks?.filter((task: any) => task.data.column === 'in-progress-column'));
-     // Population of In Review Column
-     setTasksInReview(tasks?.filter((task: any) => task.data.column === 'in-review-column'));
-     // Population of Completed Column
-     setTasksCompleted(tasks?.filter((task: any) => task.data.column === 'completed-column'));
-  }
+  const getTasks = async () => {
+   const tasksSnap = await getDocs(tasksRef);
+   tasksSnap.forEach((doc) => tasks.push({ id: doc.id, data: doc.data() }));
+   // Population of Selected for development Column
+   setTasksSelected(tasks?.filter((task: any) => task.data.column === 'selected-for-development-column'));
+   // Population of In Progress Column
+   setTasksInProgress(tasks?.filter((task: any) => task.data.column === 'in-progress-column'));
+   // Population of In Review Column
+   setTasksInReview(tasks?.filter((task: any) => task.data.column === 'in-review-column'));
+   // Population of Completed Column
+   setTasksCompleted(tasks?.filter((task: any) => task.data.column === 'completed-column'));
+  };
   getTasks();
  }, []);
 
@@ -273,6 +273,7 @@ const TasksPage: NextPage = () => {
   if (source.droppableId != destination.droppableId) {
    let startSourceTasks: any = [];
    let startDestinationTasks: any = [];
+
    // populate the startSourceTasks with a copy of current state
    switch (source.droppableId) {
     case 'selected-for-development-column':
@@ -292,7 +293,7 @@ const TasksPage: NextPage = () => {
    }
 
    // delete the tasks within the startSourceTasks
-   let temp = startSourceTasks.splice(source.index, 1)[0];
+   let [temp] = startSourceTasks.splice(source.index, 1);
 
    // save the deletion in source column to current state
    switch (source.droppableId) {
@@ -312,60 +313,62 @@ const TasksPage: NextPage = () => {
      break;
    }
 
-   // populate the startDestinationTasks with a copy of current state
    switch (destination.droppableId) {
     case 'selected-for-development-column':
-     startDestinationTasks = [...tasksSelected];
-     temp.data.column = destination.droppableId;
-     temp.data.status = 'Selected for Development';
-     await setDoc(doc(firestore, "tasks", temp.id), {
-       ...temp.data
-     })
+     {
+      startDestinationTasks = [...tasksSelected]; // create copy of current state
+      startDestinationTasks.splice(destination.index, 0, temp); // add the previously deleted task to that copy
+      setTasksSelected(startDestinationTasks); // save the addition to current state of destination column
+
+      // Change column and status on the task in firebase
+      temp.data.column = destination.droppableId;
+      temp.data.status = 'Selected for Development';
+      await setDoc(doc(firestore, 'tasks', temp.id), {
+       ...temp.data,
+      });
+     }
      break;
     case 'in-progress-column':
-     startDestinationTasks = [...tasksInProgress];
-     temp.data.column = destination.droppableId;
-     temp.data.status = 'In Progress';
-     await setDoc(doc(firestore, "tasks", temp.id), {
-      ...temp.data
-    })
+     {
+      startDestinationTasks = [...tasksInProgress]; // create copy of current state
+      startDestinationTasks.splice(destination.index, 0, temp); // add the previously deleted task to that copy
+      setTasksInProgress(startDestinationTasks); // save the addition to current state of destination column
+
+      // Change column and status on the task in firebase
+      temp.data.column = destination.droppableId;
+      temp.data.status = 'In Progress';
+      await setDoc(doc(firestore, 'tasks', temp.id), {
+       ...temp.data,
+      });
+     }
      break;
     case 'in-review-column':
-     startDestinationTasks = [...tasksInReview];
-     temp.data.column = destination.droppableId;
-     temp.data.status = 'In Review';
-     await setDoc(doc(firestore, "tasks", temp.id), {
-      ...temp.data
-    })
+     {
+      startDestinationTasks = [...tasksInReview]; // create copy of current state
+      startDestinationTasks.splice(destination.index, 0, temp); // add the previously deleted task to that copy
+      setTasksInReview(startDestinationTasks); // save the addition to current state of destination column
+
+      // Change column and status on the task in firebase
+      temp.data.column = destination.droppableId;
+      temp.data.status = 'In Review';
+      await setDoc(doc(firestore, 'tasks', temp.id), {
+       ...temp.data,
+      });
+     }
      break;
     case 'completed-column':
-     startDestinationTasks = [...tasksCompleted];
-     temp.data.column = destination.droppableId;
-     temp.data.status = 'Completed';
-     await setDoc(doc(firestore, "tasks", temp.id), {
-      ...temp.data
-    })
-     break;
-    default:
-     break;
-   }
+     {
+      startDestinationTasks = [...tasksCompleted]; // create copy of current state
+      startDestinationTasks.splice(destination.index, 0, temp); // add the previously deleted task to that copy
+      setTasksCompleted(startDestinationTasks); // save the addition to current state of destination column
 
-   // add the previously deleted task from startSourcetask to the new column
-   startDestinationTasks.splice(destination.index, 0, temp);
-
-   // save the addition in destination column to current state
-   switch (destination.droppableId) {
-    case 'selected-for-development-column':
-     setTasksSelected(startDestinationTasks);
-     break;
-    case 'in-progress-column':
-     setTasksInProgress(startDestinationTasks);
-     break;
-    case 'in-review-column':
-     setTasksInReview(startDestinationTasks);
-     break;
-    case 'completed-column':
-     setTasksCompleted(startDestinationTasks);
+      // Change column and status on the task in firebase
+      temp.data.column = destination.droppableId;
+      temp.data.status = 'Completed';
+      await setDoc(doc(firestore, 'tasks', temp.id), {
+       ...temp.data,
+      });
+     }
      break;
     default:
      break;
