@@ -49,7 +49,7 @@ const PriorityPill = styled.div<ColorProps>`
  height: fit-content;
  font-size: small;
  font-weight: 400;
- background-color: ${(props:any) => {
+ background-color: ${(props: any) => {
   if (props.priority === 'low') return '#45da5e';
   else if (props.priority === 'medium') return '#f8b965';
   else return '#e96262';
@@ -85,35 +85,37 @@ const TitleRow = styled.div`
 `;
 
 type Props = {
-  index: any;
-  id: string;
-  identifier: string;
-  authorId: string;
-  title: string;
-  timestamp: string;
-  summary: string;
-  description: string;
-  priority: string;
-  status: string;
-  onClick: any;
+ index: any;
+ id: string;
+ identifier: string;
+ authorId: string;
+ title: string;
+ timestamp: string;
+ summary: string;
+ description: string;
+ priority: string;
+ status: string;
+ onClick: any;
 };
 
 interface ColorProps {
-    priority: string;
+ priority: string;
 }
 
 function TaskCard({
-  index,
-  id,
-  identifier,
-  authorId,
-  title,
-  timestamp,
-  summary,
-  description,
-  priority,
-  status,
-  onClick }: Props) {
+ index,
+ id,
+ identifier,
+ authorId,
+ title,
+ timestamp,
+ summary,
+ description,
+ priority,
+ status,
+ onClick,
+}: Props) {
+
  return (
   <div onClick={onClick}>
    <Draggable draggableId={id} index={index} key={id}>

@@ -14,8 +14,9 @@ import withAuth from '../../utils/withAuth';
 
 // Firestore
 import { firestore } from '../../utils/firebase';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { useFirestoreQueryData, useFirestoreQuery } from '@react-query-firebase/firestore';
+import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { useFirestoreQueryData, useFirestoreQuery, useFirestoreCollectionMutation, useFirestoreDocumentMutation } from '@react-query-firebase/firestore';
+import { useQueryClient } from 'react-query';
 
 const FilterSection = styled.div`
  display: flex;
@@ -177,6 +178,7 @@ const TasksPage: NextPage = () => {
  const router = useRouter();
  const { id: projectId } = router.query;
 
+
  // Initialize states for all columns
  const [tasksSelected, setTasksSelected] = useState([]);
  const countSelected = tasksSelected?.length;
@@ -211,7 +213,7 @@ const TasksPage: NextPage = () => {
  }, []);
 
  // Drag and drop functionality (TODO: Move to seperate file, way to big a function)
- const onDragEnd = (result: {
+ const onDragEnd = async (result: {
   draggableId: string;
   type: string;
   reason: string;
@@ -314,27 +316,35 @@ const TasksPage: NextPage = () => {
    switch (destination.droppableId) {
     case 'selected-for-development-column':
      startDestinationTasks = [...tasksSelected];
-     temp.column = destination.droppableId;
-     temp.status = 'Selected for Development';
-     //  dispatch(updateTaskInitiate(temp)); hier mutation reinhauen
+     temp.data.column = destination.droppableId;
+     temp.data.status = 'Selected for Development';
+     await setDoc(doc(firestore, "tasks", temp.id), {
+       ...temp.data
+     })
      break;
     case 'in-progress-column':
      startDestinationTasks = [...tasksInProgress];
-     temp.column = destination.droppableId;
-     temp.status = 'In Progress';
-     //  dispatch(updateTaskInitiate(temp)); hier mutation reinhauen
+     temp.data.column = destination.droppableId;
+     temp.data.status = 'In Progress';
+     await setDoc(doc(firestore, "tasks", temp.id), {
+      ...temp.data
+    })
      break;
     case 'in-review-column':
      startDestinationTasks = [...tasksInReview];
-     temp.column = destination.droppableId;
-     temp.status = 'In Review';
-     //  dispatch(updateTaskInitiate(temp)); hier mutation reinhauen
+     temp.data.column = destination.droppableId;
+     temp.data.status = 'In Review';
+     await setDoc(doc(firestore, "tasks", temp.id), {
+      ...temp.data
+    })
      break;
     case 'completed-column':
      startDestinationTasks = [...tasksCompleted];
-     temp.column = destination.droppableId;
-     temp.status = 'Completed';
-     //  dispatch(updateTaskInitiate(temp)); hier mutation reinhauen
+     temp.data.column = destination.droppableId;
+     temp.data.status = 'Completed';
+     await setDoc(doc(firestore, "tasks", temp.id), {
+      ...temp.data
+    })
      break;
     default:
      break;
