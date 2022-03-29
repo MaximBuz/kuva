@@ -194,7 +194,11 @@ const TasksPage: NextPage = () => {
  const countCompleted = tasksCompleted.length;
 
  // Query tasks
- const tasksRef = query(collection(firestore, 'tasks'), where('user', '==', currentUser.uid));
+ const tasksRef = query(
+  collection(firestore, 'tasks'),
+  where('user', '==', currentUser.uid),
+  where('projectId', '==', projectId)
+ );
  const tasks: any = [];
 
  useEffect(() => {
@@ -212,7 +216,6 @@ const TasksPage: NextPage = () => {
   };
   getTasks();
  }, []);
-
 
  // Drag and drop functionality (TODO: Move to seperate file, way to big a function)
  const onDragEnd = async (result: {
@@ -485,9 +488,7 @@ const TasksPage: NextPage = () => {
         </div>
        )}
       </Droppable>
-      {openModal && (
-       <TaskModal closeModal={setOpenModal} taskId={openModal} />
-      )}
+      {openModal && <TaskModal closeModal={setOpenModal} taskId={openModal} />}
      </Column>
     </ColumnsWrapper>
    </div>

@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import { useFirestoreCollectionMutation } from '@react-query-firebase/firestore';
 import { firestore } from '../../utils/firebase';
-import { collection } from 'firebase/firestore';
+import { collection, Timestamp } from 'firebase/firestore';
 import { useQueryClient } from 'react-query';
 import Link from 'next/link';
 
@@ -174,19 +174,20 @@ function Modal({
  //  const collaborators = projects.filter((project) => project.id === projectId)[0].collaborators;
 
  const userID = currentUser.uid;
- const userName = currentUser.displayName;
- console.log(currentUser);
 
- const handleInputChange = (e) => {
+ const handleInputChange = (e: any) => {
   let { name, value } = e.target;
   setState({
    ...state,
    [name]: value,
-   ['userId']: userID,
-   ['userName']: userName,
+   ['user']: userID,
+   ['column']: null,
    ['status']: 'backlog',
    ['projectId']: projectId,
-   ['identifier']: 'test',
+   ['identifier']: 'TST',
+   ['archived']: false,
+   ['comments']: [],
+   ['timestamp']: Timestamp.now(),
   });
  };
 
@@ -252,13 +253,13 @@ function Modal({
      </TitleRow>
      <Form className='new-project-form' onSubmit={handleSubmit}>
       <Section>
-       <label htmlFor='taskTitle'>Title</label>
-       <input type='text' name='taskTitle' onChange={handleInputChange} required></input>
+       <label htmlFor='title'>Title</label>
+       <input type='text' name='title' onChange={handleInputChange} required></input>
       </Section>
 
       <Section>
-       <label htmlFor='taskSummary'>Summary</label>
-       <input type='text' name='taskSummary' onChange={handleInputChange} required></input>
+       <label htmlFor='summary'>Summary</label>
+       <input type='text' name='summary' onChange={handleInputChange} required></input>
       </Section>
 
       {/* ACHTUNG: Fix bug, when not selecting an option */}
@@ -285,9 +286,9 @@ function Modal({
 
       {/* ACHTUNG: Fix bug, when not selecting an option */}
       <Section>
-       <label htmlFor='taskPriority'>Priority</label>
+       <label htmlFor='priority'>Priority</label>
        <select
-        name='taskPriority'
+        name='priority'
         onChange={handleInputChange}
         style={{
          backgroundImage: `url("${image.src}")`,
@@ -304,12 +305,12 @@ function Modal({
       </Section>
 
       <Section>
-       <label htmlFor='taskDescription'>Description</label>
+       <label htmlFor='description'>Description</label>
        <textarea
         cols={24}
         rows={4}
         wrap='soft'
-        name='taskDescription'
+        name='description'
         onChange={handleInputChange}
         required
        ></textarea>
