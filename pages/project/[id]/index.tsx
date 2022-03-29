@@ -231,7 +231,7 @@ const TasksPage: NextPage = () => {
    index: number;
   };
  }) => {
-  const { destination, source, draggableId } = result;
+  const { destination, source } = result;
 
   // check if item has been dropped
   if (!destination) return;
