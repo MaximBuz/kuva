@@ -19,6 +19,8 @@ import withAuth from '../../../utils/withAuth';
 // Firestore
 import { firestore } from '../../../utils/firebase';
 import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { useFirestoreQuery, useFirestoreQueryData } from '@react-query-firebase/firestore';
+import { useQueryClient } from 'react-query';
 
 const FilterSection = styled.div`
  display: flex;
@@ -181,17 +183,19 @@ const TasksPage: NextPage = () => {
  const { id: projectId } = router.query;
 
  // Initialize states for all columns
- const [tasksSelected, setTasksSelected] = useState([]);
+ const [tasksSelected, setTasksSelected] = useState<any>([]);
  const countSelected = tasksSelected?.length;
 
- const [tasksInProgress, setTasksInProgress] = useState([]);
+ const [tasksInProgress, setTasksInProgress] = useState<any>([]);
  const countInProgress = tasksInProgress.length;
 
- const [tasksInReview, setTasksInReview] = useState([]);
+ const [tasksInReview, setTasksInReview] = useState<any>([]);
  const countInReview = tasksInReview.length;
 
- const [tasksCompleted, setTasksCompleted] = useState([]);
+ const [tasksCompleted, setTasksCompleted] = useState<any>([]);
  const countCompleted = tasksCompleted.length;
+
+ const queryClient = useQueryClient();
 
  // Query tasks
  const tasksRef = query(
@@ -199,22 +203,26 @@ const TasksPage: NextPage = () => {
   where('user', '==', currentUser.uid),
   where('projectId', '==', projectId)
  );
- const tasks: any = [];
+ const tasksQuery = useFirestoreQuery(['tasks'], tasksRef, { subscribe: false });
+ const tasksSnapshot = tasksQuery.data
+
+ const tasks = tasksSnapshot?.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
+ // Population of Selected for development Column
+ const selected = tasks?.filter((task: any) => task.data.column === 'selected-for-development-column');
+ // Population of In Progress Column
+ const inProgress = tasks?.filter((task: any) => task.data.column === 'in-progress-column');
+ // Population of In Review Column
+ const inReview = tasks?.filter((task: any) => task.data.column === 'in-review-column');
+ // Population of Completed Column
+ const completed = tasks?.filter((task: any) => task.data.column === 'completed-column');
 
  useEffect(() => {
-  const getTasks = async () => {
-   const tasksSnap = await getDocs(tasksRef);
-   tasksSnap.forEach((doc) => tasks.push({ id: doc.id, data: doc.data() }));
-   // Population of Selected for development Column
-   setTasksSelected(tasks?.filter((task: any) => task.data.column === 'selected-for-development-column'));
-   // Population of In Progress Column
-   setTasksInProgress(tasks?.filter((task: any) => task.data.column === 'in-progress-column'));
-   // Population of In Review Column
-   setTasksInReview(tasks?.filter((task: any) => task.data.column === 'in-review-column'));
-   // Population of Completed Column
-   setTasksCompleted(tasks?.filter((task: any) => task.data.column === 'completed-column'));
-  };
-  getTasks();
+  if (tasksQuery.isSuccess) {
+   setTasksSelected(selected);
+   setTasksInProgress(inProgress);
+   setTasksInReview(inReview);
+   setTasksCompleted(completed);
+  }
  }, []);
 
  // Drag and drop functionality (TODO: Move to seperate file, way to big a function)
@@ -331,6 +339,7 @@ const TasksPage: NextPage = () => {
       await setDoc(doc(firestore, 'tasks', temp.id), {
        ...temp.data,
       });
+      queryClient.invalidateQueries(["tasks"]);
      }
      break;
     case 'in-progress-column':
@@ -345,6 +354,7 @@ const TasksPage: NextPage = () => {
       await setDoc(doc(firestore, 'tasks', temp.id), {
        ...temp.data,
       });
+      queryClient.invalidateQueries(["tasks"]);
      }
      break;
     case 'in-review-column':
@@ -359,6 +369,7 @@ const TasksPage: NextPage = () => {
       await setDoc(doc(firestore, 'tasks', temp.id), {
        ...temp.data,
       });
+      queryClient.invalidateQueries(["tasks"]);
      }
      break;
     case 'completed-column':
@@ -373,6 +384,7 @@ const TasksPage: NextPage = () => {
       await setDoc(doc(firestore, 'tasks', temp.id), {
        ...temp.data,
       });
+      queryClient.invalidateQueries(["tasks"]);
      }
      break;
     default:
