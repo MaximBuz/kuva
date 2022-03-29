@@ -34,7 +34,15 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
  // setting up mutation
  const queryClient = useQueryClient();
  const mutation = useFirestoreDocumentMutation(taskRef, { merge: true });
- const deletion = useFirestoreDocumentDeletion(taskRef);
+ const deletion = useFirestoreDocumentDeletion(taskRef, {
+  onSuccess() {
+   queryClient.invalidateQueries(['tasks']);
+   toast.success('Document deleted!');
+  },
+  onError() {
+   toast.error('Failed to delete document!');
+  },
+ });
 
  // Handle deletion of task
  const deleteTask = async () => {
