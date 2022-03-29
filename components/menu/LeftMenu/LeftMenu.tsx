@@ -15,6 +15,8 @@ const LeftMenuWrapper = styled.div`
 
 function LeftMenu(props: any) {
  const Router = useRouter();
+ const { id: projectId } = Router.query;
+
  return (
   <LeftMenuWrapper>
    {props.items &&
@@ -22,7 +24,7 @@ function LeftMenu(props: any) {
      if (item.link === '/') {
       return <MenuItem key={index} icon={item.icon} text={item.text} url={item.link} active={item.active} />;
      } else {
-      let newLink = item.link.replace(/{CHANGETHIS}/i, props.projectId);
+      let newLink = item.link.replace(/{CHANGETHIS}/i, projectId);
       return <MenuItem key={index} icon={item.icon} text={item.text} url={newLink} active={item.active} />;
      }
     })}

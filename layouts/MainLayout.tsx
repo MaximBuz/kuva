@@ -5,7 +5,7 @@ import logo from '../public/kuva_logo.png';
 import styled from 'styled-components';
 
 /* TOASTS */
-import {ToastContainer} from "react-toastify"
+import { ToastContainer } from 'react-toastify';
 
 import Image from 'next/image';
 
@@ -13,18 +13,19 @@ export default function MainLayout(props: any) {
  const { identifier } = props.match ? props.match.params : '';
  return (
   <>
-   <div id="portal"></div>
+   <ToastContainer position='bottom-right' />
+   <div id='portal'></div>
    <TopMenu projectId={identifier} />
    <LeftMenu items={props.menuContent} projectId={identifier} />
    <LogoWrapper>
     <Image
-      src={logo}
-      alt="logo"
-      // style={{
-        //   width: 150,
-      //   height: 150,
-      //   objectFit: "cover"
-      // }}
+     src={logo}
+     alt='logo'
+     // style={{
+     //   width: 150,
+     //   height: 150,
+     //   objectFit: "cover"
+     // }}
     />
    </LogoWrapper>
    <ContentWrapper>{props.children}</ContentWrapper>
@@ -56,13 +57,13 @@ const ContentWrapper = styled.div`
 `;
 
 const LogoWrapper = styled.div`
-  height: 100px;
-  width: 100px;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-`
+ height: 100px;
+ width: 100px;
+ position: absolute;
+ bottom: 0;
+ left: 0;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ overflow: hidden;
+`;

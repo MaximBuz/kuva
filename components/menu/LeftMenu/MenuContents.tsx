@@ -55,22 +55,22 @@ export const ProjectTaskOverviewItems = [{
 },{
   icon: backlogIcon,
   text: "Backlog",
-  link: "backlog",
+  link: "/project/{CHANGETHIS}/backlog",
   active: false
 },{
   icon: archiveIcon,
   text: "Archive",
-  link: "archive",
+  link: "/project/{CHANGETHIS}/archive",
   active: false
 },{
   icon: collaboratorsIcon,
   text: "Team",
-  link: "team",
+  link: "/project/{CHANGETHIS}/team",
   active: false
 },{
   icon: settingsIcon,
   text: "Project Settings",
-  link: "settings",
+  link: "/project/{CHANGETHIS}/settings",
   active: false
 }];
 
@@ -88,22 +88,22 @@ export const ProjectBacklogItems = [{
 },{
   icon: backlogIcon,
   text: "Backlog",
-  link: "backlog",
+  link: "/project/{CHANGETHIS}/backlog",
   active: true
 },{
   icon: archiveIcon,
   text: "Archive",
-  link: "archive",
+  link: "/project/{CHANGETHIS}/archive",
   active: false
 },{
   icon: collaboratorsIcon,
   text: "Team",
-  link: "team",
+  link: "/project/{CHANGETHIS}/team",
   active: false
 },{
   icon: settingsIcon,
   text: "Project Settings",
-  link: "settings",
+  link: "/project/{CHANGETHIS}/settings",
   active: false
 }];
 
@@ -120,22 +120,22 @@ export const ProjectArchiveItems = [{
 },{
   icon: backlogIcon,
   text: "Backlog",
-  link: "backlog",
+  link: "/project/{CHANGETHIS}/backlog",
   active: false
 },{
   icon: archiveIcon,
   text: "Archive",
-  link: "archive",
+  link: "/project/{CHANGETHIS}/archive",
   active: true
 },{
   icon: collaboratorsIcon,
   text: "Team",
-  link: "team",
+  link: "/project/{CHANGETHIS}/team",
   active: false
 },{
   icon: settingsIcon,
   text: "Project Settings",
-  link: "settings",
+  link: "/project/{CHANGETHIS}/settings",
   active: false
 }];
 
@@ -154,22 +154,22 @@ export const ProjectTeamItems = [{
 },{
   icon: backlogIcon,
   text: "Backlog",
-  link: "backlog",
+  link: "/project/{CHANGETHIS}/backlog",
   active: false
 },{
   icon: archiveIcon,
   text: "Archive",
-  link: "archive",
+  link: "/project/{CHANGETHIS}/archive",
   active: false
 },{
   icon: collaboratorsIcon,
   text: "Team",
-  link: "team",
+  link: "/project/{CHANGETHIS}/team",
   active: true
 },{
   icon: settingsIcon,
   text: "Project Settings",
-  link: "settings",
+  link: "/project/{CHANGETHIS}/settings",
   active: false
 }];
 
@@ -188,21 +188,21 @@ export const ProjectSettingsItems = [{
 },{
   icon: backlogIcon,
   text: "Backlog",
-  link: "backlog",
+  link: "/project/{CHANGETHIS}/backlog",
   active: false
 },{
   icon: archiveIcon,
   text: "Archive",
-  link: "archive",
+  link: "/project/{CHANGETHIS}/archive",
   active: false
 },{
   icon: collaboratorsIcon,
   text: "Team",
-  link: "team",
+  link: "/project/{CHANGETHIS}/team",
   active: false
 },{
   icon: settingsIcon,
   text: "Project Settings",
-  link: "settings",
+  link: "/project/{CHANGETHIS}/settings",
   active: true
 }];

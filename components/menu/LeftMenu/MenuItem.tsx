@@ -1,7 +1,11 @@
 import styled from "styled-components";
 import Link from "next/link";
 
-const MenuItemIcon = styled.div`
+interface ActiveStyleProps {
+  active: boolean;
+}
+
+const MenuItemIcon = styled.div<ActiveStyleProps>`
     svg {
         transition: 0.2s;
         width: 30px;

@@ -1,8 +1,8 @@
 // Components
-import TaskCard from '../../components/cards/TaskCard';
-import CounterBlob from '../../components/misc/CounterBlob';
+import TaskCard from '../../../components/cards/TaskCard';
+import CounterBlob from '../../../components/misc/CounterBlob';
 import styled from 'styled-components';
-import TaskModal from '../../components/modals/TaskModal';
+import TaskModal from '../../../components/modals/TaskModal';
 
 // React and Next
 import { memo, useEffect, useState } from 'react';
@@ -13,11 +13,11 @@ import { NextPage } from 'next';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 // Auth
-import { useAuth } from '../../utils/auth';
-import withAuth from '../../utils/withAuth';
+import { useAuth } from '../../../utils/auth';
+import withAuth from '../../../utils/withAuth';
 
 // Firestore
-import { firestore } from '../../utils/firebase';
+import { firestore } from '../../../utils/firebase';
 import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
 
 const FilterSection = styled.div`

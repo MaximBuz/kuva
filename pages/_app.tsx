@@ -12,7 +12,6 @@ import { ReactQueryDevtools } from "react-query/devtools";
 /* AUTH */
 import { AuthProvider } from '../utils/auth'
 
-import { ToastContainer } from 'react-toastify';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient())
@@ -21,7 +20,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     <QueryClientProvider client={queryClient}>
        <Hydrate state={pageProps.dehydratedState}>
         <AuthProvider>
-         <ToastContainer position="bottom-right"/>
          <Component {...pageProps} />
         </AuthProvider>
        </Hydrate>
