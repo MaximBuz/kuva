@@ -223,7 +223,7 @@ const TasksPage: NextPage = () => {
    setTasksInReview(inReview);
    setTasksCompleted(completed);
   }
- }, []);
+ }, [tasksQuery.isFetchedAfterMount]);
 
  // Drag and drop functionality (TODO: Move to seperate file, way to big a function)
  const onDragEnd = async (result: {

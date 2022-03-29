@@ -51,7 +51,8 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
    },
    {
     onSuccess() {
-     queryClient.invalidateQueries([["tasks"],['tasks', taskId]]);
+     queryClient.invalidateQueries(['tasks', taskId]);
+     queryClient.invalidateQueries(['tasks']);
      toast.success('Document archived!');
     },
     onError() {
@@ -71,6 +72,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
    {
     onSuccess() {
      queryClient.invalidateQueries(['tasks', taskId]);
+     queryClient.invalidateQueries(['tasks']);
      toast.success('Document unarchived!');
     },
     onError() {
@@ -111,6 +113,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
    {
     onSuccess() {
      queryClient.invalidateQueries(['tasks', taskId]);
+     queryClient.invalidateQueries(['tasks']);
      toast.success('Successfully added comment!');
     },
     onError() {
@@ -147,6 +150,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
    {
     onSuccess() {
      queryClient.invalidateQueries(['tasks', taskId]);
+     queryClient.invalidateQueries(['tasks']);
      toast.success('Updated the title!');
     },
     onError() {
@@ -175,6 +179,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
    {
     onSuccess() {
      queryClient.invalidateQueries(['tasks', taskId]);
+     queryClient.invalidateQueries(['tasks']);
      toast.success('Updated the summary!');
     },
     onError() {
@@ -205,6 +210,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
    {
     onSuccess() {
      queryClient.invalidateQueries(['tasks', taskId]);
+     queryClient.invalidateQueries(['tasks']);
      toast.success('Updated the description!');
     },
     onError() {

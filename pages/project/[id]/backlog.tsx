@@ -64,7 +64,7 @@ const BacklogPage: NextPage = () => {
    setTasksSelected(selected);
    setTasksBacklog(backlog);
   }
- }, []);
+ }, [tasksQuery.isSuccess]);
 
  // Drag and drop functionality (TODO: Move to seperate file, way to big a function)
  const onDragEnd = async (result: {
