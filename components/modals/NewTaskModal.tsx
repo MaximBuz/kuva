@@ -181,7 +181,7 @@ function Modal({
    ...state,
    [name]: value,
    ['user']: userID,
-   ['column']: null,
+   ['column']: "backlog-column",
    ['status']: 'backlog',
    ['projectId']: projectId,
    ['identifier']: 'TST',
