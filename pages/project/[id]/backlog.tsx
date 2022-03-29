@@ -21,6 +21,8 @@ import { useRouter } from 'next/router';
 import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { firestore } from '../../../utils/firebase';
 import { useAuth } from '../../../utils/auth';
+import { useQueryClient } from 'react-query';
+import { useFirestoreQuery } from '@react-query-firebase/firestore';
 
 const BacklogPage: NextPage = () => {
  const [openModal, setOpenModal] = useState('');
@@ -34,11 +36,13 @@ const BacklogPage: NextPage = () => {
 
  // // Get all tasks for that project from firestore
  // Initialize states for all columns
- const [tasksSelected, setTasksSelected] = useState([]);
+ const [tasksSelected, setTasksSelected] = useState<any>([]);
  const countSelected = tasksSelected?.length;
 
- const [tasksBacklog, setTasksBacklog] = useState([]);
+ const [tasksBacklog, setTasksBacklog] = useState<any>([]);
  const countBacklog = tasksBacklog.length;
+
+ const queryClient = useQueryClient();
 
  // Query tasks
  const tasksRef = query(
@@ -46,21 +50,21 @@ const BacklogPage: NextPage = () => {
   where('user', '==', currentUser.uid),
   where('projectId', '==', projectId),
  );
- const tasks: any = [];
+ const tasksQuery = useFirestoreQuery(['tasks'], tasksRef, { subscribe: false });
+ const tasksSnapshot = tasksQuery.data
+
+ const tasks = tasksSnapshot?.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
+ // Population of Selected for development Column
+ const selected = tasks?.filter((task: any) => task.data.column === 'selected-for-development-column');
+ // Population of Backlog Column
+ const backlog = tasks?.filter((task: any) => task.data.column === 'backlog-column');
 
  useEffect(() => {
-  const getTasks = async () => {
-   const tasksSnap = await getDocs(tasksRef);
-   tasksSnap.forEach((doc) => tasks.push({ id: doc.id, data: doc.data() }));
-   // Population of Selected for development Column
-   setTasksSelected(tasks?.filter((task: any) => task.data.column === 'selected-for-development-column'));
-   // Population of Backlog Column
-   setTasksBacklog(tasks?.filter((task: any) => task.data.column === 'backlog-column'));
-  };
-  getTasks();
+  if (tasksQuery.isSuccess) {
+   setTasksSelected(selected);
+   setTasksBacklog(backlog);
+  }
  }, []);
- console.log(currentUser.uid)
- console.log(projectId)
 
  // Drag and drop functionality (TODO: Move to seperate file, way to big a function)
  const onDragEnd = async (result: {
@@ -147,6 +151,7 @@ const BacklogPage: NextPage = () => {
       await setDoc(doc(firestore, 'tasks', temp.id), {
        ...temp.data,
       });
+      queryClient.invalidateQueries(["tasks"]);
      }
      break;
     case 'backlog-column':
@@ -161,6 +166,7 @@ const BacklogPage: NextPage = () => {
       await setDoc(doc(firestore, 'tasks', temp.id), {
        ...temp.data,
       });
+      queryClient.invalidateQueries(["tasks"]);
      }
      break;
     default:
@@ -189,7 +195,7 @@ const BacklogPage: NextPage = () => {
           if (a.priority === 'high') return -1;
           if (a.priority === 'medium' && b.priority === 'high') return 1;
           if (a.priority === 'medium' && b.priority === 'low') return -1;
-          if (a.priority === 'low') return 1;
+          return 1;
          })
          .map((task: any, index: number) => {
           return (
