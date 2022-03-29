@@ -2,6 +2,7 @@
 import TaskCard from '../../components/cards/TaskCard';
 import CounterBlob from '../../components/misc/CounterBlob';
 import styled from 'styled-components';
+import TaskModal from '../../components/modals/TaskModal';
 
 // React and Next
 import { memo, useEffect, useState } from 'react';
@@ -211,6 +212,7 @@ const TasksPage: NextPage = () => {
   };
   getTasks();
  }, []);
+
 
  // Drag and drop functionality (TODO: Move to seperate file, way to big a function)
  const onDragEnd = async (result: {
@@ -483,9 +485,9 @@ const TasksPage: NextPage = () => {
         </div>
        )}
       </Droppable>
-      {/* {openModal && (
-       <TaskModal closeModal={setOpenModal} task={tasks.filter((item) => item.id === openModal)[0]} />
-      )} */}
+      {openModal && (
+       <TaskModal closeModal={setOpenModal} taskId={openModal} />
+      )}
      </Column>
     </ColumnsWrapper>
    </div>
