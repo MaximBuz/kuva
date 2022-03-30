@@ -50,7 +50,7 @@ const PriorityPill = styled.div<ColorProps>`
  height: fit-content;
  font-size: small;
  font-weight: 400;
- background-color: ${(props: any) => {
+ background-color: ${(props: ColorProps) => {
   if (props.priority === 'low') return '#45da5e';
   else if (props.priority === 'medium') return '#f8b965';
   else return '#e96262';
@@ -86,7 +86,7 @@ const TitleRow = styled.div`
 `;
 
 type Props = {
- index: any;
+ index: number;
  id: string;
  identifier: string;
  authorId: string;
@@ -94,13 +94,13 @@ type Props = {
  timestamp: string;
  summary: string;
  description: string;
- priority: string;
+ priority: "high" | "medium" | "low";
  status: string;
- onClick: any;
+ onClick: () => void;
 };
 
 interface ColorProps {
- priority: string;
+ priority: "high" | "medium" | "low";
 }
 
 function TaskCard({
