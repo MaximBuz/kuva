@@ -116,6 +116,14 @@ function TaskCard({
  onClick,
 }: Props) {
 
+  function truncateText(text: string, length: number):string {
+    if (text.length <= length) {
+      return text;
+    }
+  
+    return text.substr(0, length) + '\u2026'
+  }
+
  return (
   <div onClick={onClick}>
    <Draggable draggableId={id} index={index} key={id}>
@@ -137,7 +145,7 @@ function TaskCard({
        <TitleRow>
         <h2>{title}</h2>
        </TitleRow>
-       <p>{summary}</p>
+       <p style={{color: "grey", fontWeight: "lighter"}}>{truncateText(summary, 60)}</p>
       </Content>
      </Card>
     )}
