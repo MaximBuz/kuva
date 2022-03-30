@@ -44,7 +44,7 @@ const LoginPage = () => {
  return (
   <Background>
    <Wrapper>
-    <Image src={logo} objectFit='none' height={250} width={700} alt='Kuva Logo'></Image>
+    <Image src={logo} objectFit='none' height={250} width={800} alt='Kuva Logo'></Image>
     {/* <h1>Login Here</h1> */}
     <Form onSubmit={handleSubmit}>
      <label htmlFor='email'>Email</label>
@@ -80,10 +80,10 @@ const Wrapper = styled.div`
  width: 430px;
  height: 520px;
  border-radius: 10px;
- background-color: rgba(255, 255, 255, 0.377);
+ background-color: rgba(255, 255, 255, 0.199);
  backdrop-filter: blur(10px);
  border: 2px solid rgba(255, 255, 255, 0.123);
- box-shadow: 10px 10px 40px rgba(8, 7, 16, 0.295);
+ box-shadow: 10px 10px 40px rgba(8, 7, 16, 0.356);
  padding: 50px 35px;
  z-index: 2;
 
@@ -123,7 +123,7 @@ const Form = styled.form`
   text-align: center;
 
   ::placeholder {
-   color: #ffffffb0;
+   color: #ffffffc7;
    font-style: italic;
   }
  }
