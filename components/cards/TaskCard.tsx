@@ -121,7 +121,7 @@ function TaskCard({
       return text;
     }
   
-    return text.substr(0, length) + '\u2026'
+    return text.substring(0, length) + '\u2026'
   }
 
  return (
