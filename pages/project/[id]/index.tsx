@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import TaskModal from '../../../components/modals/TaskModal';
 
 // React and Next
-import { memo, useEffect, useState } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { NextPage } from 'next';
 
@@ -18,9 +18,13 @@ import withAuth from '../../../utils/withAuth';
 
 // Firestore
 import { firestore } from '../../../utils/firebase';
-import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { collection, doc, DocumentData, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { useFirestoreQuery, useFirestoreQueryData } from '@react-query-firebase/firestore';
 import { useQueryClient } from 'react-query';
+
+// Interfaces and Types
+import { TasksArrayType, TaskInterface, TaskData } from '../../../types/tasks';
+import { DroppableProvided } from '../../../types/dnd';
 
 const FilterSection = styled.div`
  display: flex;
@@ -87,88 +91,128 @@ const ColumnTitleRow = styled.div`
  }
 `;
 
-const SelectedList = memo(function SelectedList({ tasks, setOpenModal }: any) {
- return tasks.map((task: any, index: number) => (
-  <TaskCard
-   onClick={() => {
-    setOpenModal(task.id);
-   }}
-   index={index}
-   id={task.id}
-   identifier={task.data.identifier}
-   authorId={task.data.userId}
-   title={task.data.title}
-   timestamp={task.data.timestamp}
-   summary={task.data.taskSummary}
-   description={task.data.description}
-   priority={task.data.priority}
-   status={task.data.status}
-   key={index}
-  />
- ));
+const SelectedList = memo(function SelectedList({
+ tasks,
+ setOpenModal,
+}: {
+ tasks: TasksArrayType;
+ setOpenModal: Function;
+}): JSX.Element {
+ return (
+  <>
+   {tasks.map((task: TaskInterface<TaskData>, index: number) => (
+    <TaskCard
+     onClick={() => {
+      setOpenModal(task.id);
+     }}
+     index={index}
+     id={task.id}
+     identifier={task.data.identifier}
+     authorId={task.data.user}
+     title={task.data.title}
+     timestamp={task.data.timestamp}
+     summary={task.data.summary}
+     description={task.data.description}
+     priority={task.data.priority}
+     status={task.data.status}
+     key={index}
+    />
+   ))}
+  </>
+ );
 });
 
-const InProgressList = memo(function InProgressList({ tasks, setOpenModal }: any) {
- return tasks.map((task: any, index: number) => (
-  <TaskCard
-   onClick={() => {
-    setOpenModal(task.id);
-   }}
-   index={index}
-   id={task.id}
-   identifier={task.data.identifier}
-   authorId={task.data.userId}
-   title={task.data.title}
-   timestamp={task.data.timestamp}
-   summary={task.data.taskSummary}
-   description={task.data.description}
-   priority={task.data.priority}
-   status={task.data.status}
-   key={index}
-  />
- ));
+const InProgressList = memo(function inProgressList({
+ tasks,
+ setOpenModal,
+}: {
+ tasks: TasksArrayType;
+ setOpenModal: Function;
+}): JSX.Element {
+ return (
+  <>
+   {tasks.map((task: TaskInterface<TaskData>, index: number) => (
+    <TaskCard
+     onClick={() => {
+      setOpenModal(task.id);
+     }}
+     index={index}
+     id={task.id}
+     identifier={task.data.identifier}
+     authorId={task.data.user}
+     title={task.data.title}
+     timestamp={task.data.timestamp}
+     summary={task.data.summary}
+     description={task.data.description}
+     priority={task.data.priority}
+     status={task.data.status}
+     key={index}
+    />
+   ))}
+  </>
+ );
 });
 
-const InReviewList = memo(function InProgressList({ tasks, setOpenModal }: any) {
- return tasks.map((task: any, index: number) => (
-  <TaskCard
-   onClick={() => {
-    setOpenModal(task.id);
-   }}
-   index={index}
-   id={task.id}
-   identifier={task.data.identifier}
-   authorId={task.data.userId}
-   title={task.data.title}
-   timestamp={task.data.timestamp}
-   summary={task.data.taskSummary}
-   description={task.data.description}
-   priority={task.data.priority}
-   status={task.data.status}
-   key={index}
-  />
- ));
+const InReviewList = memo(function inReviewList({
+ tasks,
+ setOpenModal,
+}: {
+ tasks: TasksArrayType;
+ setOpenModal: Function;
+}): JSX.Element {
+ return (
+  <>
+   {tasks.map((task: TaskInterface<TaskData>, index: number) => (
+    <TaskCard
+     onClick={() => {
+      setOpenModal(task.id);
+     }}
+     index={index}
+     id={task.id}
+     identifier={task.data.identifier}
+     authorId={task.data.user}
+     title={task.data.title}
+     timestamp={task.data.timestamp}
+     summary={task.data.summary}
+     description={task.data.description}
+     priority={task.data.priority}
+     status={task.data.status}
+     key={index}
+    />
+   ))}
+  </>
+ );
 });
 
-const CompletedList = memo(function CompletedList({ tasks, setOpenModal }: any) {
- return tasks.map((task: any, index: number) => (
-  <TaskCard
-   onClick={() => {
-    setOpenModal(task.id);
-   }}
-   index={index}
-   id={task.id}
-   identifier={task.data.identifier}
-   authorId={task.data.userId}
-   title={task.data.title}
-   timestamp={task.data.timestamp}
-   summary={task.data.taskSummary}
-   description={task.data.description}
-   priority={task.data.priority}
-   status={task.data.status}
-   key={index}
-  />
- ));
+const CompletedList = memo(function inReviewList({
+ tasks,
+ setOpenModal,
+}: {
+ tasks: TasksArrayType;
+ setOpenModal: Function;
+}): JSX.Element {
+ return (
+  <>
+   {tasks.map((task: TaskInterface<TaskData>, index: number) => (
+    <TaskCard
+     onClick={() => {
+      setOpenModal(task.id);
+     }}
+     index={index}
+     id={task.id}
+     identifier={task.data.identifier}
+     authorId={task.data.user}
+     title={task.data.title}
+     timestamp={task.data.timestamp}
+     summary={task.data.summary}
+     description={task.data.description}
+     priority={task.data.priority}
+     status={task.data.status}
+     key={index}
+    />
+   ))}
+  </>
+ );
 });
 
 const TasksPage: NextPage = () => {
@@ -183,16 +227,16 @@ const TasksPage: NextPage = () => {
  const { id: projectId } = router.query;
 
  // Initialize states for all columns
- const [tasksSelected, setTasksSelected] = useState<any>([]);
+ const [tasksSelected, setTasksSelected] = useState([]);
  const countSelected = tasksSelected?.length;
 
- const [tasksInProgress, setTasksInProgress] = useState<any>([]);
+ const [tasksInProgress, setTasksInProgress] = useState([]);
  const countInProgress = tasksInProgress.length;
 
- const [tasksInReview, setTasksInReview] = useState<any>([]);
+ const [tasksInReview, setTasksInReview] = useState([]);
  const countInReview = tasksInReview.length;
 
- const [tasksCompleted, setTasksCompleted] = useState<any>([]);
+ const [tasksCompleted, setTasksCompleted] = useState([]);
  const countCompleted = tasksCompleted.length;
 
  const queryClient = useQueryClient();
@@ -204,27 +248,35 @@ const TasksPage: NextPage = () => {
   where('projectId', '==', projectId)
  );
  const tasksQuery = useFirestoreQuery(['tasks'], tasksRef, { subscribe: false });
- const tasksSnapshot = tasksQuery.data
+ const tasksSnapshot = tasksQuery.data;
 
- const tasks = tasksSnapshot?.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
+ const tasks: TaskInterface<TaskData>[] = tasksSnapshot?.docs.map((doc) => ({
+  id: doc.id,
+  data: doc.data() as TaskData,
+ }));
+
  // Population of Selected for development Column
- const selected = tasks?.filter((task: any) => task.data.column === 'selected-for-development-column');
+ const selected = tasks?.filter(
+  (task: TaskInterface<TaskData>) => task.data.column === 'selected-for-development-column'
+ );
  // Population of In Progress Column
- const inProgress = tasks?.filter((task: any) => task.data.column === 'in-progress-column');
+ const inProgress = tasks?.filter(
+  (task: TaskInterface<TaskData>) => task.data.column === 'in-progress-column'
+ );
  // Population of In Review Column
- const inReview = tasks?.filter((task: any) => task.data.column === 'in-review-column');
+ const inReview = tasks?.filter((task: TaskInterface<TaskData>) => task.data.column === 'in-review-column');
  // Population of Completed Column
- const completed = tasks?.filter((task: any) => task.data.column === 'completed-column');
+ const completed = tasks?.filter((task: TaskInterface<TaskData>) => task.data.column === 'completed-column');
 
  useEffect(() => {
-   console.log(tasksQuery.isRefetching)
+  console.log(tasksQuery.isRefetching);
   if (tasksQuery.isSuccess) {
    setTasksSelected(selected);
    setTasksInProgress(inProgress);
    setTasksInReview(inReview);
    setTasksCompleted(completed);
   }
- }, [tasksQuery.isRefetching]);
+ }, [tasksQuery.isSuccess]);
 
  // Drag and drop functionality (TODO: Move to seperate file, way to big a function)
  const onDragEnd = async (result: {
@@ -285,8 +337,8 @@ const TasksPage: NextPage = () => {
 
   // Handle item drop in a different column ( with status and index change )
   if (source.droppableId != destination.droppableId) {
-   let startSourceTasks: any = [];
-   let startDestinationTasks: any = [];
+   let startSourceTasks: TasksArrayType = [];
+   let startDestinationTasks: TasksArrayType = [];
 
    // populate the startSourceTasks with a copy of current state
    switch (source.droppableId) {
@@ -340,7 +392,7 @@ const TasksPage: NextPage = () => {
       await setDoc(doc(firestore, 'tasks', temp.id), {
        ...temp.data,
       });
-      queryClient.invalidateQueries(["tasks"]);
+      queryClient.invalidateQueries(['tasks']);
      }
      break;
     case 'in-progress-column':
@@ -355,7 +407,7 @@ const TasksPage: NextPage = () => {
       await setDoc(doc(firestore, 'tasks', temp.id), {
        ...temp.data,
       });
-      queryClient.invalidateQueries(["tasks"]);
+      queryClient.invalidateQueries(['tasks']);
      }
      break;
     case 'in-review-column':
@@ -370,7 +422,7 @@ const TasksPage: NextPage = () => {
       await setDoc(doc(firestore, 'tasks', temp.id), {
        ...temp.data,
       });
-      queryClient.invalidateQueries(["tasks"]);
+      queryClient.invalidateQueries(['tasks']);
      }
      break;
     case 'completed-column':
@@ -385,7 +437,7 @@ const TasksPage: NextPage = () => {
       await setDoc(doc(firestore, 'tasks', temp.id), {
        ...temp.data,
       });
-      queryClient.invalidateQueries(["tasks"]);
+      queryClient.invalidateQueries(['tasks']);
      }
      break;
     default:
@@ -413,7 +465,7 @@ const TasksPage: NextPage = () => {
        <CounterBlob count={countSelected} />
       </ColumnTitleRow>
       <Droppable droppableId={'selected-for-development-column'}>
-       {(provided: any, snapshot: any) => (
+       {(provided: DroppableProvided) => (
         <div
          style={{
           display: 'flex',
@@ -422,7 +474,6 @@ const TasksPage: NextPage = () => {
          }}
          ref={provided.innerRef}
          {...provided.droppableProps}
-         //  isDraggingOver={snapshot.isDraggingOver}
         >
          <SelectedList tasks={tasksSelected} setOpenModal={setOpenModal} />
          {provided.placeholder}
@@ -437,7 +488,7 @@ const TasksPage: NextPage = () => {
        <CounterBlob count={countInProgress} />
       </ColumnTitleRow>
       <Droppable droppableId={'in-progress-column'}>
-       {(provided: any, snapshot: any) => (
+       {(provided: DroppableProvided) => (
         <div
          style={{
           display: 'flex',
@@ -446,7 +497,6 @@ const TasksPage: NextPage = () => {
          }}
          ref={provided.innerRef}
          {...provided.droppableProps}
-         //  isDraggingOver={snapshot.isDraggingOver}
         >
          <InProgressList tasks={tasksInProgress} setOpenModal={setOpenModal} />
          {provided.placeholder}
@@ -461,7 +511,7 @@ const TasksPage: NextPage = () => {
        <CounterBlob count={countInReview} />
       </ColumnTitleRow>
       <Droppable droppableId={'in-review-column'}>
-       {(provided: any, snapshot: any) => (
+       {(provided: DroppableProvided) => (
         <div
          style={{
           display: 'flex',
@@ -470,7 +520,6 @@ const TasksPage: NextPage = () => {
          }}
          ref={provided.innerRef}
          {...provided.droppableProps}
-         //  isDraggingOver={snapshot.isDraggingOver}
         >
          <InReviewList tasks={tasksInReview} setOpenModal={setOpenModal} />
          {provided.placeholder}
@@ -485,7 +534,7 @@ const TasksPage: NextPage = () => {
        <CounterBlob count={countCompleted} />
       </ColumnTitleRow>
       <Droppable droppableId={'completed-column'}>
-       {(provided: any, snapshot: any) => (
+       {(provided: DroppableProvided) => (
         <div
          style={{
           display: 'flex',
@@ -494,7 +543,6 @@ const TasksPage: NextPage = () => {
          }}
          ref={provided.innerRef}
          {...provided.droppableProps}
-         //  isDraggingOver={snapshot.isDraggingOver}
         >
          <CompletedList tasks={tasksCompleted} setOpenModal={setOpenModal} />
          {provided.placeholder}
