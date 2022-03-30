@@ -81,7 +81,7 @@ const Wrapper = styled.div`
  height: 520px;
  border-radius: 10px;
  background-color: rgba(255, 255, 255, 0.199);
- backdrop-filter: blur(10px);
+ backdrop-filter: blur(18px);
  border: 2px solid rgba(255, 255, 255, 0.123);
  box-shadow: 10px 10px 40px rgba(8, 7, 16, 0.356);
  padding: 50px 35px;
@@ -115,17 +115,25 @@ const Form = styled.form`
   height: 50px;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.288);
-  border-radius: 10px;
+  border-radius: 100px;
   border: none;
   padding: 0 10px;
   margin-top: 8px;
   font-weight: normal;
   text-align: center;
+  transition: 0.3s;
 
   ::placeholder {
    color: #ffffffc7;
    font-style: italic;
   }
+
+  :focus {
+    transform: scale(1.05);
+    box-shadow: 5px 5px 20px rgba(8, 7, 16, 0.192);
+  }
+
+
  }
 
  button {
@@ -137,7 +145,19 @@ const Form = styled.form`
   padding: 15px 0;
   font-size: 18px;
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: 100px;
   cursor: pointer;
+  transition: 0.3s;
+
+  :hover {
+    transform: scale(1.05);
+    box-shadow: 5px 5px 20px rgba(8, 7, 16, 0.192);
+  }
+
+  :focus {
+    transform: scale(1.05);
+    box-shadow: 5px 5px 20px rgba(8, 7, 16, 0.192);
+  }
+
  }
 `;
