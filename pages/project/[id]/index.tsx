@@ -269,13 +269,13 @@ const TasksPage: NextPage = () => {
  const completed = tasks?.filter((task: TaskInterface<TaskData>) => task.data.column === 'completed-column');
 
  useEffect(() => {
-  if (tasksQuery.isFetched) {
+  if (tasksQuery.isSuccess) {
    setTasksSelected(selected);
    setTasksInProgress(inProgress);
    setTasksInReview(inReview);
    setTasksCompleted(completed);
   }
- }, [tasksQuery.isRefetching]);
+ }, [tasksQuery.isSuccess]);
 
  // Drag and drop functionality (TODO: Move to seperate file, way to big a function)
  const onDragEnd = async (result: {
