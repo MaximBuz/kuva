@@ -1,7 +1,7 @@
 // React & Next
 import ReactDom from 'react-dom';
 import moment from 'moment';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent, HTMLAttributes, FormEvent, SyntheticEvent, useRef } from 'react';
 
 // Style
 import styled from 'styled-components';
@@ -14,7 +14,6 @@ import { useAuth } from '../../utils/auth';
 import { firestore } from '../../utils/firebase';
 import { collection, doc, Timestamp } from 'firebase/firestore';
 import {
- useFirestoreDocument,
  useFirestoreDocumentData,
  useFirestoreDocumentDeletion,
  useFirestoreDocumentMutation,
@@ -52,7 +51,6 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
 
  // Handle archivation of task
  const archiveTask = async () => {
-  closeModal();
   mutation.mutate(
    {
     archived: true,
@@ -68,11 +66,11 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
     },
    }
   );
+  closeModal();
  };
 
  // Handle unarchivation of task
  const unArchiveTask = async () => {
-  closeModal();
   mutation.mutate(
    {
     archived: false,
@@ -88,6 +86,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
     },
    }
   );
+  closeModal();
  };
 
  /*
@@ -99,12 +98,12 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
  // adding new comments
  const [comment, setComment] = useState('');
 
- const handleInputChange = (e: any) => {
+ const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
   setComment(e.target.value);
  };
 
  // handle submitting comment
- const handleChatSubmit = async (e: any) => {
+ const handleChatSubmit = (e: SyntheticEvent): void => {
   e.preventDefault();
   mutation.mutate(
    {
@@ -141,19 +140,16 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
  // closing all editable fields
 
  // Handle Title Editing
- const [titleEditMode, setTitleEditMode] = useState(false);
- const editTitleModeOnClick = (e: any) => {
+ const [titleEditMode, setTitleEditMode] = useState<boolean>(false);
+ const editTitleModeOnClick = (e: ChangeEvent<HTMLInputElement>): void => {
   setTitleEditMode(!titleEditMode);
  };
- const [titleInput, setTitleInput] = useState(task?.data?.title || 'No title added yet');
- const onTitleChange = (e: any) => {
-  setTitleInput(e.target.value);
- };
- const handleTitleSubmit = (e: any) => {
+ const titleRef = useRef<any>(null);
+ const handleTitleSubmit = (e: SyntheticEvent): void => {
   e.preventDefault();
   mutation.mutate(
    {
-    title: titleInput,
+    title: titleRef.current.value,
    },
    {
     onSuccess() {
@@ -171,18 +167,15 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
 
  // Handle Summary Editing
  const [summaryEditMode, setSummaryEditMode] = useState(false);
- const editSummaryModeOnClick = (e: any) => {
+ const editSummaryModeOnClick = (e: ChangeEvent<HTMLInputElement>): void => {
   setSummaryEditMode(!summaryEditMode);
  };
- const [summaryInput, setSummaryInput] = useState(task?.data?.summary || 'No summary added yet');
- const onSummaryChange = (e: any) => {
-  setSummaryInput(e.target.value);
- };
- const handleSummarySubmit = (e: any) => {
+ const summaryRef = useRef<any>(null)
+ const handleSummarySubmit = (e: SyntheticEvent): void => {
   e.preventDefault();
   mutation.mutate(
    {
-    summary: summaryInput,
+    summary: summaryRef.current.value,
    },
    {
     onSuccess() {
@@ -200,20 +193,15 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
 
  // Handle Description Editing
  const [descriptionEditMode, setDescriptionEditMode] = useState(false);
- const editDescriptionModeOnClick = (e: any) => {
+ const editDescriptionModeOnClick = (e: ChangeEvent<HTMLInputElement>): void => {
   setDescriptionEditMode(!descriptionEditMode);
  };
- const [descriptionInput, setDescriptionInput] = useState(
-  task?.data?.description || 'No description added yet'
- );
- const onDescriptionChange = (e: any) => {
-  setDescriptionInput(e.target.value);
- };
- const handleDescriptionSubmit = (e: any) => {
+ const descriptionRef = useRef<any>(null);
+ const handleDescriptionSubmit = (e: SyntheticEvent): void => {
   e.preventDefault();
   mutation.mutate(
    {
-    description: descriptionInput,
+    description: descriptionRef.current.value,
    },
    {
     onSuccess() {
@@ -277,7 +265,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
       {/* Handle editing of Project Title */}
       {titleEditMode ? (
        <form onSubmit={handleTitleSubmit} style={{ textAlign: 'center' }}>
-        <TitleEdit defaultValue={titleInput} onChange={onTitleChange}></TitleEdit>
+        <TitleEdit defaultValue={task?.data?.title} ref={titleRef} ></TitleEdit>
         <input
          type='submit'
          style={{
@@ -309,7 +297,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
          {/* Handle editing of summary section */}
          {summaryEditMode ? (
           <form onSubmit={handleSummarySubmit} style={{ textAlign: 'center' }}>
-           <SummaryEdit defaultValue={summaryInput} onChange={onSummaryChange}></SummaryEdit>
+           <SummaryEdit defaultValue={task?.data?.summary} ref={summaryRef}></SummaryEdit>
            <input
             type='submit'
             style={{
@@ -331,7 +319,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
          {/* Handle editing of Project Description */}
          {descriptionEditMode ? (
           <form onSubmit={handleDescriptionSubmit} style={{ textAlign: 'center' }}>
-           <DescriptionEdit defaultValue={descriptionInput} onChange={onDescriptionChange}></DescriptionEdit>
+           <DescriptionEdit defaultValue={task?.data?.description} ref={descriptionRef}></DescriptionEdit>
            <input
             type='submit'
             style={{
@@ -454,6 +442,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
 
 interface EditableStyleProps {
  editable: boolean;
+ [key: string]: any; // because of onClick
 }
 
 interface PriorityStyleProps {
@@ -556,6 +545,8 @@ const Title = styled.h1<EditableStyleProps>`
  padding: 5px 5px 5px 5px;
  margin: -5px;
  color: #35307e;
+ cursor: pointer;
+ 
  :hover {
   outline: ${(props) => {
    if (props.editable) {
@@ -616,6 +607,7 @@ const SubSection = styled.div`
 const Summary = styled.p<EditableStyleProps>`
  padding: 2px 2px 2px 2px;
  margin: -2px;
+ cursor: pointer;
  :hover {
   outline: ${(props) => {
    if (props.editable) {
@@ -633,6 +625,13 @@ const SummaryEdit = styled.input`
  width: 100%;
  padding: 2px 2px 2px 2px;
  margin: -2px;
+ border-radius: 5px;
+ outline-width: 1.5px;
+ height: fit-content;
+ line-break: overflow-wrap;
+ font: inherit;
+ color: inherit;
+ outline: solid;
  border-radius: 5px;
  outline-width: 1.5px;
 `;

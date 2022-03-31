@@ -151,7 +151,7 @@ const Form = styled.form`
 
   :hover {
     transform: scale(1.05);
-    box-shadow: 5px 5px 20px rgba(8, 7, 16, 0.192);
+    box-shadow: 5px 5px 20px rgba(8, 7, 16, 0.192); 
   }
 
   :focus {

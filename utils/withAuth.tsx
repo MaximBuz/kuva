@@ -12,7 +12,6 @@ export default function withAuth(WrappedComponent: any): Function {
  return function Authenticated(props: any) {
   const Router = useRouter();
 
-  console.log(Router)
   const { currentUser } = useAuth();
 
   if (!currentUser) {

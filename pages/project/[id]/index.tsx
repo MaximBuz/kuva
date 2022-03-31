@@ -269,7 +269,6 @@ const TasksPage: NextPage = () => {
  const completed = tasks?.filter((task: TaskInterface<TaskData>) => task.data.column === 'completed-column');
 
  useEffect(() => {
-  console.log(tasksQuery.isRefetching);
   if (tasksQuery.isSuccess) {
    setTasksSelected(selected);
    setTasksInProgress(inProgress);
