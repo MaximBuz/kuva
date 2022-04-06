@@ -135,25 +135,6 @@ const Section = styled.div`
 `;
 
 export default function Modal({ closeModal }: { closeModal: Function }) {
- //holding the input values provided by user
- /* const [state, setState] = useState(initialState);
-
-  const dispatch = useDispatch();
-
-  const { currentUser } = useSelector((state) => state.user);
-  const userID = currentUser.id;
-
-  const handleInputChange = (e) => {
-    let { name, value } = e.target;
-    setState({ ...state, [name]: value, ["userId"]: userID });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    await dispatch(addProjectInitiate(state, currentUser));
-    closeModal();
-  }; */
-
  // Auth
  const { currentUser } = useAuth();
 

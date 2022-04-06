@@ -46,9 +46,9 @@ const SignUpPage = () => {
    /* Create User in Firebase */
    const userObject = await signup(emailRef.current.value, passwordRef.current.value);
    /* Create User in Firestare (for additional information) */
-   debugger;
    await setDoc(doc(firestore, 'users', userObject.user.uid), {
     uid: userObject.user.uid,
+    displayName: null,
     jobTitle: null,
     email: userObject.user.email,
     phone: null,
@@ -57,7 +57,6 @@ const SignUpPage = () => {
     workAnniversary: null,
     avatar: null
    });
-   debugger;
    Router.replace('/');
   } catch (error) {
    console.log(error);
