@@ -277,6 +277,22 @@ const TasksPage: NextPage = () => {
   }
  }, [tasksQuery.isSuccess]);
 
+ // Task filtering
+ const onFilterChange = (e: any) => {
+  setTasksSelected(
+   selected.filter((task) => task.data.title.toLowerCase().includes(e.target.value.toLowerCase()))
+  );
+  setTasksInProgress(
+   inProgress.filter((task) => task.data.title.toLowerCase().includes(e.target.value.toLowerCase()))
+  );
+  setTasksInReview(
+   inReview.filter((task) => task.data.title.toLowerCase().includes(e.target.value.toLowerCase()))
+  );
+  setTasksCompleted(
+   completed.filter((task) => task.data.title.toLowerCase().includes(e.target.value.toLowerCase()))
+  );
+ };
+
  // Drag and drop functionality (TODO: Move to seperate file, way to big a function)
  const onDragEnd = async (result: {
   draggableId: string;
@@ -452,7 +468,7 @@ const TasksPage: NextPage = () => {
      <p>
       Search Tasks{' '}
       <span>
-       <SearchField type='text'></SearchField>
+       <SearchField type='text' onChange={onFilterChange}></SearchField>
       </span>
      </p>
      <div className='filter-checkbox'></div>
