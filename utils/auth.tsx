@@ -10,6 +10,7 @@ import {
  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { collection, doc, getDoc } from 'firebase/firestore';
+import { useFirestoreDocumentData } from '@react-query-firebase/firestore';
 
 const AuthContext = React.createContext<any>(null);
 
@@ -37,9 +38,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
   return sendPasswordResetEmail(auth, email);
  }
 
+ async function refreshUser(user: any) {
+   const userDoc = await getDoc(doc(firestore, 'users', user.uid));
+   userDoc.exists() ? setCurrentUser(userDoc.data()) : setCurrentUser(undefined);
+   setLoading(false);
+ }
+
  useEffect(() => {
   onAuthStateChanged(auth, async (user) => {
-   const userDoc = user ? await getDoc(doc(firestore, 'users', user.uid)) : undefined
+   const userDoc = user ? await getDoc(doc(firestore, 'users', user.uid)) : undefined;
    userDoc && userDoc.exists() ? setCurrentUser(userDoc.data()) : setCurrentUser(user);
    setLoading(false);
   });
@@ -51,6 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
   login,
   logout,
   resetPassword,
+  refreshUser
  };
 
  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;

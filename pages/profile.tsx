@@ -18,12 +18,17 @@ import { UilPen } from '@iconscout/react-unicons';
 // Autg
 import { useAuth } from '../utils/auth';
 import withAuth from '../utils/withAuth';
+import { useQueryClient } from 'react-query';
+import { useFirestoreDocumentMutation } from '@react-query-firebase/firestore';
+import { collection, doc } from 'firebase/firestore';
+import { firestore } from '../utils/firebase';
+import { toast } from 'react-toastify';
 
 // Firebase
 
 const ProfilePage: NextPage = () => {
  // Get currently logged in user
- const { currentUser } = useAuth();
+ const { currentUser, refreshUser } = useAuth();
 
  // Handle Modals state
  const [isTitleModalVisible, setIsTitleModalVisible] = useState(false);
@@ -40,10 +45,16 @@ const ProfilePage: NextPage = () => {
   setInputs({ [name]: value });
  };
 
+ // set up mutations
+ // setting up mutation
+ const queryClient = useQueryClient();
+ const userRef = doc(collection(firestore, 'users'), currentUser.uid);
+ const mutation = useFirestoreDocumentMutation(userRef, { merge: true });
+ 
+
  // Handle Submits
  const handleSubmit = (e: any): void => {
   e.preventDefault();
-  // const userRef = doc(db, 'users', currentUser.id);
   //closing modals
   setIsTitleModalVisible(false);
   setIsEmailModalVisible(false);
@@ -53,8 +64,15 @@ const ProfilePage: NextPage = () => {
   setIsAnniversaryModalVisible(false);
 
   //updating document
-  // await updateDoc(userRef, inputs);
-  // window.location.reload(true);
+  mutation.mutate(inputs, {
+    onSuccess() {
+      toast.success("Updated profile!")
+      refreshUser(currentUser)
+    },
+    onError() {
+      toast.error("Failed to update profile!")
+    }
+  })
   setInputs({});
  };
 
