@@ -198,7 +198,7 @@ function Modal({
   onSuccess() {
    queryClient.invalidateQueries(['tasks']);
    toast.success(() => (
-    <Link passHref href={`/backlog`}>
+    <Link passHref href={`/project/${projectId}/backlog`}>
      Click to view new task in Backlog
     </Link>
    )); // Link einfügen um zum backlog zu kommen
