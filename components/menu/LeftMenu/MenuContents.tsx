@@ -17,7 +17,7 @@ const backlogIcon = <UilSchedule/>;
 const archiveIcon = <UilArchiveAlt/>;
 const settingsIcon = <UilSetting/>;
 
-export const projectsOverviewItems = [{
+export const ProjectsOverviewItems = [{
   icon: projectsIcon,
   text: "Projects",
   link: "/",
@@ -29,7 +29,7 @@ export const projectsOverviewItems = [{
   active: false
 }];
 
-export const profilePageItems = [{
+export const ProfilePageItems = [{
   icon: projectsIcon,
   text: "Projects",
   link: "/",

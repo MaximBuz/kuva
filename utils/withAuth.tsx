@@ -6,7 +6,7 @@ import { useAuth } from '../utils/auth';
 
 // Layout
 import MainLayout from '../layouts/MainLayout';
-import { projectsOverviewItems, ProjectTaskOverviewItems, ProjectBacklogItems } from '../components/menu/LeftMenu/MenuContents';
+import { ProjectsOverviewItems, ProjectTaskOverviewItems, ProjectBacklogItems, ProfilePageItems} from '../components/menu/LeftMenu/MenuContents';
 
 export default function withAuth(WrappedComponent: any): Function {
  return function Authenticated(props: any) {
@@ -18,7 +18,15 @@ export default function withAuth(WrappedComponent: any): Function {
    Router.replace('/login');
    return null;
   }
-
+  
+  if (Router.pathname == "/profile") {
+    return (
+      <MainLayout menuContent={ProfilePageItems} {...props} key={document.location.href}>
+       <WrappedComponent {...props} />
+      </MainLayout>
+     );
+  }
+  
   if (Router.pathname == "/project/[id]") {
     return (
       <MainLayout menuContent={ProjectTaskOverviewItems} {...props} key={document.location.href}>
@@ -36,7 +44,7 @@ export default function withAuth(WrappedComponent: any): Function {
   }
 
   return (
-   <MainLayout menuContent={projectsOverviewItems} {...props} key={document.location.href}>
+   <MainLayout menuContent={ProjectsOverviewItems} {...props} key={document.location.href}>
     <WrappedComponent {...props} />
    </MainLayout>
   );
