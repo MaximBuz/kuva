@@ -1,6 +1,12 @@
 import styled from "styled-components";
 
-const UserCardAvatar = styled.div`
+interface SizeProps {
+  size: number;
+  inComments: boolean;
+  url: string;
+}
+
+const UserCardAvatar = styled.div<SizeProps>`
   width: ${(props) => props.size}px;
   height: ${(props) => props.size}px;
   border-radius: 10000px;
@@ -24,7 +30,7 @@ function UserAvatar({ inComments, name, url, size }:{inComments:any, name:any, u
   return (
     <UserCardAvatar inComments={inComments} url={url} size={size}>
       {url ? (
-        <UserProfilePicture inComments={inComments} src={url} />
+        <UserProfilePicture src={url} />
       ) : (
         name
           ?.split(" ")
