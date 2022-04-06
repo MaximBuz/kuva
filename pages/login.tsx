@@ -1,12 +1,15 @@
+// Next & React
 import { useRef, useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 
+// Auth
 import { useAuth } from '../utils/auth';
 
+// Style
 import backgroundImage from '../public/blurry-bg.svg';
 import logo from '../public/kuva_logo.png';
-
-import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 const LoginPage = () => {
@@ -55,6 +58,7 @@ const LoginPage = () => {
       <p>Log in</p>
      </button>
     </Form>
+     <Link href='/signup'>Create account</Link>
    </Wrapper>
   </Background>
  );
@@ -92,16 +96,42 @@ const Wrapper = styled.div`
 
  display: flex;
  flex-direction: column;
+ align-items: center;
 
  h1 {
   font-size: 2.4em;
   font-weight: bolder;
  }
 
- label {
+ label,
+ a {
   font-size: 16px;
   font-weight: 500;
   margin-top: 30px;
+ }
+
+ a {
+  margin-top: 50px;
+  position: relative;
+  width: fit-content;
+
+  &:after {
+   content: '';
+   position: absolute;
+   width: 100%;
+   transform: scaleX(0);
+   height: 4px;
+   bottom: -5px;
+   left: 0;
+   background-color: white;
+   transform-origin: bottom right;
+   transition: transform 0.25s ease-out;
+  }
+
+  &:hover:after {
+   transform: scaleX(1);
+   transform-origin: bottom left;
+  }
  }
 `;
 
@@ -109,6 +139,7 @@ const Form = styled.form`
  display: flex;
  flex-direction: column;
  text-align: center;
+ width: 100%;
 
  input {
   box-sizing: border-box;
@@ -129,11 +160,9 @@ const Form = styled.form`
   }
 
   :focus {
-    transform: scale(1.05);
-    box-shadow: 5px 5px 20px rgba(8, 7, 16, 0.192);
+   transform: scale(1.05);
+   box-shadow: 5px 5px 20px rgba(8, 7, 16, 0.192);
   }
-
-
  }
 
  button {
@@ -141,7 +170,7 @@ const Form = styled.form`
   margin-top: 50px;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.774);
-  color: #35307e;;
+  color: #35307e;
   padding: 15px 0;
   font-size: 18px;
   font-weight: 600;
@@ -150,14 +179,13 @@ const Form = styled.form`
   transition: 0.3s;
 
   :hover {
-    transform: scale(1.05);
-    box-shadow: 5px 5px 20px rgba(8, 7, 16, 0.192); 
+   transform: scale(1.05);
+   box-shadow: 5px 5px 20px rgba(8, 7, 16, 0.192);
   }
 
   :focus {
-    transform: scale(1.05);
-    box-shadow: 5px 5px 20px rgba(8, 7, 16, 0.192);
+   transform: scale(1.05);
+   box-shadow: 5px 5px 20px rgba(8, 7, 16, 0.192);
   }
-
  }
 `;
