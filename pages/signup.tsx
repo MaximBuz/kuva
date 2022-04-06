@@ -11,6 +11,8 @@ import { useAuth } from '../utils/auth';
 import backgroundImage from '../public/blurry-bg.svg';
 import logo from '../public/kuva_logo.png';
 import styled from 'styled-components';
+import { doc, setDoc } from 'firebase/firestore';
+import { firestore } from '../utils/firebase';
 
 const SignUpPage = () => {
  // initialize router
@@ -40,11 +42,25 @@ const SignUpPage = () => {
   try {
    setError('');
    setLoading(true);
-   await signup(emailRef.current.value, passwordRef.current.value);
-   console.log('tryblock');
+
+   /* Create User in Firebase */
+   const userObject = await signup(emailRef.current.value, passwordRef.current.value);
+   /* Create User in Firestare (for additional information) */
+   debugger;
+   await setDoc(doc(firestore, 'users', userObject.user.uid), {
+    uid: userObject.user.uid,
+    jobTitle: null,
+    email: userObject.user.email,
+    phone: null,
+    location: null,
+    birthday: null,
+    workAnniversary: null,
+    avatar: null
+   });
+   debugger;
    Router.replace('/');
-  } catch {
-   console.log('catchblock');
+  } catch (error) {
+   console.log(error);
    setError('Failed to sign in');
   }
   setLoading(false);
@@ -54,7 +70,7 @@ const SignUpPage = () => {
   <Background>
    <Wrapper>
     <Image src={logo} objectFit='none' height={250} width={800} alt='Kuva Logo'></Image>
-     <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
      {error && <div>{error}</div>}
      <label htmlFor='email'>Email</label>
      <input id='email' type='email' ref={emailRef} placeholder='Your Email Address' />
