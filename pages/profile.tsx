@@ -14,6 +14,7 @@ import { UilMapMarker } from '@iconscout/react-unicons';
 import { UilGift } from '@iconscout/react-unicons';
 import { UilSchedule } from '@iconscout/react-unicons';
 import { UilPen } from '@iconscout/react-unicons';
+import { UilMegaphone } from '@iconscout/react-unicons'
 
 // Autg
 import { useAuth } from '../utils/auth';
@@ -31,6 +32,7 @@ const ProfilePage: NextPage = () => {
  const { currentUser, refreshUser } = useAuth();
 
  // Handle Modals state
+ const [isNameModalVisible, setIsNameModalVisible] = useState(false);
  const [isTitleModalVisible, setIsTitleModalVisible] = useState(false);
  const [isEmailModalVisible, setIsEmailModalVisible] = useState(false);
  const [isPhoneModalVisible, setIsPhoneModalVisible] = useState(false);
@@ -50,7 +52,6 @@ const ProfilePage: NextPage = () => {
  const queryClient = useQueryClient();
  const userRef = doc(collection(firestore, 'users'), currentUser.uid);
  const mutation = useFirestoreDocumentMutation(userRef, { merge: true });
- 
 
  // Handle Submits
  const handleSubmit = (e: any): void => {
@@ -65,14 +66,14 @@ const ProfilePage: NextPage = () => {
 
   //updating document
   mutation.mutate(inputs, {
-    onSuccess() {
-      toast.success("Updated profile!")
-      refreshUser(currentUser)
-    },
-    onError() {
-      toast.error("Failed to update profile!")
-    }
-  })
+   onSuccess() {
+    toast.success('Updated profile!');
+    refreshUser(currentUser);
+   },
+   onError() {
+    toast.error('Failed to update profile!');
+   },
+  });
   setInputs({});
  };
 
@@ -80,16 +81,21 @@ const ProfilePage: NextPage = () => {
   <>
    <Wrapper>
     <WelcomeWrapper>
-     <UserAvatar inComments={false} name={currentUser.name} url={currentUser?.photoUrl || null} size={150} />
+     <UserAvatar inComments={false} name={currentUser.displayName} url={currentUser?.photoUrl || null} size={150} />
      <WelcomeMessage>
       <h1>Welcome,</h1>
-      <h2>{currentUser.displayName}</h2>
+      <h2>{currentUser.displayName || "Mr(s). Noname"}</h2>
      </WelcomeMessage>
     </WelcomeWrapper>
 
     <PersonalInfoSection>
      <h3>Personal Information</h3>
      <PersonalItems>
+      <Item onClick={() => setIsNameModalVisible(true)}>
+       <UilMegaphone size={25} color='#515151' />
+       Name: {currentUser.displayName || 'Add a name'}
+       <UilPen className='edit-pen' />
+      </Item>
       <Item onClick={() => setIsTitleModalVisible(true)}>
        <UilBag size={25} color='#515151' />
        Title: {currentUser.jobTitle || 'Add a title'}
@@ -125,6 +131,29 @@ const ProfilePage: NextPage = () => {
     <PreferencesSection>
      <h3>Edit Preferences</h3>
     </PreferencesSection>
+
+    {/* Handle Name Editing */}
+
+    {isNameModalVisible && (
+     <GreyBackground onClick={() => setIsNameModalVisible(false)}>
+      <ModalWrapper onClick={(e) => e.stopPropagation()}>
+       <Header>
+        <Title>Change Your Display Name</Title>
+        <CloseButton onClick={() => setIsNameModalVisible(false)} viewBox='0 0 17 19'>
+         <path d='M1 1L16 18M16 1L1 18' stroke='black' />
+        </CloseButton>
+       </Header>
+       <Form onSubmit={handleSubmit}>
+        <Section>
+         <input type='text' name='displayName' onChange={handleInputChange} required></input>
+        </Section>
+        <button type='submit' value='Submit'>
+         Submit
+        </button>
+       </Form>
+      </ModalWrapper>
+     </GreyBackground>
+    )}
 
     {/* Handle Title Editing */}
 
