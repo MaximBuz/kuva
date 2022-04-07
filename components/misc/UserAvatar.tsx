@@ -21,7 +21,7 @@ const UserCardAvatar = styled.div<SizeProps>`
 `;
 
 const UserProfilePicture = styled.img`
-  object-fit: contain;
+  object-fit: cover;
   object-position: 50% 50%;
   width: 100%;
   height: 100%;

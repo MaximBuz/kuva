@@ -1,9 +1,10 @@
 // React & Next
 import { NextPage } from 'next';
-import { FormEvent, FormEventHandler, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 
 // Components
 import UserAvatar from '../components/misc/UserAvatar';
+import { toast } from 'react-toastify';
 
 // Styling
 import styled from 'styled-components';
@@ -14,18 +15,17 @@ import { UilMapMarker } from '@iconscout/react-unicons';
 import { UilGift } from '@iconscout/react-unicons';
 import { UilSchedule } from '@iconscout/react-unicons';
 import { UilPen } from '@iconscout/react-unicons';
-import { UilMegaphone } from '@iconscout/react-unicons'
+import { UilMegaphone } from '@iconscout/react-unicons';
 
-// Autg
+// Auth
 import { useAuth } from '../utils/auth';
 import withAuth from '../utils/withAuth';
-import { useQueryClient } from 'react-query';
-import { useFirestoreDocumentMutation } from '@react-query-firebase/firestore';
-import { collection, doc } from 'firebase/firestore';
-import { firestore } from '../utils/firebase';
-import { toast } from 'react-toastify';
 
 // Firebase
+import { useFirestoreDocumentMutation } from '@react-query-firebase/firestore';
+import { collection, doc, Timestamp } from 'firebase/firestore';
+import { firestore, storage } from '../utils/firebase';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 const ProfilePage: NextPage = () => {
  // Get currently logged in user
@@ -47,13 +47,11 @@ const ProfilePage: NextPage = () => {
   setInputs({ [name]: value });
  };
 
- // set up mutations
  // setting up mutation
- const queryClient = useQueryClient();
  const userRef = doc(collection(firestore, 'users'), currentUser.uid);
  const mutation = useFirestoreDocumentMutation(userRef, { merge: true });
 
- // Handle Submits
+ // Handle Textual Info Submits
  const handleSubmit = (e: any): void => {
   e.preventDefault();
   //closing modals
@@ -77,14 +75,59 @@ const ProfilePage: NextPage = () => {
   setInputs({});
  };
 
+ // Handle Profile Picture uploading
+ const imageInput = useRef();
+
+ async function onImageChange(e: any) {
+  const [image] = e.target.files;
+
+  // uploading avatar to Google Cloud Storage
+  const metadata = {
+   contentType: 'image/*',
+   uploaded: Timestamp.now(),
+   author: currentUser.uid,
+  };
+  const avatarRef = ref(storage, 'avatars/' + currentUser.uid);
+
+  await uploadBytes(avatarRef, image, metadata);
+
+  const downloadUrl = await getDownloadURL(avatarRef);
+  mutation.mutate(
+   {
+    avatar: downloadUrl,
+   },
+   {
+    onSuccess() {
+     toast.success('Updated profile picture!');
+     refreshUser(currentUser);
+    },
+   }
+  );
+ }
+
  return (
   <>
    <Wrapper>
     <WelcomeWrapper>
-     <UserAvatar inComments={false} name={currentUser.displayName} url={currentUser?.photoUrl || null} size={150} />
+     <input
+      name='avatar'
+      type='file'
+      style={{ display: 'none' }}
+      accept='image/*'
+      onChange={onImageChange}
+      ref={imageInput}
+     />
+     <label htmlFor='avatar' onClick={() => imageInput.current.click()}>
+      <UserAvatar
+       inComments={false}
+       name={currentUser.displayName}
+       url={currentUser?.avatar || imageURL || null}
+       size={150}
+      />
+     </label>
      <WelcomeMessage>
       <h1>Welcome,</h1>
-      <h2>{currentUser.displayName || "Mr(s). Noname"}</h2>
+      <h2>{currentUser.displayName || 'Mr(s). Noname'}</h2>
      </WelcomeMessage>
     </WelcomeWrapper>
 
