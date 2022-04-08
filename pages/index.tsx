@@ -55,8 +55,7 @@ const Home: NextPage = () => {
   <Wrapper>
    <WelcomeWrapper>
     <h1 className='greeting'>
-     {/* Hello {currentUser && currentUser.displayName.split(" ")[0]} */}
-     Hello Test
+     Hello {currentUser ? currentUser.displayName.split(" ")[0] : "nameless user"}
     </h1>
     <p className='sub-greeting'>
      An overview over all of your projects. Click on them to view related tasks, or create a new project.
