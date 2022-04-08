@@ -68,7 +68,8 @@ const TimeStamp = styled.p`
 `;
 
 const Summary = styled.p`
- color: #515151;
+ color: grey;
+ font-weight: lighter;
  transition: 0.15s;
  flex-grow: 1;
 `;

@@ -103,7 +103,7 @@ const LoginPage = () => {
       />
      </svg>
 
-     <p>Continue with Google</p>
+     <p>Log in with Google</p>
     </GoogleButton>
    </Wrapper>
   </Background>

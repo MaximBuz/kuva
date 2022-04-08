@@ -11,8 +11,9 @@ import { useAuth } from '../utils/auth';
 import backgroundImage from '../public/blurry-bg.svg';
 import logo from '../public/kuva_logo.png';
 import styled from 'styled-components';
-import { doc, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, setDoc, Timestamp, writeBatch } from 'firebase/firestore';
 import { firestore } from '../utils/firebase';
+import exampleTasks from '../utils/exampleTasks';
 
 const SignUpPage = () => {
  // initialize router
@@ -86,6 +87,31 @@ const SignUpPage = () => {
     workAnniversary: null,
     avatar: userObject.user.photoURL,
    });
+
+   /* Create a first test project for the user */
+   const projectObject = await addDoc(collection(firestore, 'projects'), {
+    archived: false,
+    description:
+     "This is an example project for you to play around with! It was created automatically, so you can try out kuva's features",
+    key: 'EXP',
+    timestamp: Timestamp.now(),
+    title: 'Your first project',
+    user: userObject.user.uid,
+   });
+
+   /* Create a bunch of new tasks for the example project */
+   const batch = writeBatch(firestore);
+
+   exampleTasks.forEach((task) => {
+    let tasksRef = doc(collection(firestore, 'tasks'));
+    batch.set(tasksRef, {
+     ...task,
+     projectId: projectObject.id,
+     user: userObject.user.uid,
+    });
+   });
+   batch.commit();
+
    Router.replace('/');
   } catch (error) {
    console.log(error);
@@ -297,12 +323,12 @@ export const GoogleButton = styled.div`
  padding: 10px;
  gap: 10px;
  max-width: 185px;
- background: #ffffff;
+ background: rgb(255, 255, 255);
  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
  border-radius: 5px;
  margin-top: 30px;
  justify-content: space-around;
  cursor: pointer;
- color: #8f8f8f;
+ color: #3b4045d5;;
  font-family: 'Roboto', sans-serif;
 `;
