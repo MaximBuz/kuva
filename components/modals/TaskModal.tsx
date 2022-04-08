@@ -1,7 +1,7 @@
 // React & Next
 import ReactDom from 'react-dom';
 import moment from 'moment';
-import { useState, useEffect, ChangeEvent, HTMLAttributes, FormEvent, SyntheticEvent, useRef } from 'react';
+import React, { useState, ChangeEvent, SyntheticEvent, useRef } from 'react';
 
 // Style
 import styled from 'styled-components';
@@ -20,6 +20,7 @@ import {
 } from '@react-query-firebase/firestore';
 import { useQueryClient } from 'react-query';
 import { toast } from 'react-toastify';
+import { IComment } from '../../types/tasks';
 
 export default function TaskModal({ closeModal, taskId }: { closeModal: Function; taskId: string }) {
  // Get the current user
@@ -140,10 +141,10 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
 
  // Handle Title Editing
  const [titleEditMode, setTitleEditMode] = useState<boolean>(false);
- const editTitleModeOnClick = (e: ChangeEvent<HTMLInputElement>): void => {
+ const editTitleModeOnClick = (e: React.MouseEvent<HTMLElement>): void => {
   setTitleEditMode(!titleEditMode);
  };
- const titleRef = useRef<any>(null);
+ const titleRef = useRef<HTMLInputElement>(null);
  const handleTitleSubmit = (e: SyntheticEvent): void => {
   e.preventDefault();
   mutation.mutate(
@@ -166,10 +167,10 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
 
  // Handle Summary Editing
  const [summaryEditMode, setSummaryEditMode] = useState(false);
- const editSummaryModeOnClick = (e: ChangeEvent<HTMLInputElement>): void => {
+ const editSummaryModeOnClick = (e: React.MouseEvent<HTMLElement>): void => {
   setSummaryEditMode(!summaryEditMode);
  };
- const summaryRef = useRef<any>(null)
+ const summaryRef = useRef<HTMLInputElement>(null)
  const handleSummarySubmit = (e: SyntheticEvent): void => {
   e.preventDefault();
   mutation.mutate(
@@ -192,10 +193,10 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
 
  // Handle Description Editing
  const [descriptionEditMode, setDescriptionEditMode] = useState(false);
- const editDescriptionModeOnClick = (e: ChangeEvent<HTMLInputElement>): void => {
+ const editDescriptionModeOnClick = (e: React.MouseEvent<HTMLElement>): void => {
   setDescriptionEditMode(!descriptionEditMode);
  };
- const descriptionRef = useRef<any>(null);
+ const descriptionRef = useRef<HTMLInputElement>(null);
  const handleDescriptionSubmit = (e: SyntheticEvent): void => {
   e.preventDefault();
   mutation.mutate(
@@ -224,7 +225,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
   <>
    <GreyBackground onClick={() => closeModal()}>
     <ModalWrapper
-     onClick={(e: any) => {
+     onClick={(e: React.MouseEvent & { target: Element}):void => {
       /* Closing title edit mode on click outside */
       titleEditMode && e.target.localName !== 'input' && setTitleEditMode(false);
 
@@ -342,14 +343,14 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
          <CommentHistory>
           {task?.data?.comments.length > 0 ? (
            task?.data?.comments
-            .sort((a: any, b: any) => {
+            .sort((a: IComment, b: IComment) => {
              if (a.timestamp < b.timestamp) {
               return -1;
              } else {
               return 1;
              }
             })
-            .map((comment: any, index: number) => {
+            .map((comment: IComment, index: number) => {
              if (comment.authorId === currentUser.uid) {
               return (
                <OwnComment>
@@ -439,9 +440,8 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
 
 /* Styled Components */
 
-interface EditableStyleProps {
+interface EditableStyleProps extends React.HTMLAttributes<HTMLElement> {
  editable: boolean;
- [key: string]: any; // because of onClick
 }
 
 interface PriorityStyleProps {
@@ -460,7 +460,7 @@ const GreyBackground = styled.div`
  z-index: 100000;
 `;
 
-const ModalWrapper = styled.div`
+const ModalWrapper = styled.div<any>`
  width: 70%;
  max-width: 700px;
  position: fixed;

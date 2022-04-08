@@ -1,6 +1,6 @@
 // React & Next
 import { NextPage } from 'next';
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import React, { FormEvent, useRef, useState } from 'react';
 
 // Components
 import UserAvatar from '../components/misc/UserAvatar';
@@ -42,7 +42,7 @@ const ProfilePage: NextPage = () => {
 
  // Handle Input Changes
  const [inputs, setInputs] = useState({});
- const handleInputChange = (e: any): void => {
+ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
   let { name, value } = e.target;
   setInputs({ [name]: value });
  };
@@ -52,7 +52,7 @@ const ProfilePage: NextPage = () => {
  const mutation = useFirestoreDocumentMutation(userRef, { merge: true });
 
  // Handle Textual Info Submits
- const handleSubmit = (e: any): void => {
+ const handleSubmit = (e: React.FormEvent): void => {
   e.preventDefault();
   //closing modals
   setIsTitleModalVisible(false);
@@ -76,9 +76,9 @@ const ProfilePage: NextPage = () => {
  };
 
  // Handle Profile Picture uploading
- const imageInput = useRef();
+ const imageInput = useRef<HTMLInputElement>(null);
 
- async function onImageChange(e: any) {
+ async function onImageChange(e: React.ChangeEvent<HTMLInputElement>) {
   const [image] = e.target.files;
 
   // uploading avatar to Google Cloud Storage
@@ -121,7 +121,7 @@ const ProfilePage: NextPage = () => {
       <UserAvatar
        inComments={false}
        name={currentUser.displayName}
-       url={currentUser?.avatar || imageURL || null}
+       url={currentUser.avatar}
        size={150}
       />
      </label>
@@ -240,7 +240,7 @@ const ProfilePage: NextPage = () => {
           onChange={handleInputChange}
           pattern='[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$'
           onInvalid={(e: FormEvent<HTMLInputElement>) => {
-           e.target.setCustomValidity('Please enter a valid email address');
+           e.currentTarget.setCustomValidity('Please enter a valid email address');
           }}
           required
          ></input>
@@ -272,7 +272,7 @@ const ProfilePage: NextPage = () => {
           onChange={handleInputChange}
           pattern='^[0-9-+\s()]*$'
           onInvalid={(e) => {
-           e.target.setCustomValidity('Please enter a valid phone number');
+           e.currentTarget.setCustomValidity('Please enter a valid phone number');
           }}
           required
          ></input>

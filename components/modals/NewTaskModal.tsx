@@ -1,6 +1,6 @@
 import ReactDom from 'react-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import image from '../../public/dropDown.png';
 
 import styled from 'styled-components';
@@ -10,6 +10,7 @@ import { firestore } from '../../utils/firebase';
 import { collection, Timestamp } from 'firebase/firestore';
 import { useQueryClient } from 'react-query';
 import Link from 'next/link';
+import { IUser } from '../../types/users';
 
 const GreyBackground = styled.div`
  position: fixed;
@@ -164,8 +165,8 @@ function Modal({
  currentUser,
 }: {
  closeModal: Function;
- projectId: any;
- currentUser: any;
+ projectId: string;
+ currentUser: IUser;
 }) {
  //holding the input values provided by user
  const [state, setState] = useState(initialState);
@@ -175,7 +176,7 @@ function Modal({
 
  const userID = currentUser.uid;
 
- const handleInputChange = (e: any) => {
+ const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement | HTMLInputElement>) => {
   let { name, value } = e.target;
   setState({
    ...state,
@@ -213,7 +214,7 @@ function Modal({
  const [loading, setLoading] = useState<boolean>(false);
 
  //  submitting the form
- async function handleSubmit(e: any) {
+ async function handleSubmit(e: React.FormEvent) {
   e.preventDefault();
   try {
    console.log('tryblock');

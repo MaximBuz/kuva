@@ -15,7 +15,7 @@ export default function MainLayout(props: any) {
   <>
    <ToastContainer position='bottom-right' />
    <div id='portal'></div>
-   <TopMenu projectId={identifier} />
+   <TopMenu />
    <LeftMenu items={props.menuContent} projectId={identifier} />
    <LogoWrapper>
     <Image

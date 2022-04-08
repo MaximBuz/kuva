@@ -9,7 +9,7 @@ import CounterBlob from '../../../components/misc/CounterBlob';
 import TaskModal from '../../../components/modals/TaskModal';
 
 // Drag and Drop
-import { DragDropContext } from 'react-beautiful-dnd';
+import { DragDropContext, DroppableProvided, IDroppableSnapshot } from 'react-beautiful-dnd';
 import { Droppable } from 'react-beautiful-dnd';
 
 // Styling
@@ -23,6 +23,7 @@ import { firestore } from '../../../utils/firebase';
 import { useAuth } from '../../../utils/auth';
 import { useQueryClient } from 'react-query';
 import { useFirestoreQuery } from '@react-query-firebase/firestore';
+import { ITaskData, ITask, TasksArrayType } from '../../../types/tasks';
 
 const BacklogPage: NextPage = () => {
  const [openModal, setOpenModal] = useState('');
@@ -36,10 +37,10 @@ const BacklogPage: NextPage = () => {
 
  // // Get all tasks for that project from firestore
  // Initialize states for all columns
- const [tasksSelected, setTasksSelected] = useState<any>([]);
+ const [tasksSelected, setTasksSelected] = useState<TasksArrayType>([]);
  const countSelected = tasksSelected?.length;
 
- const [tasksBacklog, setTasksBacklog] = useState<any>([]);
+ const [tasksBacklog, setTasksBacklog] = useState<TasksArrayType>([]);
  const countBacklog = tasksBacklog.length;
 
  const queryClient = useQueryClient();
@@ -53,11 +54,11 @@ const BacklogPage: NextPage = () => {
  const tasksQuery = useFirestoreQuery(['tasks'], tasksRef, { subscribe: false });
  const tasksSnapshot = tasksQuery.data
 
- const tasks = tasksSnapshot?.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
+ const tasks: TasksArrayType = tasksSnapshot?.docs.map((doc) => ({ id: doc.id, data: doc.data() as ITaskData }));
  // Population of Selected for development Column
- const selected = tasks?.filter((task: any) => task.data.column === 'selected-for-development-column');
+ const selected = tasks?.filter((task: ITask<ITaskData>) => task.data.column === 'selected-for-development-column');
  // Population of Backlog Column
- const backlog = tasks?.filter((task: any) => task.data.column === 'backlog-column');
+ const backlog = tasks?.filter((task: ITask<ITaskData>) => task.data.column === 'backlog-column');
 
  useEffect(() => {
   if (tasksQuery.isSuccess) {
@@ -113,8 +114,8 @@ const BacklogPage: NextPage = () => {
 
   // Handle item drop in a different column ( with status and index change )
   if (source.droppableId != destination.droppableId) {
-   let startSourceTasks: any = [];
-   let startDestinationTasks: any = [];
+   let startSourceTasks: TasksArrayType = [];
+   let startDestinationTasks: TasksArrayType = [];
    // populate the startSourceTasks with a copy of current state
    switch (source.droppableId) {
     case 'backlog-column':
@@ -184,20 +185,20 @@ const BacklogPage: NextPage = () => {
       <CounterBlob count={countBacklog} />
      </TitleRow>
      <Droppable droppableId={'backlog-column'}>
-      {(provided: any, snapshot: any) => (
+      {(provided: DroppableProvided, snapshot: IDroppableSnapshot) => (
        <TaskList
         {...provided.droppableProps}
         ref={provided.innerRef}
         isDraggingOver={snapshot.isDraggingOver}
        >
         {tasksBacklog
-         .sort((a: any, b: any) => {
-          if (a.priority === 'high') return -1;
-          if (a.priority === 'medium' && b.priority === 'high') return 1;
-          if (a.priority === 'medium' && b.priority === 'low') return -1;
+         .sort((a: ITask<ITaskData>, b: ITask<ITaskData>) => {
+          if (a.data.priority === 'high') return -1;
+          if (a.data.priority === 'medium' && b.data.priority === 'high') return 1;
+          if (a.data.priority === 'medium' && b.data.priority === 'low') return -1;
           return 1;
          })
-         .map((task: any, index: number) => {
+         .map((task: ITask<ITaskData>, index: number) => {
           return (
            <TaskRow
             onClick={() => {
@@ -206,7 +207,7 @@ const BacklogPage: NextPage = () => {
             index={index}
             id={task.id}
             identifier={task.data.identifier}
-            authorId={task.data.userId}
+            user={task.data.user}
             title={task.data.title}
             timestamp={task.data.timestamp}
             summary={task.data.summary}
@@ -229,20 +230,20 @@ const BacklogPage: NextPage = () => {
       <CounterBlob count={countSelected} />
      </TitleRow>
      <Droppable droppableId={'selected-for-development-column'}>
-      {(provided: any, snapshot: any) => (
+      {(provided: DroppableProvided, snapshot: IDroppableSnapshot) => (
        <TaskList
         {...provided.droppableProps}
         ref={provided.innerRef}
         isDraggingOver={snapshot.isDraggingOver}
        >
         {tasksSelected
-         .sort((a: any, b: any) => {
-          if (a.priority === 'high') return -1;
-          if (a.priority === 'medium' && b.priority === 'high') return 1;
-          if (a.priority === 'medium' && b.priority === 'low') return -1;
+         .sort((a: ITask<ITaskData>, b: ITask<ITaskData>) => {
+          if (a.data.priority === 'high') return -1;
+          if (a.data.priority === 'medium' && b.data.priority === 'high') return 1;
+          if (a.data.priority === 'medium' && b.data.priority === 'low') return -1;
           return 1;
          })
-         .map((task:any, index:any) => {
+         .map((task:ITask<ITaskData>, index:number) => {
           return (
            <TaskRow
             onClick={() => {
@@ -251,7 +252,7 @@ const BacklogPage: NextPage = () => {
             index={index}
             id={task.id}
             identifier={task.data.identifier}
-            authorId={task.data.userId}
+            user={task.data.user}
             title={task.data.title}
             timestamp={task.data.timestamp}
             summary={task.data.summary}
@@ -314,7 +315,7 @@ const TitleRow = styled.div`
  }
 `;
 
-const TaskList = styled.div`
+const TaskList = styled.div<any>`
  display: flex;
  flex-direction: column;
  height: 100%;

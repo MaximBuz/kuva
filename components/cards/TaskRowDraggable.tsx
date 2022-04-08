@@ -1,22 +1,11 @@
 import React from 'react';
-import { Draggable } from 'react-beautiful-dnd';
+import { Draggable, DraggableProvided, DraggableSnapshot } from 'react-beautiful-dnd';
 import { UilDraggabledots } from '@iconscout/react-unicons';
 
 import styled from 'styled-components';
+import { ITaskData } from '../../types/tasks';
 
-function TaskRow(props: {
- index: number;
- identifier: string;
- title: string;
- id: string;
- priority: 'high' | 'medium' | 'low';
- onClick: Function;
- authorId: string;
- timestamp: any;
- summary: string;
- description: string;
- status: string;
-}) {
+function TaskRow(props: ITaskData) {
  const index = props.index;
  const identifier = props.identifier;
  const id = props.id;
@@ -25,7 +14,7 @@ function TaskRow(props: {
 
  return (
   <Draggable draggableId={id} index={index}>
-   {(provided: any, snapshot: any) => (
+   {(provided: DraggableProvided, snapshot: DraggableSnapshot) => (
     <Row
      {...provided.draggableProps}
      ref={provided.innerRef}
@@ -52,7 +41,7 @@ export default TaskRow;
 
 /* Styled Components */
 
-const Row = styled.div`
+const Row = styled.div<any>`
  display: flex;
  flex-direction: row;
  gap: 10px;

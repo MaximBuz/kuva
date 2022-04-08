@@ -27,7 +27,7 @@ const UserProfilePicture = styled.img`
   height: 100%;
 `;
 
-function UserAvatar({ inComments, name, url, size }:{inComments:boolean, name:string, url:string, size:number}) {
+function UserAvatar({ inComments, name, url, size }:{inComments?:boolean, name:string, url:string, size:number}) {
   return (
     <UserCardAvatar inComments={inComments} url={url} size={size}>
       {url ? (

@@ -6,9 +6,15 @@ import { useAuth } from '../utils/auth';
 
 // Layout
 import MainLayout from '../layouts/MainLayout';
-import { ProjectsOverviewItems, ProjectTaskOverviewItems, ProjectBacklogItems, ProfilePageItems} from '../components/menu/LeftMenu/MenuContents';
+import {
+ ProjectsOverviewItems,
+ ProjectTaskOverviewItems,
+ ProjectBacklogItems,
+ ProfilePageItems,
+} from '../components/menu/LeftMenu/MenuContents';
+import { NextPage } from 'next';
 
-export default function withAuth(WrappedComponent: any): Function {
+export default function withAuth(WrappedComponent: NextPage): (props: any) => React.ReactElement {
  return function Authenticated(props: any) {
   const Router = useRouter();
 
@@ -18,29 +24,29 @@ export default function withAuth(WrappedComponent: any): Function {
    Router.replace('/login');
    return null;
   }
-  
-  if (Router.pathname == "/profile") {
-    return (
-      <MainLayout menuContent={ProfilePageItems} {...props} key={document.location.href}>
-       <WrappedComponent {...props} />
-      </MainLayout>
-     );
-  }
-  
-  if (Router.pathname == "/project/[id]") {
-    return (
-      <MainLayout menuContent={ProjectTaskOverviewItems} {...props} key={document.location.href}>
-       <WrappedComponent {...props} />
-      </MainLayout>
-     );
+
+  if (Router.pathname == '/profile') {
+   return (
+    <MainLayout menuContent={ProfilePageItems} {...props} key={document.location.href}>
+     <WrappedComponent {...props} />
+    </MainLayout>
+   );
   }
 
-  if (Router.pathname == "/project/[id]/backlog") {
-    return (
-      <MainLayout menuContent={ProjectBacklogItems} {...props} key={document.location.href}>
-       <WrappedComponent {...props} />
-      </MainLayout>
-     );
+  if (Router.pathname == '/project/[id]') {
+   return (
+    <MainLayout menuContent={ProjectTaskOverviewItems} {...props} key={document.location.href}>
+     <WrappedComponent {...props} />
+    </MainLayout>
+   );
+  }
+
+  if (Router.pathname == '/project/[id]/backlog') {
+   return (
+    <MainLayout menuContent={ProjectBacklogItems} {...props} key={document.location.href}>
+     <WrappedComponent {...props} />
+    </MainLayout>
+   );
   }
 
   return (

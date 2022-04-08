@@ -24,6 +24,7 @@ import withAuth from '../utils/withAuth';
 import ProjectCard from '../components/cards/ProjectCard';
 import CounterBlob from '../components/misc/CounterBlob';
 import Modal from '../components/modals/NewProjectModal';
+import { IProject, IProjectArray, IProjectData } from '../types/projects';
 
 const Home: NextPage = () => {
  const { currentUser } = useAuth();
@@ -31,8 +32,8 @@ const Home: NextPage = () => {
  // Data
  const projectsRef = query(collection(firestore, 'projects'), where('user', '==', currentUser.uid));
  const projectsSnap = useFirestoreQuery(['projects'], projectsRef);
- const projects: any[] = [];
- projectsSnap?.data?.forEach((doc) => projects.push({ id: doc.id, data: doc.data() }));
+ const projects: IProjectArray = [];
+ projectsSnap?.data?.forEach((doc) => projects.push({ id: doc.id, data: doc.data() as IProjectData }));
 
  // Handling archived / unarchived state
  const [archived, setArchived] = useState(false);
@@ -41,8 +42,8 @@ const Home: NextPage = () => {
  const [openModal, setOpenModal] = useState(false);
 
  // filtering into archived and unarchived
- const activeProjects = projects?.filter((project) => !project.archived);
- const archivedProjects = projects?.filter((project) => project.archived);
+ const activeProjects = projects?.filter((project) => !project.data.archived);
+ const archivedProjects = projects?.filter((project) => project.data.archived);
 
  // Count Projects
  let projectCount = activeProjects?.length;
@@ -92,7 +93,7 @@ const Home: NextPage = () => {
           id={project.id}
           projectKey={project.data.key}
           projectTitle={project.data.title}
-          timeStamp={moment(new Date(project.data.timestamp.seconds * 1000))
+          timestamp={moment(new Date(project.data.timestamp.seconds * 1000))
            .fromNow()
            .toString()}
           projectSummary={project.data.description}
@@ -107,7 +108,7 @@ const Home: NextPage = () => {
           id={project.id}
           projectKey={project.data.key}
           projectTitle={project.data.title}
-          timeStamp={moment(new Date(project.data.timestamp.seconds * 1000))
+          timestamp={moment(new Date(project.data.timestamp.seconds * 1000))
            .fromNow()
            .toString()}
           projectSummary={project.data.description}

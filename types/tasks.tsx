@@ -1,35 +1,41 @@
-interface Comment {
+import { Timestamp } from "firebase/firestore";
+import React from "react";
+
+export interface IComment {
  authorId: string;
  authorName: string;
  text: string;
- timestamp: any;
+ timestamp: Timestamp;
 }
 
-export interface TaskData {
- archived: boolean;
- column:
+export interface ITaskData {
+ archived?: boolean;
+ column?:
   | 'backlog-column'
   | 'selected-for-development-column'
   | 'in-progress-column'
   | 'in-review-column'
   | 'completed-column';
- comments: Comment[];
+ comments?: IComment[];
  description: string;
  identifier: string;
  priority: 'high' | 'medium' | 'low';
- projectId: string;
- status: 'backlog' | 'Selected for Development' | 'In Progress' | 'In Review' | 'Completed';
+ projectId?: string;
+ status: 'Backlog' | 'Selected for Development' | 'In Progress' | 'In Review' | 'Completed';
  summary: string;
- timestamp: any;
+ timestamp: Timestamp;
  title: string;
  user: string;
+ index: number;
+ id: string;
+ onClick: (event: React.MouseEvent) => void;
 }
 
-export interface TaskInterface<T> {
+export interface ITask<T> {
  data: T;
  id: string;
 }
 
-export type TasksArrayType = TaskInterface<TaskData>[];
+export type TasksArrayType = ITask<ITaskData>[];
 
 

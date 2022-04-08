@@ -1,8 +1,8 @@
-import { Draggable } from 'react-beautiful-dnd';
 import { UilDraggabledots } from '@iconscout/react-unicons';
 
 import styled from 'styled-components';
-import { DraggableProvided } from '../../types/dnd';
+import { Timestamp } from 'firebase/firestore';
+import { Draggable, DraggableProvided, DraggableSnapshot, DragHandleProps } from 'react-beautiful-dnd';
 
 const Card = styled.div<any>`
  background-color: white;
@@ -57,7 +57,7 @@ const PriorityPill = styled.div<ColorProps>`
  }};
 `;
 
-const DragHandle = styled.div<any>`
+const DragHandle = styled.div<DragHandleProps>`
  display: flex;
  align-items: center;
  justify-content: center;
@@ -91,7 +91,7 @@ type Props = {
  identifier: string;
  authorId: string;
  title: string;
- timestamp: string;
+ timestamp: Timestamp;
  summary: string;
  description: string;
  priority: "high" | "medium" | "low";
@@ -128,7 +128,7 @@ function TaskCard({
  return (
   <div onClick={onClick}>
    <Draggable draggableId={id} index={index} key={id}>
-    {(provided: DraggableProvided, snapshot: any) => (
+    {(provided: DraggableProvided, snapshot: DraggableSnapshot) => (
      <Card {...provided.draggableProps} ref={provided.innerRef} isDragging={snapshot.isDragging}>
       <TopRow>
        <IdentifierPill>

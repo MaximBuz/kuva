@@ -1,5 +1,5 @@
 // Next & React
-import { useRef, useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -19,9 +19,9 @@ const SignUpPage = () => {
  const Router = useRouter();
 
  //  getting input values
- const emailRef = useRef<any>(null);
- const passwordRef = useRef<any>(null);
- const passwordConfirmRef = useRef<any>(null);
+ const emailRef = useRef<HTMLInputElement>(null);
+ const passwordRef = useRef<HTMLInputElement>(null);
+ const passwordConfirmRef = useRef<HTMLInputElement>(null);
 
  //  getting signup function and currentuser object
  const { signup } = useAuth();
@@ -31,7 +31,7 @@ const SignUpPage = () => {
  const [loading, setLoading] = useState<boolean>(false);
 
  //  submitting the form and logging in the user
- async function handleSubmit(e: any) {
+ async function handleSubmit(e: FormEvent) {
   e.preventDefault();
 
   //  check if two passwords are the same

@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import Link from "next/link";
+import { IMenuItem } from "../../../types/menu";
 
 interface ActiveStyleProps {
   active: boolean;
@@ -51,7 +52,7 @@ const MenuItemWrapper = styled.div`
     }
 `
 
-function MenuItem(props: any) {
+function MenuItem(props: IMenuItem) {
 
     return (
         <Link href={props.url} passHref>

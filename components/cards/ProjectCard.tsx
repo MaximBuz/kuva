@@ -1,3 +1,4 @@
+import { Timestamp } from 'firebase/firestore';
 import Link from 'next/link';
 import styled from 'styled-components';
 
@@ -91,11 +92,11 @@ type Props = {
  id: string;
  projectKey: string;
  projectTitle: string;
- timeStamp: string;
+ timestamp: Timestamp | string;
  projectSummary: string;
 };
 
-function ProjectCard({ id, projectKey, projectTitle, timeStamp, projectSummary }: Props): JSX.Element {
+function ProjectCard({ id, projectKey, projectTitle, timestamp, projectSummary }: Props): JSX.Element {
  return (
   <Link href={'/project/' + id + '/'} passHref>
    <Card id={'project-card-' + parseInt(projectKey)}>
@@ -111,7 +112,7 @@ function ProjectCard({ id, projectKey, projectTitle, timeStamp, projectSummary }
     <Content>
      <TitleRow>
       <Title>{projectTitle}</Title>
-      <TimeStamp>{timeStamp}</TimeStamp>
+      <TimeStamp>{timestamp}</TimeStamp>
      </TitleRow>
      <Summary>{projectSummary}</Summary>
     </Content>

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import ReactDom from 'react-dom';
 
 // Firebase
@@ -161,7 +161,7 @@ export default function Modal({ closeModal }: { closeModal: Function }) {
  const [loading, setLoading] = useState<boolean>(false);
 
  //  submitting the form
- async function handleSubmit(e: any) {
+ async function handleSubmit(e: React.FormEvent) {
   e.preventDefault();
   try {
    console.log('tryblock');

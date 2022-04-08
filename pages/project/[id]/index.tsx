@@ -5,12 +5,12 @@ import styled from 'styled-components';
 import TaskModal from '../../../components/modals/TaskModal';
 
 // React and Next
-import { FC, memo, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { NextPage } from 'next';
 
 // Drag and Drop
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, DroppableProvided } from 'react-beautiful-dnd';
 
 // Auth
 import { useAuth } from '../../../utils/auth';
@@ -18,13 +18,12 @@ import withAuth from '../../../utils/withAuth';
 
 // Firestore
 import { firestore } from '../../../utils/firebase';
-import { collection, doc, DocumentData, getDocs, query, setDoc, where } from 'firebase/firestore';
-import { useFirestoreQuery, useFirestoreQueryData } from '@react-query-firebase/firestore';
+import { collection, doc, query, setDoc, where } from 'firebase/firestore';
+import { useFirestoreQuery } from '@react-query-firebase/firestore';
 import { useQueryClient } from 'react-query';
 
 // Interfaces and Types
-import { TasksArrayType, TaskInterface, TaskData } from '../../../types/tasks';
-import { DroppableProvided } from '../../../types/dnd';
+import { TasksArrayType, ITask, ITaskData } from '../../../types/tasks';
 
 const FilterSection = styled.div`
  display: flex;
@@ -100,7 +99,7 @@ const SelectedList = function SelectedList({
 }): JSX.Element {
  return (
   <>
-   {tasks.map((task: TaskInterface<TaskData>, index: number) => (
+   {tasks.map((task: ITask<ITaskData>, index: number) => (
     <TaskCard
      onClick={() => {
       setOpenModal(task.id);
@@ -131,7 +130,7 @@ const InProgressList = function inProgressList({
 }): JSX.Element {
  return (
   <>
-   {tasks.map((task: TaskInterface<TaskData>, index: number) => (
+   {tasks.map((task: ITask<ITaskData>, index: number) => (
     <TaskCard
      onClick={() => {
       setOpenModal(task.id);
@@ -162,7 +161,7 @@ const InReviewList = function inReviewList({
 }): JSX.Element {
  return (
   <>
-   {tasks.map((task: TaskInterface<TaskData>, index: number) => (
+   {tasks.map((task: ITask<ITaskData>, index: number) => (
     <TaskCard
      onClick={() => {
       setOpenModal(task.id);
@@ -193,7 +192,7 @@ const CompletedList = function inReviewList({
 }): JSX.Element {
  return (
   <>
-   {tasks.map((task: TaskInterface<TaskData>, index: number) => (
+   {tasks.map((task: ITask<ITaskData>, index: number) => (
     <TaskCard
      onClick={() => {
       setOpenModal(task.id);
@@ -250,23 +249,23 @@ const TasksPage: NextPage = () => {
  const tasksQuery = useFirestoreQuery(['tasks'], tasksRef, { subscribe: false });
  const tasksSnapshot = tasksQuery.data;
 
- const tasks: TaskInterface<TaskData>[] = tasksSnapshot?.docs.map((doc) => ({
+ const tasks: ITask<ITaskData>[] = tasksSnapshot?.docs.map((doc) => ({
   id: doc.id,
-  data: doc.data() as TaskData,
+  data: doc.data() as ITaskData,
  }));
 
  // Population of Selected for development Column
  const selected = tasks?.filter(
-  (task: TaskInterface<TaskData>) => task.data.column === 'selected-for-development-column'
+  (task: ITask<ITaskData>) => task.data.column === 'selected-for-development-column'
  );
  // Population of In Progress Column
  const inProgress = tasks?.filter(
-  (task: TaskInterface<TaskData>) => task.data.column === 'in-progress-column'
+  (task: ITask<ITaskData>) => task.data.column === 'in-progress-column'
  );
  // Population of In Review Column
- const inReview = tasks?.filter((task: TaskInterface<TaskData>) => task.data.column === 'in-review-column');
+ const inReview = tasks?.filter((task: ITask<ITaskData>) => task.data.column === 'in-review-column');
  // Population of Completed Column
- const completed = tasks?.filter((task: TaskInterface<TaskData>) => task.data.column === 'completed-column');
+ const completed = tasks?.filter((task: ITask<ITaskData>) => task.data.column === 'completed-column');
 
  useEffect(() => {
   if (tasksQuery.isSuccess) {
@@ -278,7 +277,7 @@ const TasksPage: NextPage = () => {
  }, [tasksQuery.isSuccess]);
 
  // Task filtering
- const onFilterChange = (e: any) => {
+ const onFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
   setTasksSelected(
    selected.filter((task) => task.data.title.toLowerCase().includes(e.target.value.toLowerCase()))
   );

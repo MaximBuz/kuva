@@ -1,4 +1,6 @@
+import React from "react";
 import styled from "styled-components";
+import { IUser } from "../../types/users";
 import UserAvatar from "../misc/UserAvatar";
 
 const UserCardWrapper = styled.div`
@@ -41,17 +43,17 @@ const UserCardRole = styled.p`
   color: #ff0aba;
 `;
 
-function UserCard({ user, onClick} : {user: any, onClick: any}) {
+function UserCard({ user, onClick} : {user: IUser, onClick: (event: React.MouseEvent) => void}) {
   return (
     <UserCardWrapper onClick={onClick}>
       <UserAvatar
-        name={user.name}
-        url={user?.photoUrl || null}
+        name={user.displayName}
+        url={user.avatar}
         size={50}
       />
       <UserCardTextWrapper>
         <UserCardName>{user.displayName}</UserCardName>
-        <UserCardRole>{user.projectRole}</UserCardRole>
+        {/* <UserCardRole>{user.projectRole}</UserCardRole> */}
       </UserCardTextWrapper>
     </UserCardWrapper>
   );
