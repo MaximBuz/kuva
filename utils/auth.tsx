@@ -1,13 +1,14 @@
 import React, { useContext, useState, useEffect } from 'react';
 
 /* FIREBASE */
-import { auth, firestore } from './firebase';
+import { auth, firestore, googleAuthProvider } from './firebase';
 import {
  createUserWithEmailAndPassword,
  signInWithEmailAndPassword,
  onAuthStateChanged,
  signOut,
  sendPasswordResetEmail,
+ signInWithPopup,
 } from 'firebase/auth';
 import { collection, doc, getDoc } from 'firebase/firestore';
 import { useFirestoreDocumentData } from '@react-query-firebase/firestore';
@@ -24,6 +25,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
 
  function signup(email: string, password: string) {
   return createUserWithEmailAndPassword(auth, email, password);
+ }
+
+ function googleSignup() {
+   return signInWithPopup(auth, googleAuthProvider);
  }
 
  function login(email: string, password: string) {
@@ -55,6 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
  const value = {
   currentUser,
   signup,
+  googleSignup,
   login,
   logout,
   resetPassword,
