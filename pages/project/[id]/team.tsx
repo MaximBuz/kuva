@@ -104,7 +104,7 @@ const TeamPage: NextPage = () => {
    )}
    {openUserModal && (
     <UserModal
-     closeModal={setOpenUserModal}
+     closeModal={() => setOpenUserModal("")}
      collaborator={openUserModal}
      projectId={projectId}
      collaborators={project.collaborators}
