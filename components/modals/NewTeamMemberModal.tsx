@@ -45,14 +45,14 @@ export default function NewTeamMemberModal({ closeModal, projectId, refresh }: a
     const userData = user.data();
     userData['id'] = user.id;
     setUsers([...users, userData]);
-    setCollaborators([...collaborators, { role: "None", user: doc(firestore, 'users', user.id) }]);
+    setCollaborators([...collaborators, { role: 'None', user: doc(firestore, 'users', user.id) }]);
    });
   }
  };
 
  // handles deletion of successfully found users in the pipeline
  const handleDeleteCollaborator = (emailToDelete: any) => () => {
-  setCollaborators(collaborators.filter((collaborator) => collaborator.email !== emailToDelete));
+  setUsers(users.filter((user) => user.email !== emailToDelete));
  };
 
  // sends out an invitation email to non-existing user
@@ -92,7 +92,7 @@ export default function NewTeamMemberModal({ closeModal, projectId, refresh }: a
    {
     onSuccess() {
      toast.success('Added new team member to project!');
-     refresh()
+     refresh();
      closeModal();
     },
    }
@@ -128,7 +128,8 @@ export default function NewTeamMemberModal({ closeModal, projectId, refresh }: a
          {users.map((user: any) => {
           return (
            <CollaboratorPill key={user.id}>
-            {user.displayName} ({user.email})<div onClick={handleDeleteCollaborator(user.email)}>&#10005;</div>
+            <UserAvatar inComments={true} url={user.avatar} name={user.displayName} size={35}></UserAvatar> {user.displayName} (
+            {user.email})<div onClick={handleDeleteCollaborator(user.email)}>&#10005;</div>
            </CollaboratorPill>
           );
          })}
@@ -311,10 +312,13 @@ const CollaboratorPill = styled.div`
  flex-direction: row;
  align-items: center;
  justify-content: space-between;
- background-color: #c6c6c6;
+ background-color: white;
+ border-style: solid;
+ border-color: rgb(221, 221, 221);
+ border-width: thin;
+ color: grey;
  border-radius: 10px;
  padding: 10px;
- color: white;
  font-size: small;
  gap: 10px;
  div {
