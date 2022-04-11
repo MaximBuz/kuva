@@ -4,7 +4,7 @@ import ReactDom from 'react-dom';
 
 // Firebase
 import { useFirestoreCollectionMutation } from '@react-query-firebase/firestore';
-import { collection } from 'firebase/firestore';
+import { collection, doc } from 'firebase/firestore';
 import { firestore } from '../../utils/firebase';
 import { Timestamp } from 'firebase/firestore';
 
@@ -174,7 +174,8 @@ export default function Modal({ closeModal }: { closeModal: Function }) {
      key: projectKey.current.value,
      timestamp: Timestamp.now(),
      title: projectTitle.current.value,
-     user: currentUser.uid
+     user: currentUser.uid,
+     collaborators: [doc(collection(firestore, "users"), currentUser.uid)]
    })
   } catch {
    console.log('catchblock');
