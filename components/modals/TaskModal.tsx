@@ -61,13 +61,13 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
      queryClient.invalidateQueries(['tasks', taskId]);
      queryClient.invalidateQueries(['tasks']);
      toast.success('Task archived!');
+     closeModal();
     },
     onError() {
      toast.error('Failed to archive task!');
     },
    }
   );
-  closeModal();
  };
 
  // Handle unarchivation of task
@@ -81,13 +81,13 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
      queryClient.invalidateQueries(['tasks', taskId]);
      queryClient.invalidateQueries(['tasks']);
      toast.success('Task unarchived!');
+     closeModal();
     },
     onError() {
      toast.error('Failed to unarchive task!');
     },
    }
   );
-  closeModal();
  };
 
  /*
@@ -170,7 +170,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
  const editSummaryModeOnClick = (e: React.MouseEvent<HTMLElement>): void => {
   setSummaryEditMode(!summaryEditMode);
  };
- const summaryRef = useRef<HTMLInputElement>(null)
+ const summaryRef = useRef<HTMLInputElement>(null);
  const handleSummarySubmit = (e: SyntheticEvent): void => {
   e.preventDefault();
   mutation.mutate(
@@ -225,7 +225,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
   <>
    <GreyBackground onClick={() => closeModal()}>
     <ModalWrapper
-     onClick={(e: React.MouseEvent & { target: Element}):void => {
+     onClick={(e: React.MouseEvent & { target: Element }): void => {
       /* Closing title edit mode on click outside */
       titleEditMode && e.target.localName !== 'input' && setTitleEditMode(false);
 
@@ -265,7 +265,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
       {/* Handle editing of Project Title */}
       {titleEditMode ? (
        <form onSubmit={handleTitleSubmit} style={{ textAlign: 'center' }}>
-        <TitleEdit defaultValue={task?.data?.title} ref={titleRef} ></TitleEdit>
+        <TitleEdit defaultValue={task?.data?.title} ref={titleRef}></TitleEdit>
         <input
          type='submit'
          style={{
@@ -545,7 +545,7 @@ const Title = styled.h1<EditableStyleProps>`
  margin: -5px;
  color: #35307e;
  cursor: pointer;
- 
+
  :hover {
   outline: ${(props) => {
    if (props.editable) {
