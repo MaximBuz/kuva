@@ -244,7 +244,8 @@ const TasksPage: NextPage = () => {
  const tasksRef = query(
   collection(firestore, 'tasks'),
   where('user', '==', currentUser.uid),
-  where('projectId', '==', projectId)
+  where('projectId', '==', projectId),
+  where('archived', '==', false)
  );
  const tasksQuery = useFirestoreQuery(['tasks'], tasksRef, { subscribe: false });
  const tasksSnapshot = tasksQuery.data;
@@ -259,9 +260,7 @@ const TasksPage: NextPage = () => {
   (task: ITask<ITaskData>) => task.data.column === 'selected-for-development-column'
  );
  // Population of In Progress Column
- const inProgress = tasks?.filter(
-  (task: ITask<ITaskData>) => task.data.column === 'in-progress-column'
- );
+ const inProgress = tasks?.filter((task: ITask<ITaskData>) => task.data.column === 'in-progress-column');
  // Population of In Review Column
  const inReview = tasks?.filter((task: ITask<ITaskData>) => task.data.column === 'in-review-column');
  // Population of Completed Column

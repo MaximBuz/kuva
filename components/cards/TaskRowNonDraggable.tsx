@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { ITaskData } from '../../types/tasks';
 
 function TaskRow(props: ITaskData) {
-
  return (
   <Row onClick={props.onClick}>
    <IdentifierPill>
@@ -13,9 +12,7 @@ function TaskRow(props: ITaskData) {
    <PriorityPill priority={props.priority}>
     <p>{props.priority}</p>
    </PriorityPill>
-   <StatusPill>
-     {props.status}
-   </StatusPill>
+   <StatusPill>{props.status}</StatusPill>
 
    <Title>{props.title}</Title>
   </Row>
@@ -88,7 +85,7 @@ const StatusPill = styled.div`
  border-radius: 6px;
  padding: 5px 10px 5px 10px;
  margin: 0px;
- min-width: 55px;
+ width: fit-content;
  text-align: center;
  text-transform: uppercase;
  height: fit-content;
@@ -98,6 +95,7 @@ const StatusPill = styled.div`
  border-style: solid;
  border-color: rgb(221, 221, 221);
  border-width: thin;
+ box-sizing: border-box;
 `;
 
 const Title = styled.h2`
