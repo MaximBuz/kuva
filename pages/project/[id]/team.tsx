@@ -25,27 +25,28 @@ const TeamPage: NextPage = () => {
  const [openUserModal, setOpenUserModal] = useState<any>('');
  const [openNewModal, setOpenNewModal] = useState<any>('');
 
- // Get Project from firestore
+ // Get Project and the collaboratorsfrom firestore
+ const [project, setProject] = useState(null);
+
  const router = useRouter();
  const { id: projectId } = router.query;
  const projectRef = doc(firestore, 'projects', Array.isArray(projectId) ? projectId[0] : projectId);
 
- // load project into state
- const [project, setProject] = useState(null);
-
  useEffect(() => {
   const getCollaborators = async () => {
+   // first get the project
    const projectSnap = await getDoc(projectRef);
-   if (projectSnap.exists()) {
-    const collaborators = await Promise.all(
-     projectSnap.data().collaborators.map(async (ref: any) => {
-      const user = await Promise.resolve(getDoc(ref.user));
-      const role = ref.role;
-      return {user: user.data(), role: role};
-     })
-    );
-    setProject({ ...projectSnap.data(), collaborators: collaborators });
-   }
+   // now get the collaborators from the references in the project doc
+   const collaborators = await Promise.all(
+    projectSnap.data().collaborators.map(async (collaborator: any) => {
+     const user = await Promise.resolve(getDoc(collaborator.user));
+     const role = collaborator.role;
+     // merge user data and project role into one object
+     return { user: user.data(), role: role };
+    })
+   );
+   // update project with the projectdata and overwrite collaborators with real user data
+   setProject({ ...projectSnap.data(), collaborators: collaborators });
   };
   getCollaborators();
  }, []);
@@ -53,7 +54,6 @@ const TeamPage: NextPage = () => {
  // Counting team members
  const memberCount = project?.collaborators?.length;
 
- console.log(project);
  return (
   <>
    <FilterSection>
