@@ -28,7 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
  }
 
  function googleSignup() {
-   return signInWithPopup(auth, googleAuthProvider);
+  return signInWithPopup(auth, googleAuthProvider);
  }
 
  function login(email: string, password: string) {
@@ -44,15 +44,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
  }
 
  async function refreshUser(user: any) {
-   const userDoc = await getDoc(doc(firestore, 'users', user.uid));
-   userDoc.exists() ? setCurrentUser(userDoc.data()) : setCurrentUser(undefined);
-   setLoading(false);
+  const userDoc = await getDoc(doc(firestore, 'users', user.uid));
+  userDoc.exists() ? setCurrentUser(userDoc.data()) : setCurrentUser(undefined);
+  setLoading(false);
  }
 
  useEffect(() => {
   onAuthStateChanged(auth, async (user) => {
-   const userDoc = user ? await getDoc(doc(firestore, 'users', user.uid)) : undefined;
-   userDoc && userDoc.exists() ? setCurrentUser(userDoc.data()) : setCurrentUser(user);
+   if (user) {
+    const userDoc = await getDoc(doc(firestore, 'users', user.uid));
+    userDoc.exists() ? setCurrentUser(userDoc.data()) : setCurrentUser(user);
+   }
    setLoading(false);
   });
  }, []);
@@ -64,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
   login,
   logout,
   resetPassword,
-  refreshUser
+  refreshUser,
  };
 
  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;

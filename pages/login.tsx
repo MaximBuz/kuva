@@ -22,7 +22,7 @@ const LoginPage = () => {
  const passwordRef = useRef<any>(null);
 
  //  getting signup function and currentuser object
- const { login, googleSignup } = useAuth();
+ const { currentUser, login, googleSignup } = useAuth();
 
  //  handling error and loading state
  const [error, setError] = useState<string>('');
@@ -45,6 +45,7 @@ const LoginPage = () => {
 
  //  signing in with Google Popup
  async function handleGoogleSignIn(e: React.MouseEvent<HTMLElement>) {
+   e.preventDefault()
   try {
    setError('');
    setLoading(true);
@@ -52,7 +53,7 @@ const LoginPage = () => {
    /* Create User in Firebase */
    await googleSignup();
    /* Create User in Firestare (for additional information) */
-   Router.replace('/');
+   currentUser && Router.replace('/');
   } catch (error) {
    setError('Failed to sign in');
   }
