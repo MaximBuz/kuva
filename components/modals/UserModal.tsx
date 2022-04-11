@@ -3,18 +3,11 @@ import React, { useState, useRef, SyntheticEvent } from 'react';
 import ReactDom from 'react-dom';
 
 // Firebase
-import {
- useFirestoreCollectionMutation,
- useFirestoreDocumentMutation,
-} from '@react-query-firebase/firestore';
-import { collection, doc } from 'firebase/firestore';
+import { useFirestoreDocumentMutation } from '@react-query-firebase/firestore';
+import { doc } from 'firebase/firestore';
 import { firestore } from '../../utils/firebase';
-import { Timestamp } from 'firebase/firestore';
-
-import { useQueryClient } from 'react-query';
 
 // Auth
-import { useAuth } from '../../utils/auth';
 import { toast } from 'react-toastify';
 import UserAvatar from '../misc/UserAvatar';
 

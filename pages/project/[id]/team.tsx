@@ -15,6 +15,7 @@ import { firestore } from '../../../utils/firebase';
 import CounterBlob from '../../../components/misc/CounterBlob';
 import UserCard from '../../../components/cards/UserCard';
 import UserModal from '../../../components/modals/UserModal';
+import NewTeamMemberModal from '../../../components/modals/NewTeamMemberModal';
 
 const TeamPage: NextPage = () => {
  // Auth
@@ -94,7 +95,14 @@ const TeamPage: NextPage = () => {
     </AddButton>
    </UserList>
 
-   {/* {openNewModal && <NewModal closeModal={setOpenNewModal} projectId={identifier} />} */}
+   {openNewModal && (
+    <NewTeamMemberModal
+     closeModal={setOpenNewModal}
+     projectId={projectId}
+     oldCollaborators={project.collaborators}
+     refresh={getCollaborators}
+    />
+   )}
    {openUserModal && (
     <UserModal
      closeModal={setOpenUserModal}
