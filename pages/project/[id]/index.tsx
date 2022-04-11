@@ -274,8 +274,6 @@ const TasksPage: NextPage = () => {
    setTasksCompleted(completed);
   }
  }, [tasksQuery.isRefetching]);
- 
- console.log("success: " + tasksQuery.isSuccess, "refetch: " + tasksQuery.isRefetching, tasksQuery)
 
  // Task filtering
  const onFilterChange = (e: ChangeEvent<HTMLInputElement>) => {

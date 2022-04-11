@@ -12,6 +12,7 @@ import {
  ProjectBacklogItems,
  ProfilePageItems,
  ProjectArchiveItems,
+ ProjectTeamItems,
 } from '../components/menu/LeftMenu/MenuContents';
 import { NextPage } from 'next';
 
@@ -53,6 +54,14 @@ export default function withAuth(WrappedComponent: NextPage): (props: any) => Re
   if (Router.pathname == '/project/[id]/archive') {
    return (
     <MainLayout menuContent={ProjectArchiveItems} {...props} key={document.location.href}>
+     <WrappedComponent {...props} />
+    </MainLayout>
+   );
+  }
+
+  if (Router.pathname == '/project/[id]/team') {
+   return (
+    <MainLayout menuContent={ProjectTeamItems} {...props} key={document.location.href}>
      <WrappedComponent {...props} />
     </MainLayout>
    );

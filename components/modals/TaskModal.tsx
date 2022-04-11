@@ -37,6 +37,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
  const deletion = useFirestoreDocumentDeletion(taskRef, {
   onSuccess() {
    queryClient.invalidateQueries(['tasks']);
+   queryClient.invalidateQueries(['archivedTasks']);
    toast.success('Task deleted!');
   },
   onError() {
@@ -58,7 +59,6 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
    },
    {
     onSuccess() {
-     queryClient.invalidateQueries(['tasks', taskId]);
      queryClient.invalidateQueries(['tasks']);
      queryClient.invalidateQueries(['archivedTasks']);
      toast.success('Task archived!');
@@ -79,7 +79,6 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
    },
    {
     onSuccess() {
-     queryClient.invalidateQueries(['tasks', taskId]);
      queryClient.invalidateQueries(['tasks']);
      queryClient.invalidateQueries(['archivedTasks']);
      toast.success('Task unarchived!');
@@ -122,7 +121,6 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
    },
    {
     onSuccess() {
-     queryClient.invalidateQueries(['tasks', taskId]);
      queryClient.invalidateQueries(['tasks']);
     },
     onError() {

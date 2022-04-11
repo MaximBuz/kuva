@@ -47,35 +47,7 @@ const SignUpPage = () => {
    /* Create User in Firebase */
    const userObject = await signup(emailRef.current.value, passwordRef.current.value);
    /* Create User in Firestare (for additional information) */
-   await setDoc(doc(firestore, 'users', userObject.user.uid), {
-    uid: userObject.user.uid,
-    displayName: userObject.user.displayName,
-    jobTitle: null,
-    email: userObject.user.email,
-    phone: userObject.user.phoneNumber,
-    location: null,
-    birthday: null,
-    workAnniversary: null,
-    avatar: userObject.user.photoUrl,
-   });
-   Router.replace('/');
-  } catch (error) {
-   console.log(error);
-   setError('Failed to sign in');
-  }
-  setLoading(false);
- }
-
- //  signing in with Google Popup
- async function handleGoogleSignIn(e: React.MouseEvent<HTMLElement>) {
-  try {
-   setError('');
-   setLoading(true);
-
-   /* Create User in Firebase */
-   const userObject = await googleSignup();
    /* Create User in Firestare (for additional information) */
-   console.log(userObject);
    await setDoc(doc(firestore, 'users', userObject.user.uid), {
     uid: userObject.user.uid,
     displayName: userObject.user.displayName,
@@ -97,6 +69,71 @@ const SignUpPage = () => {
     timestamp: Timestamp.now(),
     title: 'Your first project',
     user: userObject.user.uid,
+    collaborators: [
+     {
+      user: doc(collection(firestore, 'users'), userObject.user.uid),
+      role: 'Creator',
+     },
+    ],
+   });
+
+   /* Create a bunch of new tasks for the example project */
+   const batch = writeBatch(firestore);
+
+   exampleTasks.forEach((task) => {
+    let tasksRef = doc(collection(firestore, 'tasks'));
+    batch.set(tasksRef, {
+     ...task,
+     projectId: projectObject.id,
+     user: userObject.user.uid,
+    });
+   });
+   batch.commit();
+
+   Router.replace('/');
+  } catch (error) {
+   console.log(error);
+   setError('Failed to sign in');
+  }
+  setLoading(false);
+ }
+
+ //  signing in with Google Popup
+ async function handleGoogleSignIn(e: React.MouseEvent<HTMLElement>) {
+  try {
+   setError('');
+   setLoading(true);
+
+   /* Create User in Firebase */
+   const userObject = await googleSignup();
+   /* Create User in Firestare (for additional information) */
+   await setDoc(doc(firestore, 'users', userObject.user.uid), {
+    uid: userObject.user.uid,
+    displayName: userObject.user.displayName,
+    jobTitle: null,
+    email: userObject.user.email,
+    phone: userObject.user.phoneNumber,
+    location: null,
+    birthday: null,
+    workAnniversary: null,
+    avatar: userObject.user.photoURL,
+   });
+
+   /* Create a first test project for the user */
+   const projectObject = await addDoc(collection(firestore, 'projects'), {
+    archived: false,
+    description:
+     "This is an example project for you to play around with! It was created automatically, so you can try out kuva's features",
+    key: 'EXP',
+    timestamp: Timestamp.now(),
+    title: 'Your first project',
+    user: userObject.user.uid,
+    collaborators: [
+     {
+      user: doc(collection(firestore, 'users'), userObject.user.uid),
+      role: 'Creator',
+     },
+    ],
    });
 
    /* Create a bunch of new tasks for the example project */
@@ -329,6 +366,6 @@ export const GoogleButton = styled.div`
  margin-top: 30px;
  justify-content: space-around;
  cursor: pointer;
- color: #3b4045d5;;
+ color: #3b4045d5;
  font-family: 'Roboto', sans-serif;
 `;

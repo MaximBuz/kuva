@@ -175,7 +175,10 @@ export default function Modal({ closeModal }: { closeModal: Function }) {
      timestamp: Timestamp.now(),
      title: projectTitle.current.value,
      user: currentUser.uid,
-     collaborators: [doc(collection(firestore, "users"), currentUser.uid)]
+     collaborators: [{
+       user: doc(collection(firestore, "users"), currentUser.uid),
+       role: "Creator"
+     }]
    })
   } catch {
    console.log('catchblock');

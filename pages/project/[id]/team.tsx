@@ -5,24 +5,99 @@ import { NextPage } from 'next';
 
 // Components
 import styled from 'styled-components';
+import { UilPlusCircle } from '@iconscout/react-unicons';
 
 // Auth
 import { useAuth } from '../../../utils/auth';
 import withAuth from '../../../utils/withAuth';
+import { collection, doc, getDoc } from 'firebase/firestore';
+import { firestore } from '../../../utils/firebase';
+import { useFirestoreDocumentData } from '@react-query-firebase/firestore';
+import CounterBlob from '../../../components/misc/CounterBlob';
+import UserCard from '../../../components/cards/UserCard';
+import { IUser } from '../../../types/users';
 
 const TeamPage: NextPage = () => {
  // Auth
  const { currentUser } = useAuth();
 
  // Opening and closing Modals
- const [openUserModal, setOpenUserModal] = useState('');
- const [openNewModal, setOpenNewModal] = useState('');
+ const [openUserModal, setOpenUserModal] = useState<any>('');
+ const [openNewModal, setOpenNewModal] = useState<any>('');
 
- // Get Project ID
+ // Get Project from firestore
  const router = useRouter();
  const { id: projectId } = router.query;
+ const projectRef = doc(firestore, 'projects', Array.isArray(projectId) ? projectId[0] : projectId);
 
- return <div>team</div>;
+ // load project into state
+ const [project, setProject] = useState(null);
+
+ useEffect(() => {
+  const getCollaborators = async () => {
+   const projectSnap = await getDoc(projectRef);
+   if (projectSnap.exists()) {
+    const collaborators = await Promise.all(
+     projectSnap.data().collaborators.map(async (ref: any) => {
+      const user = await Promise.resolve(getDoc(ref.user));
+      const role = ref.role;
+      return {user: user.data(), role: role};
+     })
+    );
+    setProject({ ...projectSnap.data(), collaborators: collaborators });
+   }
+  };
+  getCollaborators();
+ }, []);
+
+ // Counting team members
+ const memberCount = project?.collaborators?.length;
+
+ console.log(project);
+ return (
+  <>
+   <FilterSection>
+    <p>
+     Search For Team Members:{' '}
+     <span>
+      <SearchField type='text'></SearchField>
+     </span>
+    </p>
+    {/* <div className="filter-checkbox">
+                    </div> */}
+   </FilterSection>
+   <MemberCounter>
+    <h2>Your project-team</h2>
+    <CounterBlob count={memberCount || 0} />
+   </MemberCounter>
+   <UserList>
+    {project?.collaborators?.map((collaborator: any) => {
+     return (
+      <UserCard
+       key={collaborator.user.uid}
+       onClick={() => {
+        setOpenUserModal(collaborator.user);
+       }}
+       role={collaborator.role}
+       user={collaborator.user}
+      ></UserCard>
+     );
+    })}
+    <AddButton
+     onClick={() => {
+      setOpenNewModal(!openNewModal);
+     }}
+    >
+     <UilPlusCircle className='add-icon' size='50' color='#51515170' />
+    </AddButton>
+   </UserList>
+
+   {/* {openNewModal && <NewModal closeModal={setOpenNewModal} projectId={identifier} />}
+   {openUserModal && (
+    <UserModal closeModal={setOpenUserModal} user={openUserModal} projectId={identifier} members={members} />
+   )} */}
+  </>
+ );
 };
 
 export default withAuth(TeamPage);
