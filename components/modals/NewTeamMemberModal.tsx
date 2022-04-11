@@ -16,9 +16,11 @@ export default function NewTeamMemberModal({ closeModal, projectId, refresh }: a
  // State holding the user-input values of the form
  const [state, setState] = useState<any>({});
 
- // State holding successfully found users by their email
+ // State holding successfully found user references (for updating firestore)
  const [collaborators, setCollaborators] = useState([]);
- const [users, setUsers] = useState([]);
+
+ // State holding successfully found user data (for displaying avatar etc.)
+ const [collaboratorsWithData, setCollaboratorsWithData] = useState([]);
 
  // State holding an error message when no user could be found by the provided email
  const [queryError, setQueryError] = useState('');
@@ -41,24 +43,29 @@ export default function NewTeamMemberModal({ closeModal, projectId, refresh }: a
    setQueryError('No user with this email adress found!');
   } else {
    setQueryError('');
-   teamSearchQuery.forEach((user) => {
-    const userData = user.data();
-    userData['id'] = user.id;
-    setUsers([...users, userData]);
-    setCollaborators([...collaborators, { role: 'None', user: doc(firestore, 'users', user.id) }]);
+   teamSearchQuery.forEach((collaborator) => {
+    const collaboratorData = collaborator.data();
+    collaboratorData['id'] = collaborator.id;
+    // safe in state for displaying
+    setCollaboratorsWithData([...collaboratorsWithData, collaboratorData]);
+    // safe in state for updating firestore
+    setCollaborators([...collaborators, { role: 'None', user: doc(firestore, 'users', collaborator.id) }]);
    });
   }
  };
 
  // handles deletion of successfully found users in the pipeline
- const handleDeleteCollaborator = (emailToDelete: any) => () => {
-  setUsers(users.filter((user) => user.email !== emailToDelete));
+ const handleDeleteCollaborator = (idToDelete: any) => () => {
+  setCollaboratorsWithData(collaboratorsWithData.filter((collaborator) => collaborator.id !== idToDelete));
+  setCollaborators(
+   collaborators.filter((collaborator) => collaborator.user !== doc(firestore, 'users', idToDelete))
+  );
  };
 
  // sends out an invitation email to non-existing user
  const handleInvitation = async () => {
-  const mailRef = await addDoc(collection(firestore, 'mail'), {
-   to: [state.userEmail],
+  await addDoc(collection(firestore, 'mail'), {
+   to: [state.email],
    message: {
     subject: `${currentUser.displayName} invited you to use kuva!`,
     text: `
@@ -102,7 +109,7 @@ export default function NewTeamMemberModal({ closeModal, projectId, refresh }: a
  return ReactDom.createPortal(
   <>
    {/* Grey background behind modal, closes modal on click */}
-   <GreyBackground onClick={() => closeModal()}>
+   <GreyBackground onClick={closeModal}>
     <FormWrapper
      onClick={(e) => {
       e.stopPropagation();
@@ -110,7 +117,7 @@ export default function NewTeamMemberModal({ closeModal, projectId, refresh }: a
     >
      <TitleRow>
       <Title>Add New Team Member</Title>
-      <CloseButton onClick={() => closeModal()} viewBox='0 0 17 19'>
+      <CloseButton onClick={closeModal} viewBox='0 0 17 19'>
        <path d='M1 1L16 18M16 1L1 18' stroke='black' />
       </CloseButton>
      </TitleRow>
@@ -123,13 +130,13 @@ export default function NewTeamMemberModal({ closeModal, projectId, refresh }: a
        </SearchField>
        {queryError && <ErrorMessage>{queryError}</ErrorMessage>}
        {queryError && <InviteLink onClick={handleInvitation}>Invite your team member to kuva!</InviteLink>}
-       {users && (
+       {collaboratorsWithData && (
         <Collaborators>
-         {users.map((user: any) => {
+         {collaboratorsWithData.map((user: any) => {
           return (
            <CollaboratorPill key={user.id}>
-            <UserAvatar inComments={true} url={user.avatar} name={user.displayName} size={35}></UserAvatar> {user.displayName} (
-            {user.email})<div onClick={handleDeleteCollaborator(user.email)}>&#10005;</div>
+            <UserAvatar inComments={true} url={user.avatar} name={user.displayName} size={35}></UserAvatar>{' '}
+            {user.displayName} ({user.email})<div onClick={handleDeleteCollaborator(user.id)}>&#10005;</div>
            </CollaboratorPill>
           );
          })}

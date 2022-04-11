@@ -97,9 +97,8 @@ const TeamPage: NextPage = () => {
 
    {openNewModal && (
     <NewTeamMemberModal
-     closeModal={setOpenNewModal}
+     closeModal={() => setOpenNewModal(false)}
      projectId={projectId}
-     oldCollaborators={project.collaborators}
      refresh={getCollaborators}
     />
    )}
