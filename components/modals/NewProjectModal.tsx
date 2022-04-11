@@ -12,7 +12,6 @@ import { useQueryClient } from 'react-query';
 
 // Auth
 import { useAuth } from '../../utils/auth';
-import withAuth from '../../utils/withAuth';
 import { toast } from 'react-toastify';
 
 const GreyBackground = styled.div`
@@ -236,3 +235,5 @@ export default function Modal({ closeModal }: { closeModal: Function }) {
   document.getElementById('portal')
  );
 }
+
+

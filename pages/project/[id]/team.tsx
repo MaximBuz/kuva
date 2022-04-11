@@ -10,12 +10,11 @@ import { UilPlusCircle } from '@iconscout/react-unicons';
 // Auth
 import { useAuth } from '../../../utils/auth';
 import withAuth from '../../../utils/withAuth';
-import { collection, doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { firestore } from '../../../utils/firebase';
-import { useFirestoreDocumentData } from '@react-query-firebase/firestore';
 import CounterBlob from '../../../components/misc/CounterBlob';
 import UserCard from '../../../components/cards/UserCard';
-import { IUser } from '../../../types/users';
+import UserModal from '../../../components/modals/UserModal';
 
 const TeamPage: NextPage = () => {
  // Auth
@@ -31,25 +30,28 @@ const TeamPage: NextPage = () => {
  const router = useRouter();
  const { id: projectId } = router.query;
  const projectRef = doc(firestore, 'projects', Array.isArray(projectId) ? projectId[0] : projectId);
+ let collaborators;
+
+ const getCollaborators = async () => {
+  // first get the project
+  const projectSnap = await getDoc(projectRef);
+  // now get the collaborators from the references in the project doc
+  collaborators = await Promise.all(
+   projectSnap.data().collaborators.map(async (collaborator: any) => {
+    const user = await Promise.resolve(getDoc(collaborator.user));
+    const role = collaborator.role;
+    // merge user data and project role into one object
+    return { user: user.data(), role: role };
+   })
+  );
+  // update project with the projectdata and overwrite collaborators with real user data
+  setProject({ ...projectSnap.data(), collaborators: collaborators });
+ };
 
  useEffect(() => {
-  const getCollaborators = async () => {
-   // first get the project
-   const projectSnap = await getDoc(projectRef);
-   // now get the collaborators from the references in the project doc
-   const collaborators = await Promise.all(
-    projectSnap.data().collaborators.map(async (collaborator: any) => {
-     const user = await Promise.resolve(getDoc(collaborator.user));
-     const role = collaborator.role;
-     // merge user data and project role into one object
-     return { user: user.data(), role: role };
-    })
-   );
-   // update project with the projectdata and overwrite collaborators with real user data
-   setProject({ ...projectSnap.data(), collaborators: collaborators });
-  };
+  console.log('fired');
   getCollaborators();
- }, []);
+ }, [collaborators]);
 
  // Counting team members
  const memberCount = project?.collaborators?.length;
@@ -76,7 +78,7 @@ const TeamPage: NextPage = () => {
       <UserCard
        key={collaborator.user.uid}
        onClick={() => {
-        setOpenUserModal(collaborator.user);
+        setOpenUserModal(collaborator);
        }}
        role={collaborator.role}
        user={collaborator.user}
@@ -92,10 +94,16 @@ const TeamPage: NextPage = () => {
     </AddButton>
    </UserList>
 
-   {/* {openNewModal && <NewModal closeModal={setOpenNewModal} projectId={identifier} />}
+   {/* {openNewModal && <NewModal closeModal={setOpenNewModal} projectId={identifier} />} */}
    {openUserModal && (
-    <UserModal closeModal={setOpenUserModal} user={openUserModal} projectId={identifier} members={members} />
-   )} */}
+    <UserModal
+     closeModal={setOpenUserModal}
+     collaborator={openUserModal}
+     projectId={projectId}
+     collaborators={project.collaborators}
+     refresh={getCollaborators}
+    />
+   )}
   </>
  );
 };

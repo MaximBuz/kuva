@@ -137,8 +137,6 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
   ----------------------------
   */
 
- // closing all editable fields
-
  // Handle Title Editing
  const [titleEditMode, setTitleEditMode] = useState<boolean>(false);
  const editTitleModeOnClick = (e: React.MouseEvent<HTMLElement>): void => {
@@ -153,7 +151,6 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
    },
    {
     onSuccess() {
-     queryClient.invalidateQueries(['tasks', taskId]);
      queryClient.invalidateQueries(['tasks']);
      toast.success('Updated the title!');
     },
