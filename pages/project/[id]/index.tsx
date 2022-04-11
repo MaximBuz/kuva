@@ -273,7 +273,9 @@ const TasksPage: NextPage = () => {
    setTasksInReview(inReview);
    setTasksCompleted(completed);
   }
- }, [tasksQuery.isSuccess]);
+ }, [tasksQuery.isRefetching]);
+ 
+ console.log("success: " + tasksQuery.isSuccess, "refetch: " + tasksQuery.isRefetching, tasksQuery)
 
  // Task filtering
  const onFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -320,7 +322,7 @@ const TasksPage: NextPage = () => {
     case 'selected-for-development-column': {
      let newSelectedTasks = [...tasksSelected];
      newSelectedTasks.splice(destination.index, 0, newSelectedTasks.splice(source.index, 1)[0]); // reordering the array
-     setTasksSelected(newSelectedTasks);
+      setTasksSelected(newSelectedTasks);
      break;
     }
     case 'in-progress-column': {
@@ -328,19 +330,19 @@ const TasksPage: NextPage = () => {
      // reordering the array
      let [insert] = newTasksInProgress.splice(source.index, 1);
      newTasksInProgress.splice(destination.index, 0, insert);
-     setTasksInProgress(newTasksInProgress);
+      setTasksInProgress(newTasksInProgress);
      break;
     }
     case 'in-review-column': {
      let newTasksInReview = [...tasksInReview];
      newTasksInReview.splice(destination.index, 0, newTasksInReview.splice(source.index, 1)[0]); // reordering the array
-     setTasksInReview(newTasksInReview);
+      setTasksInReview(newTasksInReview);
      break;
     }
     case 'completed-column': {
      let newTasksCompleted = [...tasksCompleted];
      newTasksCompleted.splice(destination.index, 0, newTasksCompleted.splice(source.index, 1)[0]); // reordering the array
-     setTasksCompleted(newTasksCompleted);
+      setTasksCompleted(newTasksCompleted);
      break;
     }
     default:
@@ -405,7 +407,6 @@ const TasksPage: NextPage = () => {
       await setDoc(doc(firestore, 'tasks', temp.id), {
        ...temp.data,
       });
-      queryClient.invalidateQueries(['tasks']);
      }
      break;
     case 'in-progress-column':
@@ -420,7 +421,6 @@ const TasksPage: NextPage = () => {
       await setDoc(doc(firestore, 'tasks', temp.id), {
        ...temp.data,
       });
-      queryClient.invalidateQueries(['tasks']);
      }
      break;
     case 'in-review-column':
@@ -435,7 +435,6 @@ const TasksPage: NextPage = () => {
       await setDoc(doc(firestore, 'tasks', temp.id), {
        ...temp.data,
       });
-      queryClient.invalidateQueries(['tasks']);
      }
      break;
     case 'completed-column':
@@ -450,7 +449,6 @@ const TasksPage: NextPage = () => {
       await setDoc(doc(firestore, 'tasks', temp.id), {
        ...temp.data,
       });
-      queryClient.invalidateQueries(['tasks']);
      }
      break;
     default:

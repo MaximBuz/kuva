@@ -60,6 +60,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
     onSuccess() {
      queryClient.invalidateQueries(['tasks', taskId]);
      queryClient.invalidateQueries(['tasks']);
+     queryClient.invalidateQueries(['archivedTasks']);
      toast.success('Task archived!');
      closeModal();
     },
@@ -80,6 +81,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
     onSuccess() {
      queryClient.invalidateQueries(['tasks', taskId]);
      queryClient.invalidateQueries(['tasks']);
+     queryClient.invalidateQueries(['archivedTasks']);
      toast.success('Task unarchived!');
      closeModal();
     },

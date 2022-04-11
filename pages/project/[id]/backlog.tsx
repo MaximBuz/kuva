@@ -50,6 +50,7 @@ const BacklogPage: NextPage = () => {
   collection(firestore, 'tasks'),
   where('user', '==', currentUser.uid),
   where('projectId', '==', projectId),
+  where('archived', '==', false)
  );
  const tasksQuery = useFirestoreQuery(['tasks'], tasksRef, { subscribe: false });
  const tasksSnapshot = tasksQuery.data
