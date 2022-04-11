@@ -23,7 +23,6 @@ function MyApp({ Component, pageProps }: AppProps) {
          <Component {...pageProps} />
         </AuthProvider>
        </Hydrate>
-       <ReactQueryDevtools initialIsOpen={false} position={"top-left"} />
      </QueryClientProvider>
   )
 }
