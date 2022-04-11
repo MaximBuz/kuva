@@ -23,7 +23,7 @@ import { useFirestoreQuery } from '@react-query-firebase/firestore';
 import { useQueryClient } from 'react-query';
 
 // Interfaces and Types
-import { TasksArrayType, ITask, ITaskData } from '../../../types/tasks';
+import { ITaskArray, ITask, ITaskData } from '../../../types/tasks';
 
 const FilterSection = styled.div`
  display: flex;
@@ -94,7 +94,7 @@ const SelectedList = function SelectedList({
  tasks,
  setOpenModal,
 }: {
- tasks: TasksArrayType;
+ tasks: ITaskArray;
  setOpenModal: Function;
 }): JSX.Element {
  return (
@@ -125,7 +125,7 @@ const InProgressList = function inProgressList({
  tasks,
  setOpenModal,
 }: {
- tasks: TasksArrayType;
+ tasks: ITaskArray;
  setOpenModal: Function;
 }): JSX.Element {
  return (
@@ -156,7 +156,7 @@ const InReviewList = function inReviewList({
  tasks,
  setOpenModal,
 }: {
- tasks: TasksArrayType;
+ tasks: ITaskArray;
  setOpenModal: Function;
 }): JSX.Element {
  return (
@@ -187,7 +187,7 @@ const CompletedList = function inReviewList({
  tasks,
  setOpenModal,
 }: {
- tasks: TasksArrayType;
+ tasks: ITaskArray;
  setOpenModal: Function;
 }): JSX.Element {
  return (
@@ -351,8 +351,8 @@ const TasksPage: NextPage = () => {
 
   // Handle item drop in a different column ( with status and index change )
   if (source.droppableId != destination.droppableId) {
-   let startSourceTasks: TasksArrayType = [];
-   let startDestinationTasks: TasksArrayType = [];
+   let startSourceTasks: ITaskArray = [];
+   let startDestinationTasks: ITaskArray = [];
 
    // populate the startSourceTasks with a copy of current state
    switch (source.droppableId) {

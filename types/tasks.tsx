@@ -36,6 +36,6 @@ export interface ITask<T> {
  id: string;
 }
 
-export type TasksArrayType = ITask<ITaskData>[];
+export type ITaskArray = ITask<ITaskData>[];
 
 

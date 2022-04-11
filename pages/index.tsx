@@ -59,7 +59,7 @@ const Home: NextPage = () => {
     </h1>
     <p className='sub-greeting'>
      An overview over all of your projects. Click on them to view related tasks, or create a new project.
-    </p>
+    </p> 
    </WelcomeWrapper>
    <ProjectCounter>
     {archived ? (

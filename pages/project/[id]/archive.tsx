@@ -50,8 +50,9 @@ const BacklogPage: NextPage = () => {
   collection(firestore, 'tasks'),
   where('user', '==', currentUser.uid),
   where('projectId', '==', projectId),
+  where('archived', "==", true)
  );
- const tasksQuery = useFirestoreQuery(['tasks'], tasksRef, { subscribe: false });
+ const tasksQuery = useFirestoreQuery(['archivedTasks'], tasksRef, { subscribe: false });
  const tasksSnapshot = tasksQuery.data
 
  const tasks: ITaskArray = tasksSnapshot?.docs.map((doc) => ({ id: doc.id, data: doc.data() as ITaskData }));
