@@ -198,16 +198,14 @@ function Modal({
   getCollaborators();
  }, [collaborators]);
 
- const userID = currentUser.uid;
-
  const handleInputChange = (
   e: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement | HTMLInputElement>
  ) => {
   let { name, value } = e.target;
   setState({
    ...state,
-   [name]: value,
-   ['user']: userID,
+   [name]: name == 'assignedTo' ? doc(collection(firestore, 'users'), value) : value,
+   ['user']: currentUser.uid,
    ['column']: 'backlog-column',
    ['status']: 'backlog',
    ['projectId']: projectId,
@@ -249,6 +247,7 @@ function Modal({
    mutation.mutate({
     ...state,
    });
+   queryClient.invalidateQueries(['tasks']);
   } catch {
    console.log('catchblock');
    setError('Failed to submit form');
@@ -291,9 +290,9 @@ function Modal({
 
       {/* ACHTUNG: Fix bug, when not selecting an option */}
       <Section>
-       <label htmlFor='taskAssignedTo'>Assigned To</label>
+       <label htmlFor='assignedTo'>Assigned To</label>
        <select
-        name='taskAssignedTo'
+        name='assignedTo'
         onChange={handleInputChange}
         style={{
          backgroundImage: `url("${image}")`,
@@ -303,7 +302,7 @@ function Modal({
         <option disabled selected value=''>
          Choose a user
         </option>
-        {project.collaborators?.map((collaborator: ICollaboratorWithData) => (
+        {project?.collaborators?.map((collaborator: ICollaboratorWithData) => (
          <option key={collaborator.user.uid} value={collaborator.user.uid} required={true}>
           {collaborator.user.displayName} | {collaborator.role}
          </option>

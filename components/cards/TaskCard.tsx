@@ -3,6 +3,7 @@ import { UilDraggabledots } from '@iconscout/react-unicons';
 import styled from 'styled-components';
 import { Timestamp } from 'firebase/firestore';
 import { Draggable, DraggableProvided, DraggableSnapshot, DragHandleProps } from 'react-beautiful-dnd';
+import { ITaskData } from '../../types/tasks';
 
 const Card = styled.div<any>`
  background-color: white;
@@ -10,7 +11,9 @@ const Card = styled.div<any>`
  border-style: solid;
  border-color: rgb(221, 221, 221);
  border-width: thin;
- width: 235px;
+ min-width: 235px;
+ width: 100%;
+ box-sizing: border-box;
  height: fit-content;
  display: flex;
  flex-direction: column;
@@ -94,64 +97,54 @@ type Props = {
  timestamp: Timestamp;
  summary: string;
  description: string;
- priority: "high" | "medium" | "low";
+ priority: 'high' | 'medium' | 'low';
  status: string;
  onClick: () => void;
 };
 
 interface ColorProps {
- priority: "high" | "medium" | "low";
+ priority: 'high' | 'medium' | 'low';
 }
 
-function TaskCard({
- index,
- id,
- identifier,
- authorId,
- title,
- timestamp,
- summary,
- description,
- priority,
- status,
- onClick,
-}: Props) {
-
-  function truncateText(text: string, length: number):string {
-    if (text.length <= length) {
-      return text;
-    }
-  
-    return text.substring(0, length) + '\u2026'
+function TaskCard(props: ITaskData) {
+ function truncateText(text: string, length: number): string {
+  if (text.length <= length) {
+   return text;
   }
 
- return (
-  <div onClick={onClick}>
-   <Draggable draggableId={id} index={index} key={id}>
-    {(provided: DraggableProvided, snapshot: DraggableSnapshot) => (
-     <Card {...provided.draggableProps} ref={provided.innerRef} isDragging={snapshot.isDragging}>
-      <TopRow>
-       <IdentifierPill>
-        <p>{identifier}</p>
-       </IdentifierPill>
-       <PriorityPill priority={priority}>
-        <p>{priority}</p>
-       </PriorityPill>
-       <DragHandle {...provided.dragHandleProps}>
-        <UilDraggabledots color='#dddddd' />
-       </DragHandle>
-      </TopRow>
+  return text.substring(0, length) + '\u2026';
+ }
 
-      <Content>
-       <TitleRow>
-        <h2>{title}</h2>
-       </TitleRow>
-       <p style={{color: "grey", fontWeight: "lighter"}}>{truncateText(summary, 60)}</p>
-      </Content>
-     </Card>
-    )}
-   </Draggable>
-  </div>
+ return (
+  <Draggable draggableId={props.id} index={props.index} key={props.id}>
+   {(provided: DraggableProvided, snapshot: DraggableSnapshot) => (
+    <Card
+     {...provided.draggableProps}
+     ref={provided.innerRef}
+     isDragging={snapshot.isDragging}
+     onClick={props.onClick}
+    >
+     <TopRow>
+      <IdentifierPill>
+       <p>{props.identifier}</p>
+      </IdentifierPill>
+      <PriorityPill priority={props.priority}>
+       <p>{props.priority}</p>
+      </PriorityPill>
+      <DragHandle {...provided.dragHandleProps}>
+       <UilDraggabledots color='#dddddd' />
+      </DragHandle>
+     </TopRow>
+
+     <Content>
+      <TitleRow>
+       <h2>{props.title}</h2>
+      </TitleRow>
+      <p style={{ color: 'grey', fontWeight: 'lighter' }}>{truncateText(props.summary, 60)}</p>
+     </Content>
+    </Card>
+   )}
+  </Draggable>
  );
 }
 

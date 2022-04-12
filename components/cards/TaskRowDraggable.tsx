@@ -6,14 +6,8 @@ import styled from 'styled-components';
 import { ITaskData } from '../../types/tasks';
 
 function TaskRow(props: ITaskData) {
- const index = props.index;
- const identifier = props.identifier;
- const id = props.id;
- const title = props.title;
- const priority = props.priority;
-
  return (
-  <Draggable draggableId={id} index={index}>
+  <Draggable draggableId={props.id} index={props.index} key={props.id}>
    {(provided: DraggableProvided, snapshot: DraggableSnapshot) => (
     <Row
      {...provided.draggableProps}
@@ -22,12 +16,12 @@ function TaskRow(props: ITaskData) {
      onClick={props.onClick}
     >
      <IdentifierPill>
-      <p>{identifier}</p>
+      <p>{props.identifier}</p>
      </IdentifierPill>
-     <PriorityPill priority={priority}>
-      <p>{priority}</p>
+     <PriorityPill priority={props.priority}>
+      <p>{props.priority}</p>
      </PriorityPill>
-     <Title>{title}</Title>
+     <Title>{props.title}</Title>
      <DragHandle {...provided.dragHandleProps}>
       <UilDraggabledots color='#dddddd' />
      </DragHandle>
@@ -61,8 +55,8 @@ const Row = styled.div<any>`
  margin-bottom: 10px;
 `;
 
-interface PriorityStyleProps{
-  priority: "high" | "medium" | "low"
+interface PriorityStyleProps {
+ priority: 'high' | 'medium' | 'low';
 }
 const PriorityPill = styled.div<PriorityStyleProps>`
  color: white;

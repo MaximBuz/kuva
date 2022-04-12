@@ -68,8 +68,9 @@ const Column = styled.div`
  border-width: thin;
  border-radius: 25px;
  min-height: 75vh;
+ min-height: 75vh;
  min-width: 280px;
- width: 280px;
+ width: 100%;
  display: flex;
  flex-direction: column;
  gap: 10px;
@@ -90,7 +91,7 @@ const ColumnTitleRow = styled.div`
  }
 `;
 
-const SelectedList = function SelectedList({
+const TaskList = function TaskList({
  tasks,
  setOpenModal,
 }: {
@@ -107,100 +108,7 @@ const SelectedList = function SelectedList({
      index={index}
      id={task.id}
      identifier={task.data.identifier}
-     authorId={task.data.user}
-     title={task.data.title}
-     timestamp={task.data.timestamp}
-     summary={task.data.summary}
-     description={task.data.description}
-     priority={task.data.priority}
-     status={task.data.status}
-     key={index}
-    />
-   ))}
-  </>
- );
-};
-
-const InProgressList = function inProgressList({
- tasks,
- setOpenModal,
-}: {
- tasks: ITaskArray;
- setOpenModal: Function;
-}): JSX.Element {
- return (
-  <>
-   {tasks.map((task: ITask<ITaskData>, index: number) => (
-    <TaskCard
-     onClick={() => {
-      setOpenModal(task.id);
-     }}
-     index={index}
-     id={task.id}
-     identifier={task.data.identifier}
-     authorId={task.data.user}
-     title={task.data.title}
-     timestamp={task.data.timestamp}
-     summary={task.data.summary}
-     description={task.data.description}
-     priority={task.data.priority}
-     status={task.data.status}
-     key={index}
-    />
-   ))}
-  </>
- );
-};
-
-const InReviewList = function inReviewList({
- tasks,
- setOpenModal,
-}: {
- tasks: ITaskArray;
- setOpenModal: Function;
-}): JSX.Element {
- return (
-  <>
-   {tasks.map((task: ITask<ITaskData>, index: number) => (
-    <TaskCard
-     onClick={() => {
-      setOpenModal(task.id);
-     }}
-     index={index}
-     id={task.id}
-     identifier={task.data.identifier}
-     authorId={task.data.user}
-     title={task.data.title}
-     timestamp={task.data.timestamp}
-     summary={task.data.summary}
-     description={task.data.description}
-     priority={task.data.priority}
-     status={task.data.status}
-     key={index}
-    />
-   ))}
-  </>
- );
-};
-
-const CompletedList = function inReviewList({
- tasks,
- setOpenModal,
-}: {
- tasks: ITaskArray;
- setOpenModal: Function;
-}): JSX.Element {
- return (
-  <>
-   {tasks.map((task: ITask<ITaskData>, index: number) => (
-    <TaskCard
-     onClick={() => {
-      setOpenModal(task.id);
-     }}
-     index={index}
-     id={task.id}
-     identifier={task.data.identifier}
-     authorId={task.data.user}
+     user={task.data.user}
      title={task.data.title}
      timestamp={task.data.timestamp}
      summary={task.data.summary}
@@ -237,8 +145,6 @@ const TasksPage: NextPage = () => {
 
  const [tasksCompleted, setTasksCompleted] = useState([]);
  const countCompleted = tasksCompleted.length;
-
- const queryClient = useQueryClient();
 
  // Query tasks
  const tasksRef = query(
@@ -320,7 +226,7 @@ const TasksPage: NextPage = () => {
     case 'selected-for-development-column': {
      let newSelectedTasks = [...tasksSelected];
      newSelectedTasks.splice(destination.index, 0, newSelectedTasks.splice(source.index, 1)[0]); // reordering the array
-      setTasksSelected(newSelectedTasks);
+     setTasksSelected(newSelectedTasks);
      break;
     }
     case 'in-progress-column': {
@@ -328,19 +234,19 @@ const TasksPage: NextPage = () => {
      // reordering the array
      let [insert] = newTasksInProgress.splice(source.index, 1);
      newTasksInProgress.splice(destination.index, 0, insert);
-      setTasksInProgress(newTasksInProgress);
+     setTasksInProgress(newTasksInProgress);
      break;
     }
     case 'in-review-column': {
      let newTasksInReview = [...tasksInReview];
      newTasksInReview.splice(destination.index, 0, newTasksInReview.splice(source.index, 1)[0]); // reordering the array
-      setTasksInReview(newTasksInReview);
+     setTasksInReview(newTasksInReview);
      break;
     }
     case 'completed-column': {
      let newTasksCompleted = [...tasksCompleted];
      newTasksCompleted.splice(destination.index, 0, newTasksCompleted.splice(source.index, 1)[0]); // reordering the array
-      setTasksCompleted(newTasksCompleted);
+     setTasksCompleted(newTasksCompleted);
      break;
     }
     default:
@@ -484,7 +390,7 @@ const TasksPage: NextPage = () => {
          ref={provided.innerRef}
          {...provided.droppableProps}
         >
-         <SelectedList tasks={tasksSelected} setOpenModal={setOpenModal} />
+         <TaskList tasks={tasksSelected} setOpenModal={setOpenModal} />
          {provided.placeholder}
         </div>
        )}
@@ -507,7 +413,7 @@ const TasksPage: NextPage = () => {
          ref={provided.innerRef}
          {...provided.droppableProps}
         >
-         <InProgressList tasks={tasksInProgress} setOpenModal={setOpenModal} />
+         <TaskList tasks={tasksInProgress} setOpenModal={setOpenModal} />
          {provided.placeholder}
         </div>
        )}
@@ -530,7 +436,7 @@ const TasksPage: NextPage = () => {
          ref={provided.innerRef}
          {...provided.droppableProps}
         >
-         <InReviewList tasks={tasksInReview} setOpenModal={setOpenModal} />
+         <TaskList tasks={tasksInReview} setOpenModal={setOpenModal} />
          {provided.placeholder}
         </div>
        )}
@@ -553,7 +459,7 @@ const TasksPage: NextPage = () => {
          ref={provided.innerRef}
          {...provided.droppableProps}
         >
-         <CompletedList tasks={tasksCompleted} setOpenModal={setOpenModal} />
+         <TaskList tasks={tasksCompleted} setOpenModal={setOpenModal} />
          {provided.placeholder}
         </div>
        )}

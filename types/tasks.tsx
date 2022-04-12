@@ -28,7 +28,7 @@ export interface ITaskData {
  user: string;
  index: number;
  id: string;
- onClick: (event: React.MouseEvent) => void;
+ onClick: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
 export interface ITask<T> {

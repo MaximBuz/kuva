@@ -18,12 +18,43 @@ import styled from 'styled-components';
 // Auth
 import withAuth from '../../../utils/withAuth';
 import { useRouter } from 'next/router';
-import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { collection, doc, query, setDoc, where } from 'firebase/firestore';
 import { firestore } from '../../../utils/firebase';
 import { useAuth } from '../../../utils/auth';
-import { useQueryClient } from 'react-query';
 import { useFirestoreQuery } from '@react-query-firebase/firestore';
 import { ITaskData, ITask, ITaskArray } from '../../../types/tasks';
+
+const TaskList = function TaskList({
+  tasks,
+  setOpenModal,
+ }: {
+  tasks: ITaskArray;
+  setOpenModal: Function;
+ }): JSX.Element {
+  return (
+   <>
+    {tasks.map((task: ITask<ITaskData>, index: number) => (
+     <TaskRow
+      onClick={() => {
+       setOpenModal(task.id);
+      }}
+      index={index}
+      id={task.id}
+      identifier={task.data.identifier}
+      user={task.data.user}
+      title={task.data.title}
+      timestamp={task.data.timestamp}
+      summary={task.data.summary}
+      description={task.data.description}
+      priority={task.data.priority}
+      status={task.data.status}
+      key={index}
+     />
+    ))}
+   </>
+  );
+ };
+
 
 const BacklogPage: NextPage = () => {
  const [openModal, setOpenModal] = useState('');
@@ -43,8 +74,6 @@ const BacklogPage: NextPage = () => {
  const [tasksBacklog, setTasksBacklog] = useState<ITaskArray>([]);
  const countBacklog = tasksBacklog.length;
 
- const queryClient = useQueryClient();
-
  // Query tasks
  const tasksRef = query(
   collection(firestore, 'tasks'),
@@ -53,11 +82,17 @@ const BacklogPage: NextPage = () => {
   where('archived', '==', false)
  );
  const tasksQuery = useFirestoreQuery(['tasks'], tasksRef, { subscribe: false });
- const tasksSnapshot = tasksQuery.data
+ const tasksSnapshot = tasksQuery.data;
 
- const tasks: ITaskArray = tasksSnapshot?.docs.map((doc) => ({ id: doc.id, data: doc.data() as ITaskData }));
+ const tasks: ITask<ITaskData>[] = tasksSnapshot?.docs.map((doc) => ({
+  id: doc.id,
+  data: doc.data() as ITaskData,
+ }));
+
  // Population of Selected for development Column
- const selected = tasks?.filter((task: ITask<ITaskData>) => task.data.column === 'selected-for-development-column');
+ const selected = tasks?.filter(
+  (task: ITask<ITaskData>) => task.data.column === 'selected-for-development-column'
+ );
  // Population of Backlog Column
  const backlog = tasks?.filter((task: ITask<ITaskData>) => task.data.column === 'backlog-column');
 
@@ -66,7 +101,7 @@ const BacklogPage: NextPage = () => {
    setTasksSelected(selected);
    setTasksBacklog(backlog);
   }
- }, [tasksQuery.isSuccess]);
+ }, [tasksQuery.isRefetching]);
 
  // Drag and drop functionality (TODO: Move to seperate file, way to big a function)
  const onDragEnd = async (result: {
@@ -102,9 +137,7 @@ const BacklogPage: NextPage = () => {
     }
     case 'backlog-column': {
      let newTasksBacklog = [...tasksBacklog];
-     // reordering the array
-     let [insert] = newTasksBacklog.splice(source.index, 1);
-     newTasksBacklog.splice(destination.index, 0, insert);
+     newTasksBacklog.splice(destination.index, 0, newTasksBacklog.splice(source.index, 1)[0]); // reordering the array
      setTasksBacklog(newTasksBacklog);
      break;
     }
@@ -153,7 +186,6 @@ const BacklogPage: NextPage = () => {
       await setDoc(doc(firestore, 'tasks', temp.id), {
        ...temp.data,
       });
-      queryClient.invalidateQueries(["tasks"]);
      }
      break;
     case 'backlog-column':
@@ -168,7 +200,6 @@ const BacklogPage: NextPage = () => {
       await setDoc(doc(firestore, 'tasks', temp.id), {
        ...temp.data,
       });
-      queryClient.invalidateQueries(["tasks"]);
      }
      break;
     default:
@@ -186,41 +217,19 @@ const BacklogPage: NextPage = () => {
       <CounterBlob count={countBacklog} />
      </TitleRow>
      <Droppable droppableId={'backlog-column'}>
-      {(provided: DroppableProvided, snapshot: IDroppableSnapshot) => (
-       <TaskList
-        {...provided.droppableProps}
-        ref={provided.innerRef}
-        isDraggingOver={snapshot.isDraggingOver}
+      {(provided: DroppableProvided) => (
+       <div
+       style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+       }}
+       ref={provided.innerRef}
+       {...provided.droppableProps}
        >
-        {tasksBacklog
-         .sort((a: ITask<ITaskData>, b: ITask<ITaskData>) => {
-          if (a.data.priority === 'high') return -1;
-          if (a.data.priority === 'medium' && b.data.priority === 'high') return 1;
-          if (a.data.priority === 'medium' && b.data.priority === 'low') return -1;
-          return 1;
-         })
-         .map((task: ITask<ITaskData>, index: number) => {
-          return (
-           <TaskRow
-            onClick={() => {
-             setOpenModal(task.id);
-            }}
-            index={index}
-            id={task.id}
-            identifier={task.data.identifier}
-            user={task.data.user}
-            title={task.data.title}
-            timestamp={task.data.timestamp}
-            summary={task.data.summary}
-            description={task.data.description}
-            priority={task.data.priority}
-            status={task.data.status}
-            key={index}
-           />
-          );
-         })}
+        <TaskList tasks={tasksBacklog} setOpenModal={setOpenModal} />
         {provided.placeholder}
-       </TaskList>
+       </div>
       )}
      </Droppable>
     </Section>
@@ -231,46 +240,22 @@ const BacklogPage: NextPage = () => {
       <CounterBlob count={countSelected} />
      </TitleRow>
      <Droppable droppableId={'selected-for-development-column'}>
-      {(provided: DroppableProvided, snapshot: IDroppableSnapshot) => (
-       <TaskList
-        {...provided.droppableProps}
-        ref={provided.innerRef}
-        isDraggingOver={snapshot.isDraggingOver}
-       >
-        {tasksSelected
-         .sort((a: ITask<ITaskData>, b: ITask<ITaskData>) => {
-          if (a.data.priority === 'high') return -1;
-          if (a.data.priority === 'medium' && b.data.priority === 'high') return 1;
-          if (a.data.priority === 'medium' && b.data.priority === 'low') return -1;
-          return 1;
-         })
-         .map((task:ITask<ITaskData>, index:number) => {
-          return (
-           <TaskRow
-            onClick={() => {
-             setOpenModal(task.id);
-            }}
-            index={index}
-            id={task.id}
-            identifier={task.data.identifier}
-            user={task.data.user}
-            title={task.data.title}
-            timestamp={task.data.timestamp}
-            summary={task.data.summary}
-            description={task.data.description}
-            priority={task.data.priority}
-            status={task.data.status}
-            key={index}
-           />
-          );
-         })}
-        {provided.placeholder}
-       </TaskList>
-      )}
-     </Droppable>
-     {openModal && (
-      <TaskModal closeModal={setOpenModal} taskId={openModal} />
-     )}
+       {(provided: DroppableProvided) => (
+        <div
+         style={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+         }}
+         ref={provided.innerRef}
+         {...provided.droppableProps}
+        >
+         <TaskList tasks={tasksSelected} setOpenModal={setOpenModal} />
+         {provided.placeholder}
+        </div>
+       )}
+      </Droppable>
+     {openModal && <TaskModal closeModal={setOpenModal} taskId={openModal} />}
     </Section>
    </Wrapper>
   </DragDropContext>
@@ -288,18 +273,19 @@ const Wrapper = styled.div`
 `;
 
 const Section = styled.div`
- display: flex;
- flex-direction: column;
  padding: 20px 10px 30px 10px;
  background-color: white;
  border-style: solid;
  border-color: rgb(221, 221, 221);
  border-width: thin;
  border-radius: 25px;
+ min-height: 75vh;
+ min-height: 75vh;
+ min-width: 280px;
+ width: 100%;
  display: flex;
  flex-direction: column;
  gap: 10px;
- width: 45%;
 `;
 
 const TitleRow = styled.div`
@@ -314,10 +300,4 @@ const TitleRow = styled.div`
   color: #35307e;
   transition: 0.15s;
  }
-`;
-
-const TaskList = styled.div<any>`
- display: flex;
- flex-direction: column;
- height: 100%;
 `;
