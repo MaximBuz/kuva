@@ -1,6 +1,7 @@
 import { Timestamp } from 'firebase/firestore';
+import { ITaskArray,  ITaskData} from '../types/tasks';
 
-const exampleTasks = [
+const exampleTasks= [
  {
   archived: false,
   column: 'backlog-column',
@@ -35,7 +36,7 @@ const exampleTasks = [
    "This task was selected for development. Just drag and drop it into a different column to update it's status! ",
   identifier: 'EXP',
   priority: 'medium',
-  status: 'Selected for development',
+  status: 'Selected for Development',
   summary: 'This is an example of a task that has been selected for development',
   timestamp: Timestamp.now(),
   title: 'Check this task out',
@@ -47,7 +48,7 @@ const exampleTasks = [
   description: 'And this one is selected for development',
   identifier: 'EXP',
   priority: 'high',
-  status: 'Selected for development',
+  status: 'Selected for Development',
   summary: 'Phu, so much to develop...',
   timestamp: Timestamp.now(),
   title: 'Very important task!',
@@ -60,7 +61,7 @@ const exampleTasks = [
    "This task was selected for development. Just drag and drop it into a different column to update it's status! ",
   identifier: 'EXP',
   priority: 'low',
-  status: 'Selected for development',
+  status: 'Selected for Development',
   summary: 'Another one!',
   timestamp: Timestamp.now(),
   title: 'Not so important task...',
@@ -73,7 +74,7 @@ const exampleTasks = [
    "This task seems to be in review. Drag and drop it into the completed column, if you feel like it doesn't belong here! ",
   identifier: 'EXP',
   priority: 'medium',
-  status: 'In review',
+  status: 'In Review',
   summary: 'Someone might need to check this task out',
   timestamp: Timestamp.now(),
   title: 'Test all the columns',
@@ -98,7 +99,7 @@ const exampleTasks = [
   description: 'I think you should check out the comments below',
   identifier: 'EXP',
   priority: 'medium',
-  status: 'In review',
+  status: 'In Review',
   summary: 'Can you delete a task?',
   timestamp: Timestamp.now(),
   title: 'Test deletion of tasks',

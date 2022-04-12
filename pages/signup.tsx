@@ -14,6 +14,7 @@ import styled from 'styled-components';
 import { addDoc, collection, doc, setDoc, Timestamp, writeBatch } from 'firebase/firestore';
 import { firestore } from '../utils/firebase';
 import exampleTasks from '../utils/exampleTasks';
+import { ITask, ITaskData } from '../types/tasks';
 
 const SignUpPage = () => {
  // initialize router
@@ -130,7 +131,7 @@ const SignUpPage = () => {
     timestamp: Timestamp.now(),
     title: 'Your first project',
     user: userObject.user.uid,
-    avatar:"",
+    avatar: '',
     collaborators: [
      {
       user: doc(collection(firestore, 'users'), userObject.user.uid),
@@ -148,6 +149,7 @@ const SignUpPage = () => {
      ...task,
      projectId: projectObject.id,
      user: userObject.user.uid,
+     assignedTo: doc(collection(firestore, 'users'), userObject.user.uid),
     });
    });
    batch.commit();

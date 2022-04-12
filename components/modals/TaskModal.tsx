@@ -1,7 +1,7 @@
 // React & Next
 import ReactDom from 'react-dom';
 import moment from 'moment';
-import React, { useState, ChangeEvent, SyntheticEvent, useRef } from 'react';
+import React, { useState, ChangeEvent, SyntheticEvent, useRef, useEffect } from 'react';
 
 // Style
 import styled from 'styled-components';
@@ -12,7 +12,7 @@ import { useAuth } from '../../utils/auth';
 
 // Firebase
 import { firestore } from '../../utils/firebase';
-import { collection, doc, Timestamp } from 'firebase/firestore';
+import { collection, doc, getDoc, Timestamp } from 'firebase/firestore';
 import {
  useFirestoreDocumentData,
  useFirestoreDocumentDeletion,
@@ -21,6 +21,8 @@ import {
 import { useQueryClient } from 'react-query';
 import { toast } from 'react-toastify';
 import { IComment } from '../../types/tasks';
+import UserCard from '../cards/UserCard';
+import { IUser } from '../../types/users';
 
 export default function TaskModal({ closeModal, taskId }: { closeModal: Function; taskId: string }) {
  // Get the current user
@@ -30,6 +32,39 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
  const taskRef = doc(collection(firestore, 'tasks'), taskId);
  const task = useFirestoreDocumentData(['tasks', taskId], taskRef);
  let priority = task?.data?.priority || '';
+
+ // Get the assigned user
+ const [assignedUser, setAssignedUser] = useState(null);
+ const getAssignedUser = async () => {
+  if (task.isSuccess) {
+   // first get the project
+   const assignedSnap = await getDoc(task.data.assignedTo);
+   // now get the collaborators from the references in the project doc
+   const assignedUser = assignedSnap.data();
+   console.log(assignedUser);
+   // update project with the projectdata and overwrite collaborators with real user data
+   setAssignedUser(assignedUser);
+  }
+ };
+
+ // Get the author
+ const [author, setAuthor] = useState(null);
+ const getAuthor = async () => {
+  if (task.isSuccess) {
+   // first get the project
+   const authorSnap = await getDoc(doc(collection(firestore, 'users'), task.data.user));
+   // now get the collaborators from the references in the project doc
+   const author = authorSnap.data();
+   console.log(author);
+   // update project with the projectdata and overwrite collaborators with real user data
+   setAuthor(author);
+  }
+ };
+
+ useEffect(() => {
+  getAssignedUser();
+  getAuthor();
+ }, []);
 
  // setting up mutation
  const queryClient = useQueryClient();
@@ -350,7 +385,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
             .map((comment: IComment, index: number) => {
              if (comment.authorId === currentUser.uid) {
               return (
-               <OwnComment>
+               <OwnComment key={index}>
                 <OwnCommentBubble>
                  {comment.text}
                  <ChatTimeStamp>
@@ -363,7 +398,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
               );
              } else {
               return (
-               <ForeignComment>
+               <ForeignComment key={index}>
                 <ForeignCommentBubble>
                  <ForeignUserName>{comment.authorName}</ForeignUserName>
                  {comment.text}
@@ -416,15 +451,12 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
 
        <SubSection>
         <h3>Assigned To</h3>
-        {/* {task.taskAssignedToUsers &&
-                  task.taskAssignedToUsers.map((user) => {
-                    return <UserCard user={user}></UserCard>;
-                  })} */}
+        {assignedUser && <UserCard user={assignedUser} role='' onClick={() => {}}></UserCard>}
        </SubSection>
 
        <SubSection>
         <h3>Author</h3>
-        {/* <UserCard user={task.author}></UserCard> */}
+        {author && <UserCard user={author} role='Author' onClick={() => {}}></UserCard>}
        </SubSection>
       </RightSection>
      </Content>
@@ -704,7 +736,7 @@ const ForeignComment = styled.div`
  box-sizing: border-box;
 `;
 
-const OwnComment = styled.div`
+const OwnComment = styled.div<any>`
  display: flex;
  flex-direction: row;
  align-items: flex-start;
