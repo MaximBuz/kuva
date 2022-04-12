@@ -5,17 +5,13 @@ import { NextPage } from 'next';
 
 // Components
 import styled from 'styled-components';
-import { UilPlusCircle } from '@iconscout/react-unicons';
+import { UilPen } from '@iconscout/react-unicons';
 
 // Auth
 import { useAuth } from '../../../utils/auth';
 import withAuth from '../../../utils/withAuth';
-import { collection, doc, getDoc, Timestamp } from 'firebase/firestore';
+import { collection, doc, Timestamp } from 'firebase/firestore';
 import { firestore, storage } from '../../../utils/firebase';
-import CounterBlob from '../../../components/misc/CounterBlob';
-import UserCard from '../../../components/cards/UserCard';
-import UserModal from '../../../components/modals/UserModal';
-import NewTeamMemberModal from '../../../components/modals/NewTeamMemberModal';
 import {
  useFirestoreDocumentData,
  useFirestoreDocumentDeletion,
@@ -74,6 +70,23 @@ const SettingsPage: NextPage = () => {
   );
   router.replace('/');
  };
+
+  // Handle unarchiving project
+  const unarchiveProject = async () => {
+    mutation.mutate(
+     { archived: false },
+     {
+      onSuccess() {
+       queryClient.invalidateQueries(['projects']);
+       toast.success('Project restored!');
+      },
+      onError() {
+       toast.error('Failed to restore project!');
+      },
+     }
+    );
+    router.replace('/');
+   };
 
  /* 
 ----------------------------
@@ -211,7 +224,12 @@ Handling editable fields
       ref={imageInput}
      />
      <label htmlFor='avatar' onClick={() => imageInput.current.click()}>
-      <ProjectAvatar projectKey={projectData?.data?.key} url={projectData?.data?.avatar} size={150} />
+      <AvatarUploadWrapper>
+       <AvatarEditButton>
+        <UilPen className='edit-pen' />
+       </AvatarEditButton>
+       <ProjectAvatar projectKey={projectData?.data?.key} url={projectData?.data?.avatar} size={150} />
+      </AvatarUploadWrapper>
      </label>
      <WelcomeMessage>
       <div style={{ display: 'flex', gap: '10px' }}>
@@ -219,8 +237,8 @@ Handling editable fields
         <p>Delete Project</p>
         <span className='tooltiptext'>Caution: Cannot undo this action!</span>
        </DeleteButton>
-       <ArchiveButton onClick={archiveProject}>
-        <p>Archive</p>
+       <ArchiveButton onClick={projectData?.data?.archived ? unarchiveProject : archiveProject}>
+        <p>{projectData?.data?.archived ? "Unarchive" : "Archive"}</p>
        </ArchiveButton>
       </div>
       {/* Editable Project Title */}
@@ -248,7 +266,10 @@ Handling editable fields
 
       {summaryEditMode ? (
        <form onSubmit={handleSummarySubmit} style={{ textAlign: 'center' }}>
-        <SummaryEdit defaultValue={projectData?.data?.summary || "No Summary added yet"} ref={summaryRef}></SummaryEdit>
+        <SummaryEdit
+         defaultValue={projectData?.data?.summary || 'No Summary added yet'}
+         ref={summaryRef}
+        ></SummaryEdit>
         <input
          type='submit'
          style={{
@@ -302,6 +323,31 @@ const Wrapper = styled.div<any>`
  align-items: flex-start;
  width: 95%;
  min-height: 100vh;
+`;
+
+const AvatarEditButton = styled.div`
+ width: 40px;
+ height: 40px;
+ background-color: #ff08b9;
+ border-radius: 100%;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ color: white;
+ position: absolute;
+ right: 0;
+ bottom: 0;
+ cursor: pointer;
+ transition: 0.3s;
+
+ :hover {
+  transform: scale(1.1);
+  box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.15);
+ }
+`;
+
+const AvatarUploadWrapper = styled.div`
+ position: relative;
 `;
 
 const WelcomeMessage = styled.div`

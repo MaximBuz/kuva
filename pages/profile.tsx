@@ -118,12 +118,12 @@ const ProfilePage: NextPage = () => {
       ref={imageInput}
      />
      <label htmlFor='avatar' onClick={() => imageInput.current.click()}>
-      <UserAvatar
-       inComments={false}
-       name={currentUser.displayName}
-       url={currentUser.avatar}
-       size={150}
-      />
+      <AvatarUploadWrapper>
+       <AvatarEditButton>
+        <UilPen className='edit-pen' />
+       </AvatarEditButton>
+       <UserAvatar inComments={false} name={currentUser.displayName} url={currentUser.avatar} size={150} />
+      </AvatarUploadWrapper>
      </label>
      <WelcomeMessage>
       <h1>Welcome,</h1>
@@ -371,6 +371,31 @@ const Wrapper = styled.div`
 const WelcomeMessage = styled.div`
  display: flex;
  flex-direction: column;
+`;
+
+const AvatarEditButton = styled.div`
+ width: 40px;
+ height: 40px;
+ background-color: #ff08b9;
+ border-radius: 100%;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ color: white;
+ position: absolute;
+ right: 0;
+ bottom: 0;
+ cursor: pointer;
+ transition: 0.3s;
+
+ :hover {
+  transform: scale(1.1);
+  box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.15);
+ }
+`;
+
+const AvatarUploadWrapper = styled.div`
+ position: relative;
 `;
 
 const WelcomeWrapper = styled.div`
