@@ -10,7 +10,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="frontend/src/kuva_logo.png" alt="Logo" width="150" height="150">
+    <img src="public/kuva_logo.png" alt="Logo" width="150" height="150">
   </a>
 
   <h3 align="center">kuva.</h3>
