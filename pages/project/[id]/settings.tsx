@@ -248,7 +248,7 @@ Handling editable fields
 
       {summaryEditMode ? (
        <form onSubmit={handleSummarySubmit} style={{ textAlign: 'center' }}>
-        <SummaryEdit defaultValue={projectData?.data?.summary} ref={summaryRef}></SummaryEdit>
+        <SummaryEdit defaultValue={projectData?.data?.summary || "No Summary added yet"} ref={summaryRef}></SummaryEdit>
         <input
          type='submit'
          style={{

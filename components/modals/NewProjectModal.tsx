@@ -146,13 +146,13 @@ export default function Modal({ closeModal }: { closeModal: Function }) {
  const queryClient = useQueryClient();
  const ref = collection(firestore, 'projects');
  const mutation = useFirestoreCollectionMutation(ref, {
-   onSuccess() {
-     queryClient.invalidateQueries(['projects']);
-     toast.success("Added new project!")
-   },
-   onError() {
-    toast.error("Failed to add new project!")
-  }
+  onSuccess() {
+   queryClient.invalidateQueries(['projects']);
+   toast.success('Added new project!');
+  },
+  onError() {
+   toast.error('Failed to add new project!');
+  },
  });
 
  //  handling error and loading state
@@ -168,22 +168,26 @@ export default function Modal({ closeModal }: { closeModal: Function }) {
    setLoading(true);
    /* here submit to firebase */
    mutation.mutate({
-     archived: false,
-     description: projectSummary.current.value,
-     key: projectKey.current.value,
-     timestamp: Timestamp.now(),
-     title: projectTitle.current.value,
-     user: currentUser.uid,
-     collaborators: [{
-       user: doc(collection(firestore, "users"), currentUser.uid),
-       role: "Creator"
-     }]
-   })
+    archived: false,
+    key: projectKey.current.value,
+    timestamp: Timestamp.now(),
+    title: projectTitle.current.value,
+    summary: projectSummary.current.value,
+    description: 'Here you can add a full description of your project',
+    user: currentUser.uid,
+    avatar: '',
+    collaborators: [
+     {
+      user: doc(collection(firestore, 'users'), currentUser.uid),
+      role: 'Creator',
+     },
+    ],
+   });
   } catch {
    console.log('catchblock');
    setError('Failed to sign in');
   }
-  closeModal()
+  closeModal();
   setLoading(false);
  }
 
@@ -227,7 +231,6 @@ export default function Modal({ closeModal }: { closeModal: Function }) {
       <button type='submit' value='Submit' disabled={loading}>
        Create New Project
       </button>
-
      </Form>
     </FormWrapper>
    </GreyBackground>
@@ -235,5 +238,3 @@ export default function Modal({ closeModal }: { closeModal: Function }) {
   document.getElementById('portal')
  );
 }
-
-

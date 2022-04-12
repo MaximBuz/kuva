@@ -122,12 +122,15 @@ const SignUpPage = () => {
    /* Create a first test project for the user */
    const projectObject = await addDoc(collection(firestore, 'projects'), {
     archived: false,
+    summary:
+     "This is an example project for you to play around with! It was created automatically, so you can try out kuva's features",
     description:
      "This is an example project for you to play around with! It was created automatically, so you can try out kuva's features",
     key: 'EXP',
     timestamp: Timestamp.now(),
     title: 'Your first project',
     user: userObject.user.uid,
+    avatar:"",
     collaborators: [
      {
       user: doc(collection(firestore, 'users'), userObject.user.uid),
