@@ -173,7 +173,7 @@ export default function Modal({ closeModal }: { closeModal: Function }) {
     timestamp: Timestamp.now(),
     title: projectTitle.current.value,
     summary: projectSummary.current.value,
-    description: 'Here you can add a full description of your project',
+    description: projectSummary.current.value,
     user: currentUser.uid,
     avatar: '',
     collaborators: [
