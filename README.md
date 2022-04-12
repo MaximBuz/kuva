@@ -65,11 +65,12 @@ Here are the currently implemented main use-cases:
 This application has been built and styled without using any pre-built component frameworks, only by using following technologies:
 
 Front-End:
+* [TypeScript](https://www.typescriptlang.org/)
 * [React.js](https://reactjs.org/)
-* [Redux.js](https://redux.js.org/)
+* [React Query](https://react-query.tanstack.com/)
 * [Styled Components](https://styled-components.com/)
 
-Back-End and Authentication:
+Back-End with Authentication, Database and Filestorage:
 * [Firebase](https://firebase.google.com/)
 
 
