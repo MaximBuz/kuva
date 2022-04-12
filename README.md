@@ -65,11 +65,13 @@ Here are the currently implemented main use-cases:
 This application has been built and styled without using any pre-built component frameworks, only by using following technologies:
 
 Front-End:
+* [TypeScript](https://www.typescriptlang.org/)
+* [Next.js](https://nextjs.org/)
 * [React.js](https://reactjs.org/)
-* [Redux.js](https://redux.js.org/)
+* [React Query](https://react-query.tanstack.com/)
 * [Styled Components](https://styled-components.com/)
 
-Back-End and Authentication:
+Back-End with Authentication, Database and Filestorage:
 * [Firebase](https://firebase.google.com/)
 
 
@@ -110,7 +112,7 @@ See the prototype in action with some of these usage examples!
 
 Maxim Buz - [LinkedIn](https://www.linkedin.com/in/maxim-buz-17a2a717b/) - mbuz.maxim@gmail.com
 
-Project Link: [https://github.com/MaximBuz/kanban/](https://github.com/MaximBuz/kuva-project-manager/)
+Project Link: [https://github.com/MaximBuz/kuva/](https://github.com/MaximBuz/kuva/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
