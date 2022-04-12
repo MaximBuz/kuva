@@ -93,13 +93,13 @@ Back-End and Authentication:
 See the prototype in action with some of these usage examples!
 
 1. Interacting with Kan Ban Board
-<img src="screen-capture-1.gif" alt="using_kan_ban_board">
+<img src="public/screen-capture-1.gif" alt="using_kan_ban_board">
 
 2. Inviting Co-Workers (already signed-up or invite via email possible)
-<img src="screen-capture-2.gif" alt="inviting_coworkers">
+<img src="public/screen-capture-2.gif" alt="inviting_coworkers">
 
 3. Adding Comments to Tasks
-<img src="screen-capture-3.gif" alt="adding_comments_to_task">
+<img src="public/screen-capture-3.gif" alt="adding_comments_to_task">
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -120,4 +120,4 @@ Project Link: [https://github.com/MaximBuz/kanban/](https://github.com/MaximBuz/
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/maxim-buz-17a2a717b/
-[product-screenshot]: ./screenshot.png
+[product-screenshot]: public/screenshot.png
