@@ -66,6 +66,7 @@ This application has been built and styled without using any pre-built component
 
 Front-End:
 * [TypeScript](https://www.typescriptlang.org/)
+* [Next.js](https://nextjs.org/)
 * [React.js](https://reactjs.org/)
 * [React Query](https://react-query.tanstack.com/)
 * [Styled Components](https://styled-components.com/)
