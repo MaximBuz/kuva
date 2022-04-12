@@ -16,6 +16,7 @@ import CounterBlob from '../../../components/misc/CounterBlob';
 import UserCard from '../../../components/cards/UserCard';
 import UserModal from '../../../components/modals/UserModal';
 import NewTeamMemberModal from '../../../components/modals/NewTeamMemberModal';
+import { ICollaborator, ICollaboratorWithData, IUser } from '../../../types/users';
 
 const TeamPage: NextPage = () => {
  // Auth
@@ -31,19 +32,21 @@ const TeamPage: NextPage = () => {
  const router = useRouter();
  const { id: projectId } = router.query;
  const projectRef = doc(firestore, 'projects', Array.isArray(projectId) ? projectId[0] : projectId);
- let collaborators;
+ let collaborators: ICollaboratorWithData[];
 
  const getCollaborators = async () => {
   // first get the project
   const projectSnap = await getDoc(projectRef);
   // now get the collaborators from the references in the project doc
   collaborators = await Promise.all(
-   projectSnap.data().collaborators.map(async (collaborator: any) => {
-    const user = await Promise.resolve(getDoc(collaborator.user));
-    const role = collaborator.role;
-    // merge user data and project role into one object
-    return { user: user.data(), role: role };
-   })
+   projectSnap
+    .data()
+    .collaborators.map(async (collaborator: ICollaborator): Promise<ICollaboratorWithData> => {
+     const user = await Promise.resolve(getDoc(collaborator.user));
+     const role = collaborator.role;
+     // merge user data and project role into one object
+     return { user: user.data() as IUser, role: role };
+    })
   );
   // update project with the projectdata and overwrite collaborators with real user data
   setProject({ ...projectSnap.data(), collaborators: collaborators });
@@ -104,7 +107,7 @@ const TeamPage: NextPage = () => {
    )}
    {openUserModal && (
     <UserModal
-     closeModal={() => setOpenUserModal("")}
+     closeModal={() => setOpenUserModal('')}
      collaborator={openUserModal}
      projectId={Array.isArray(projectId) ? projectId[0] : projectId}
      collaborators={project.collaborators}

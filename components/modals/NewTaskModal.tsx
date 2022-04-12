@@ -1,16 +1,16 @@
 import ReactDom from 'react-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import image from '../../public/dropDown.png';
 
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import { useFirestoreCollectionMutation } from '@react-query-firebase/firestore';
 import { firestore } from '../../utils/firebase';
-import { collection, Timestamp } from 'firebase/firestore';
+import { collection, doc, getDoc, Timestamp } from 'firebase/firestore';
 import { useQueryClient } from 'react-query';
 import Link from 'next/link';
-import { IUser } from '../../types/users';
+import { ICollaborator, ICollaboratorWithData, IUser } from '../../types/users';
 
 const GreyBackground = styled.div`
  position: fixed;
@@ -171,18 +171,44 @@ function Modal({
  //holding the input values provided by user
  const [state, setState] = useState(initialState);
 
- // Find collaborators of the project to assign task to them
- //  const collaborators = projects.filter((project) => project.id === projectId)[0].collaborators;
+ // Getting collaborators
+ const [project, setProject] = useState(null);
+ const projectRef = doc(firestore, 'projects', projectId);
+ let collaborators: ICollaboratorWithData[];
+
+ const getCollaborators = async () => {
+  // first get the project
+  const projectSnap = await getDoc(projectRef);
+  // now get the collaborators from the references in the project doc
+  collaborators = await Promise.all(
+   projectSnap
+    .data()
+    .collaborators.map(async (collaborator: ICollaborator): Promise<ICollaboratorWithData> => {
+     const user = await Promise.resolve(getDoc(collaborator.user));
+     const role = collaborator.role;
+     // merge user data and project role into one object
+     return { user: user.data() as IUser, role: role };
+    })
+  );
+  // update project with the projectdata and overwrite collaborators with real user data
+  setProject({ ...projectSnap.data(), collaborators: collaborators });
+ };
+
+ useEffect(() => {
+  getCollaborators();
+ }, [collaborators]);
 
  const userID = currentUser.uid;
 
- const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement | HTMLInputElement>) => {
+ const handleInputChange = (
+  e: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement | HTMLInputElement>
+ ) => {
   let { name, value } = e.target;
   setState({
    ...state,
    [name]: value,
    ['user']: userID,
-   ['column']: "backlog-column",
+   ['column']: 'backlog-column',
    ['status']: 'backlog',
    ['projectId']: projectId,
    ['identifier']: 'TST',
@@ -264,7 +290,7 @@ function Modal({
       </Section>
 
       {/* ACHTUNG: Fix bug, when not selecting an option */}
-      {/* <Section>
+      <Section>
        <label htmlFor='taskAssignedTo'>Assigned To</label>
        <select
         name='taskAssignedTo'
@@ -277,13 +303,13 @@ function Modal({
         <option disabled selected value=''>
          Choose a user
         </option>
-        {collaborators.map((collaborator) => (
-         <option value={collaborator.id} required>
-          {collaborator.displayName}
+        {project.collaborators?.map((collaborator: ICollaboratorWithData) => (
+         <option key={collaborator.user.uid} value={collaborator.user.uid} required={true}>
+          {collaborator.user.displayName} | {collaborator.role}
          </option>
         ))}
        </select>
-      </Section> */}
+      </Section>
 
       {/* ACHTUNG: Fix bug, when not selecting an option */}
       <Section>
