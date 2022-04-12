@@ -1,26 +1,35 @@
 import styled from 'styled-components';
-import React, { useState, useRef, SyntheticEvent } from 'react';
+import React, { useState, useRef, SyntheticEvent, ButtonHTMLAttributes } from 'react';
 import ReactDom from 'react-dom';
 
 // Firebase
 import { useFirestoreDocumentMutation } from '@react-query-firebase/firestore';
-import { addDoc, arrayUnion, collection, doc, getDocs, query, where } from 'firebase/firestore';
+import { addDoc, arrayUnion, collection, doc, DocumentReference, getDocs, query, QueryDocumentSnapshot, where } from 'firebase/firestore';
 import { firestore } from '../../utils/firebase';
 
 // Auth
 import { toast } from 'react-toastify';
 import UserAvatar from '../misc/UserAvatar';
 import { useAuth } from '../../utils/auth';
+import { ICollaborator, IUser } from '../../types/users';
 
-export default function NewTeamMemberModal({ closeModal, projectId, refresh }: any) {
+export default function NewTeamMemberModal({
+ closeModal,
+ projectId,
+ refresh,
+}: {
+ closeModal: () => void;
+ projectId: string;
+ refresh: () => void;
+}): React.ReactPortal {
  // State holding the user-input values of the form
- const [state, setState] = useState<any>({});
+ const [state, setState] = useState<{email?:string}>({});
 
  // State holding successfully found user references (for updating firestore)
- const [collaborators, setCollaborators] = useState([]);
+ const [collaborators, setCollaborators] = useState<ICollaborator[]>([]);
 
  // State holding successfully found user data (for displaying avatar etc.)
- const [collaboratorsWithData, setCollaboratorsWithData] = useState([]);
+ const [collaboratorsWithData, setCollaboratorsWithData] = useState<IUser[]>([]);
 
  // State holding an error message when no user could be found by the provided email
  const [queryError, setQueryError] = useState('');
@@ -35,7 +44,7 @@ export default function NewTeamMemberModal({ closeModal, projectId, refresh }: a
  };
 
  // searching for users by email adress in firestore
- const handleUserSearch = async (e: any) => {
+ const handleUserSearch = async (e: React.MouseEvent<HTMLElement>) => {
   e.preventDefault();
   const queryRef = query(collection(firestore, 'users'), where('email', '==', state.email));
   const teamSearchQuery = await getDocs(queryRef);
@@ -43,9 +52,9 @@ export default function NewTeamMemberModal({ closeModal, projectId, refresh }: a
    setQueryError('No user with this email adress found!');
   } else {
    setQueryError('');
-   teamSearchQuery.forEach((collaborator) => {
-    const collaboratorData = collaborator.data();
-    collaboratorData['id'] = collaborator.id;
+   teamSearchQuery.forEach((collaborator: QueryDocumentSnapshot) => {
+    const collaboratorData = collaborator.data() as IUser;
+    collaboratorData['uid'] = collaborator.id;
     // safe in state for displaying
     setCollaboratorsWithData([...collaboratorsWithData, collaboratorData]);
     // safe in state for updating firestore
@@ -55,8 +64,8 @@ export default function NewTeamMemberModal({ closeModal, projectId, refresh }: a
  };
 
  // handles deletion of successfully found users in the pipeline
- const handleDeleteCollaborator = (idToDelete: any) => () => {
-  setCollaboratorsWithData(collaboratorsWithData.filter((collaborator) => collaborator.id !== idToDelete));
+ const handleDeleteCollaborator = (idToDelete: string) => () => {
+  setCollaboratorsWithData(collaboratorsWithData.filter((collaborator) => collaborator.uid !== idToDelete));
   setCollaborators(
    collaborators.filter((collaborator) => collaborator.user !== doc(firestore, 'users', idToDelete))
   );
@@ -90,7 +99,7 @@ export default function NewTeamMemberModal({ closeModal, projectId, refresh }: a
  const ref = doc(firestore, 'projects', projectId);
  const mutation = useFirestoreDocumentMutation(ref, { merge: true });
 
- const handleSubmit = async (e: any) => {
+ const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   mutation.mutate(
    {
@@ -111,7 +120,7 @@ export default function NewTeamMemberModal({ closeModal, projectId, refresh }: a
    {/* Grey background behind modal, closes modal on click */}
    <GreyBackground onClick={closeModal}>
     <FormWrapper
-     onClick={(e) => {
+     onClick={(e: React.MouseEvent<HTMLElement>) => {
       e.stopPropagation();
      }}
     >
@@ -132,11 +141,11 @@ export default function NewTeamMemberModal({ closeModal, projectId, refresh }: a
        {queryError && <InviteLink onClick={handleInvitation}>Invite your team member to kuva!</InviteLink>}
        {collaboratorsWithData && (
         <Collaborators>
-         {collaboratorsWithData.map((user: any) => {
+         {collaboratorsWithData.map((user: IUser) => {
           return (
-           <CollaboratorPill key={user.id}>
+           <CollaboratorPill key={user.uid}>
             <UserAvatar inComments={true} url={user.avatar} name={user.displayName} size={35}></UserAvatar>{' '}
-            {user.displayName} ({user.email})<div onClick={handleDeleteCollaborator(user.id)}>&#10005;</div>
+            {user.displayName} ({user.email})<div onClick={handleDeleteCollaborator(user.uid)}>&#10005;</div>
            </CollaboratorPill>
           );
          })}

@@ -98,7 +98,7 @@ const TeamPage: NextPage = () => {
    {openNewModal && (
     <NewTeamMemberModal
      closeModal={() => setOpenNewModal(false)}
-     projectId={projectId}
+     projectId={Array.isArray(projectId) ? projectId[0] : projectId}
      refresh={getCollaborators}
     />
    )}
@@ -106,7 +106,7 @@ const TeamPage: NextPage = () => {
     <UserModal
      closeModal={() => setOpenUserModal("")}
      collaborator={openUserModal}
-     projectId={projectId}
+     projectId={Array.isArray(projectId) ? projectId[0] : projectId}
      collaborators={project.collaborators}
      refresh={getCollaborators}
     />

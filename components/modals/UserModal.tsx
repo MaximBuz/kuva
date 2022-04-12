@@ -10,8 +10,21 @@ import { firestore } from '../../utils/firebase';
 // Auth
 import { toast } from 'react-toastify';
 import UserAvatar from '../misc/UserAvatar';
+import { ICollaboratorWithData } from '../../types/users';
 
-export default function UserModal({ closeModal, projectId, collaborator, collaborators, refresh }: any) {
+export default function UserModal({
+ closeModal,
+ projectId,
+ collaborator,
+ collaborators,
+ refresh,
+}: {
+ closeModal: () => void;
+ projectId: string;
+ collaborator: ICollaboratorWithData;
+ collaborators: ICollaboratorWithData[];
+ refresh: () => void;
+}): React.ReactPortal {
  // setting up mutation
  const ref = doc(firestore, 'projects', projectId);
  const mutation = useFirestoreDocumentMutation(ref, { merge: true });
@@ -24,7 +37,7 @@ export default function UserModal({ closeModal, projectId, collaborator, collabo
  const roleRef = useRef<HTMLInputElement>(null);
  const handleRoleSubmit = (e: SyntheticEvent): void => {
   e.preventDefault();
-  const newCollaborators = collaborators.map((teamMember: any) => {
+  const newCollaborators = collaborators.map((teamMember: ICollaboratorWithData) => {
    if (teamMember.user.uid == collaborator.user.uid) {
     return {
      user: doc(firestore, 'users', teamMember.user.uid),
@@ -44,7 +57,7 @@ export default function UserModal({ closeModal, projectId, collaborator, collabo
 
  async function deleteCollaborator() {
   const newCollaborators = collaborators.filter(
-   (teamMember: any) => teamMember.user.uid != collaborator.user.uid
+   (teamMember: ICollaboratorWithData) => teamMember.user.uid != collaborator.user.uid
   );
   mutation.mutate({
    collaborators: newCollaborators,
@@ -82,7 +95,7 @@ export default function UserModal({ closeModal, projectId, collaborator, collabo
       </CloseButton>
      </Header>
      <Content>
-      <UserAvatar name={collaborator.user.name} url={collaborator.user.avatar} size={150} />
+      <UserAvatar name={collaborator.user.displayName} url={collaborator.user.avatar} size={150} />
       <UserName>{collaborator.user.displayName}</UserName>
 
       <AttributeName>Title:</AttributeName>
