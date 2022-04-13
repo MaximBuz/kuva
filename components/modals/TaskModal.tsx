@@ -64,7 +64,7 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
  useEffect(() => {
   getAssignedUser();
   getAuthor();
- }, []);
+ }, [task.isSuccess, task.isRefetching]);
 
  // setting up mutation
  const queryClient = useQueryClient();
