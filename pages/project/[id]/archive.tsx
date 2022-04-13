@@ -14,12 +14,12 @@ import styled from 'styled-components';
 // Auth
 import withAuth from '../../../utils/withAuth';
 import { useRouter } from 'next/router';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, DocumentSnapshot, query, where } from 'firebase/firestore';
 import { firestore } from '../../../utils/firebase';
 import { useAuth } from '../../../utils/auth';
 import { useQueryClient } from 'react-query';
 import { useFirestoreQuery } from '@react-query-firebase/firestore';
-import { ITaskData, ITask, ITaskArray } from '../../../types/tasks';
+import { ITask } from '../../../types/tasks';
 
 const BacklogPage: NextPage = () => {
  const [openModal, setOpenModal] = useState('');
@@ -43,7 +43,10 @@ const BacklogPage: NextPage = () => {
  const tasksQuery = useFirestoreQuery(['archivedTasks'], tasksRef, { subscribe: false });
  const tasksSnapshot = tasksQuery.data;
 
- const tasks: ITaskArray = tasksSnapshot?.docs.map((doc) => ({ id: doc.id, data: doc.data() as ITaskData }));
+ const tasks: ITask[] = tasksSnapshot?.docs.map((doc:DocumentSnapshot) => ({
+  ...doc.data() as ITask,
+  uid: doc.id,
+ }));
 
  if (!tasksQuery.isSuccess) {
   return <>Loading...</>;
@@ -57,29 +60,22 @@ const BacklogPage: NextPage = () => {
      <CounterBlob count={tasks.length} />
     </TitleRow>
     <TaskList>
-     {tasks
-      .sort((a: ITask<ITaskData>, b: ITask<ITaskData>) => {
-       if (a.data.priority === 'high') return -1;
-       if (a.data.priority === 'medium' && b.data.priority === 'high') return 1;
-       if (a.data.priority === 'medium' && b.data.priority === 'low') return -1;
-       return 1;
-      })
-      .map((task: ITask<ITaskData>, index: number) => {
+     {tasks.map((task: ITask, index: number) => {
        return (
         <TaskRowNonDraggable
          onClick={() => {
-          setOpenModal(task.id);
+          setOpenModal(task.uid);
          }}
          index={index}
-         id={task.id}
-         identifier={task.data.identifier}
-         user={task.data.user}
-         title={task.data.title}
-         timestamp={task.data.timestamp}
-         summary={task.data.summary}
-         description={task.data.description}
-         priority={task.data.priority}
-         status={task.data.status}
+         id={task.uid}
+         identifier={task.identifier}
+         user={task.user}
+         title={task.title}
+         timestamp={task.timestamp}
+         summary={task.summary}
+         description={task.description}
+         priority={task.priority}
+         status={task.status}
          key={index}
         />
        );

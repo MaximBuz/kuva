@@ -3,7 +3,7 @@ import { UilDraggabledots } from '@iconscout/react-unicons';
 import styled from 'styled-components';
 import { Timestamp } from 'firebase/firestore';
 import { Draggable, DraggableProvided, DraggableSnapshot, DragHandleProps } from 'react-beautiful-dnd';
-import { ITaskData } from '../../types/tasks';
+import { ITask } from '../../types/tasks';
 
 const Card = styled.div<any>`
  background-color: white;
@@ -106,7 +106,7 @@ interface ColorProps {
  priority: 'high' | 'medium' | 'low';
 }
 
-function TaskCard(props: ITaskData) {
+function TaskCard(props: ITask) {
  function truncateText(text: string, length: number): string {
   if (text.length <= length) {
    return text;
@@ -116,7 +116,7 @@ function TaskCard(props: ITaskData) {
  }
 
  return (
-  <Draggable draggableId={props.id} index={props.index} key={props.id}>
+  <Draggable draggableId={props.uid} index={props.index} key={props.uid}>
    {(provided: DraggableProvided, snapshot: DraggableSnapshot) => (
     <Card
      {...provided.draggableProps}

@@ -18,12 +18,12 @@ import withAuth from '../../../utils/withAuth';
 
 // Firestore
 import { firestore } from '../../../utils/firebase';
-import { collection, doc, query, setDoc, where } from 'firebase/firestore';
+import { collection, doc, DocumentSnapshot, query, setDoc, where } from 'firebase/firestore';
 import { useFirestoreQuery } from '@react-query-firebase/firestore';
 import { useQueryClient } from 'react-query';
 
 // Interfaces and Types
-import { ITaskArray, ITask, ITaskData } from '../../../types/tasks';
+import { ITask } from '../../../types/tasks';
 
 const FilterSection = styled.div`
  display: flex;
@@ -95,27 +95,28 @@ const TaskList = function TaskList({
  tasks,
  setOpenModal,
 }: {
- tasks: ITaskArray;
+ tasks: ITask[];
  setOpenModal: Function;
 }): JSX.Element {
  return (
   <>
-   {tasks.map((task: ITask<ITaskData>, index: number) => (
+   {tasks.map((task: ITask, index: number) => (
     <TaskCard
      onClick={() => {
-      setOpenModal(task.id);
+      setOpenModal(task.uid);
      }}
      index={index}
-     id={task.id}
-     identifier={task.data.identifier}
-     user={task.data.user}
-     title={task.data.title}
-     timestamp={task.data.timestamp}
-     summary={task.data.summary}
-     description={task.data.description}
-     priority={task.data.priority}
-     status={task.data.status}
+     uid={task.uid}
+     identifier={task.identifier}
+     user={task.user}
+     title={task.title}
+     timestamp={task.timestamp}
+     summary={task.summary}
+     description={task.description}
+     priority={task.priority}
+     status={task.status}
      key={index}
+     assignedTo={task.assignedTo}
     />
    ))}
   </>
@@ -138,13 +139,13 @@ const TasksPage: NextPage = () => {
  const countSelected = tasksSelected?.length;
 
  const [tasksInProgress, setTasksInProgress] = useState([]);
- const countInProgress = tasksInProgress.length;
+ const countInProgress = tasksInProgress?.length;
 
  const [tasksInReview, setTasksInReview] = useState([]);
- const countInReview = tasksInReview.length;
+ const countInReview = tasksInReview?.length;
 
  const [tasksCompleted, setTasksCompleted] = useState([]);
- const countCompleted = tasksCompleted.length;
+ const countCompleted = tasksCompleted?.length;
 
  // Query tasks
  const tasksRef = query(
@@ -153,47 +154,45 @@ const TasksPage: NextPage = () => {
   where('projectId', '==', projectId),
   where('archived', '==', false)
  );
- const tasksQuery = useFirestoreQuery(['tasks'], tasksRef, { subscribe: false });
+ const tasksQuery = useFirestoreQuery(['tasks'], tasksRef);
  const tasksSnapshot = tasksQuery.data;
 
- const tasks: ITask<ITaskData>[] = tasksSnapshot?.docs.map((doc) => ({
-  id: doc.id,
-  data: doc.data() as ITaskData,
+ const tasks: ITask[] = tasksSnapshot?.docs.map((doc:DocumentSnapshot) => ({
+  ...doc.data() as ITask,
+  uid: doc.id,
  }));
 
  // Population of Selected for development Column
  const selected = tasks?.filter(
-  (task: ITask<ITaskData>) => task.data.column === 'selected-for-development-column'
+  (task: ITask) => task.column === 'selected-for-development-column'
  );
  // Population of In Progress Column
- const inProgress = tasks?.filter((task: ITask<ITaskData>) => task.data.column === 'in-progress-column');
+ const inProgress = tasks?.filter((task: ITask) => task.column === 'in-progress-column');
  // Population of In Review Column
- const inReview = tasks?.filter((task: ITask<ITaskData>) => task.data.column === 'in-review-column');
+ const inReview = tasks?.filter((task: ITask) => task.column === 'in-review-column');
  // Population of Completed Column
- const completed = tasks?.filter((task: ITask<ITaskData>) => task.data.column === 'completed-column');
+ const completed = tasks?.filter((task: ITask) => task.column === 'completed-column');
 
  useEffect(() => {
-  if (tasksQuery.isSuccess) {
-   setTasksSelected(selected);
-   setTasksInProgress(inProgress);
-   setTasksInReview(inReview);
-   setTasksCompleted(completed);
-  }
+  setTasksSelected(selected);
+  setTasksInProgress(inProgress);
+  setTasksInReview(inReview);
+  setTasksCompleted(completed);
  }, [tasksQuery.isRefetching]);
 
  // Task filtering
  const onFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
   setTasksSelected(
-   selected.filter((task) => task.data.title.toLowerCase().includes(e.target.value.toLowerCase()))
+   selected.filter((task) => task.title.toLowerCase().includes(e.target.value.toLowerCase()))
   );
   setTasksInProgress(
-   inProgress.filter((task) => task.data.title.toLowerCase().includes(e.target.value.toLowerCase()))
+   inProgress.filter((task) => task.title.toLowerCase().includes(e.target.value.toLowerCase()))
   );
   setTasksInReview(
-   inReview.filter((task) => task.data.title.toLowerCase().includes(e.target.value.toLowerCase()))
+   inReview.filter((task) => task.title.toLowerCase().includes(e.target.value.toLowerCase()))
   );
   setTasksCompleted(
-   completed.filter((task) => task.data.title.toLowerCase().includes(e.target.value.toLowerCase()))
+   completed.filter((task) => task.title.toLowerCase().includes(e.target.value.toLowerCase()))
   );
  };
 
@@ -256,8 +255,8 @@ const TasksPage: NextPage = () => {
 
   // Handle item drop in a different column ( with status and index change )
   if (source.droppableId != destination.droppableId) {
-   let startSourceTasks: ITaskArray = [];
-   let startDestinationTasks: ITaskArray = [];
+   let startSourceTasks: ITask[] = [];
+   let startDestinationTasks: ITask[] = [];
 
    // populate the startSourceTasks with a copy of current state
    switch (source.droppableId) {
@@ -306,10 +305,10 @@ const TasksPage: NextPage = () => {
       setTasksSelected(startDestinationTasks); // save the addition to current state of destination column
 
       // Change column and status on the task in firebase
-      temp.data.column = destination.droppableId;
-      temp.data.status = 'Selected for Development';
-      await setDoc(doc(firestore, 'tasks', temp.id), {
-       ...temp.data,
+      temp.column = destination.droppableId;
+      temp.status = 'Selected for Development';
+      await setDoc(doc(firestore, 'tasks', temp.uid), {
+       ...temp,
       });
      }
      break;
@@ -320,10 +319,10 @@ const TasksPage: NextPage = () => {
       setTasksInProgress(startDestinationTasks); // save the addition to current state of destination column
 
       // Change column and status on the task in firebase
-      temp.data.column = destination.droppableId;
-      temp.data.status = 'In Progress';
-      await setDoc(doc(firestore, 'tasks', temp.id), {
-       ...temp.data,
+      temp.column = destination.droppableId;
+      temp.status = 'In Progress';
+      await setDoc(doc(firestore, 'tasks', temp.uid), {
+       ...temp,
       });
      }
      break;
@@ -334,10 +333,10 @@ const TasksPage: NextPage = () => {
       setTasksInReview(startDestinationTasks); // save the addition to current state of destination column
 
       // Change column and status on the task in firebase
-      temp.data.column = destination.droppableId;
-      temp.data.status = 'In Review';
-      await setDoc(doc(firestore, 'tasks', temp.id), {
-       ...temp.data,
+      temp.column = destination.droppableId;
+      temp.status = 'In Review';
+      await setDoc(doc(firestore, 'tasks', temp.uid), {
+       ...temp,
       });
      }
      break;
@@ -348,10 +347,10 @@ const TasksPage: NextPage = () => {
       setTasksCompleted(startDestinationTasks); // save the addition to current state of destination column
 
       // Change column and status on the task in firebase
-      temp.data.column = destination.droppableId;
-      temp.data.status = 'Completed';
-      await setDoc(doc(firestore, 'tasks', temp.id), {
-       ...temp.data,
+      temp.column = destination.droppableId;
+      temp.status = 'Completed';
+      await setDoc(doc(firestore, 'tasks', temp.uid), {
+       ...temp,
       });
      }
      break;

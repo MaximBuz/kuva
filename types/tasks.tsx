@@ -8,7 +8,7 @@ export interface IComment {
  timestamp: Timestamp;
 }
 
-export interface ITaskData {
+export interface ITask {
  archived?: boolean;
  column?:
   | 'backlog-column'
@@ -29,13 +29,7 @@ export interface ITaskData {
  index?: number;
  assignedTo: string;
  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+ uid?: string;
 }
-
-export interface ITask<T> {
- data: T;
- id: string;
-}
-
-export type ITaskArray = ITask<ITaskData>[];
 
 
