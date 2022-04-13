@@ -1,5 +1,4 @@
 import { Timestamp } from 'firebase/firestore';
-import { ITaskArray,  ITaskData} from '../types/tasks';
 
 const exampleTasks= [
  {

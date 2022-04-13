@@ -14,7 +14,6 @@ import styled from 'styled-components';
 import { addDoc, collection, doc, setDoc, Timestamp, writeBatch } from 'firebase/firestore';
 import { firestore } from '../utils/firebase';
 import exampleTasks from '../utils/exampleTasks';
-import { ITask, ITaskData } from '../types/tasks';
 
 const SignUpPage = () => {
  // initialize router

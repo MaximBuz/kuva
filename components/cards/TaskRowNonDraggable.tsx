@@ -1,9 +1,9 @@
 import React from 'react';
 
 import styled from 'styled-components';
-import { ITaskData } from '../../types/tasks';
+import { ITask } from '../../types/tasks';
 
-function TaskRow(props: ITaskData) {
+function TaskRow(props: ITask) {
  return (
   <Row onClick={props.onClick}>
    <IdentifierPill>

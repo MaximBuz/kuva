@@ -3,11 +3,11 @@ import { Draggable, DraggableProvided, DraggableSnapshot } from 'react-beautiful
 import { UilDraggabledots } from '@iconscout/react-unicons';
 
 import styled from 'styled-components';
-import { ITaskData } from '../../types/tasks';
+import { ITask } from '../../types/tasks';
 
-function TaskRow(props: ITaskData) {
+function TaskRow(props: ITask) {
  return (
-  <Draggable draggableId={props.id} index={props.index} key={props.id}>
+  <Draggable draggableId={props.uid} index={props.index} key={props.uid}>
    {(provided: DraggableProvided, snapshot: DraggableSnapshot) => (
     <Row
      {...provided.draggableProps}
