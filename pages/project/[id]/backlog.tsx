@@ -39,7 +39,7 @@ const TaskList = function TaskList({
       setOpenModal(task.uid);
      }}
      index={index}
-     id={task.uid}
+     uid={task.uid}
      identifier={task.identifier}
      user={task.user}
      title={task.title}
@@ -49,6 +49,7 @@ const TaskList = function TaskList({
      priority={task.priority}
      status={task.status}
      key={index}
+     assignedTo={task.assignedTo}
     />
    ))}
   </>
