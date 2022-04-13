@@ -303,7 +303,7 @@ function Modal({
          Choose a user
         </option>
         {project?.collaborators?.map((collaborator: ICollaboratorWithData) => (
-         <option key={collaborator.user.uid} value={collaborator.user.uid} required={true}>
+         <option key={collaborator.user.uid} value={collaborator.user.uid}>
           {collaborator.user.displayName} | {collaborator.role}
          </option>
         ))}
