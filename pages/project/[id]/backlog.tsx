@@ -25,36 +25,35 @@ import { useFirestoreQuery } from '@react-query-firebase/firestore';
 import { ITask } from '../../../types/tasks';
 
 const TaskList = function TaskList({
-  tasks,
-  setOpenModal,
- }: {
-  tasks: ITask[];
-  setOpenModal: Function;
- }): JSX.Element {
-  return (
-   <>
-    {tasks.map((task: ITask, index: number) => (
-     <TaskRow
-      onClick={() => {
-       setOpenModal(task.uid);
-      }}
-      index={index}
-      id={task.uid}
-      identifier={task.identifier}
-      user={task.user}
-      title={task.title}
-      timestamp={task.timestamp}
-      summary={task.summary}
-      description={task.description}
-      priority={task.priority}
-      status={task.status}
-      key={index}
-     />
-    ))}
-   </>
-  );
- };
-
+ tasks,
+ setOpenModal,
+}: {
+ tasks: ITask[];
+ setOpenModal: Function;
+}): JSX.Element {
+ return (
+  <>
+   {tasks.map((task: ITask, index: number) => (
+    <TaskRow
+     onClick={() => {
+      setOpenModal(task.uid);
+     }}
+     index={index}
+     id={task.uid}
+     identifier={task.identifier}
+     user={task.user}
+     title={task.title}
+     timestamp={task.timestamp}
+     summary={task.summary}
+     description={task.description}
+     priority={task.priority}
+     status={task.status}
+     key={index}
+    />
+   ))}
+  </>
+ );
+};
 
 const BacklogPage: NextPage = () => {
  const [openModal, setOpenModal] = useState('');
@@ -81,27 +80,23 @@ const BacklogPage: NextPage = () => {
   where('projectId', '==', projectId),
   where('archived', '==', false)
  );
- const tasksQuery = useFirestoreQuery(['tasks'], tasksRef, { subscribe: false });
+ const tasksQuery = useFirestoreQuery(['tasks'], tasksRef);
  const tasksSnapshot = tasksQuery.data;
 
- const tasks: ITask[] = tasksSnapshot?.docs.map((doc:DocumentSnapshot) => ({
-  ...doc.data() as ITask,
+ const tasks: ITask[] = tasksSnapshot?.docs.map((doc: DocumentSnapshot) => ({
+  ...(doc.data() as ITask),
   uid: doc.id,
  }));
 
  // Population of Selected for development Column
- const selected = tasks?.filter(
-  (task: ITask) => task.column === 'selected-for-development-column'
- );
+ const selected = tasks?.filter((task: ITask) => task.column === 'selected-for-development-column');
  // Population of Backlog Column
  const backlog = tasks?.filter((task: ITask) => task.column === 'backlog-column');
 
  useEffect(() => {
-  if (tasksQuery.isSuccess) {
-   setTasksSelected(selected);
-   setTasksBacklog(backlog);
-  }
- }, [tasksQuery.isRefetching]);
+  setTasksSelected(selected);
+  setTasksBacklog(backlog);
+ }, [tasksQuery.isSuccess, tasksQuery.isRefetching]);
 
  // Drag and drop functionality (TODO: Move to seperate file, way to big a function)
  const onDragEnd = async (result: {
@@ -219,15 +214,15 @@ const BacklogPage: NextPage = () => {
      <Droppable droppableId={'backlog-column'}>
       {(provided: DroppableProvided) => (
        <div
-       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-       }}
-       ref={provided.innerRef}
-       {...provided.droppableProps}
+        style={{
+         display: 'flex',
+         flexDirection: 'column',
+         height: '100%',
+        }}
+        ref={provided.innerRef}
+        {...provided.droppableProps}
        >
-        <TaskList tasks={tasksBacklog} setOpenModal={setOpenModal} />
+        {tasksBacklog && <TaskList tasks={tasksBacklog} setOpenModal={setOpenModal} />}
         {provided.placeholder}
        </div>
       )}
@@ -240,21 +235,21 @@ const BacklogPage: NextPage = () => {
       <CounterBlob count={countSelected} />
      </TitleRow>
      <Droppable droppableId={'selected-for-development-column'}>
-       {(provided: DroppableProvided) => (
-        <div
-         style={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
-         }}
-         ref={provided.innerRef}
-         {...provided.droppableProps}
-        >
-         <TaskList tasks={tasksSelected} setOpenModal={setOpenModal} />
-         {provided.placeholder}
-        </div>
-       )}
-      </Droppable>
+      {(provided: DroppableProvided) => (
+       <div
+        style={{
+         display: 'flex',
+         flexDirection: 'column',
+         height: '100%',
+        }}
+        ref={provided.innerRef}
+        {...provided.droppableProps}
+       >
+        {tasksSelected && <TaskList tasks={tasksSelected} setOpenModal={setOpenModal} />}
+        {provided.placeholder}
+       </div>
+      )}
+     </Droppable>
      {openModal && <TaskModal closeModal={setOpenModal} taskId={openModal} />}
     </Section>
    </Wrapper>

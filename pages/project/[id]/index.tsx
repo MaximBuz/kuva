@@ -157,15 +157,13 @@ const TasksPage: NextPage = () => {
  const tasksQuery = useFirestoreQuery(['tasks'], tasksRef);
  const tasksSnapshot = tasksQuery.data;
 
- const tasks: ITask[] = tasksSnapshot?.docs.map((doc:DocumentSnapshot) => ({
-  ...doc.data() as ITask,
+ const tasks: ITask[] = tasksSnapshot?.docs.map((doc: DocumentSnapshot) => ({
+  ...(doc.data() as ITask),
   uid: doc.id,
  }));
 
  // Population of Selected for development Column
- const selected = tasks?.filter(
-  (task: ITask) => task.column === 'selected-for-development-column'
- );
+ const selected = tasks?.filter((task: ITask) => task.column === 'selected-for-development-column');
  // Population of In Progress Column
  const inProgress = tasks?.filter((task: ITask) => task.column === 'in-progress-column');
  // Population of In Review Column
@@ -178,7 +176,7 @@ const TasksPage: NextPage = () => {
   setTasksInProgress(inProgress);
   setTasksInReview(inReview);
   setTasksCompleted(completed);
- }, [tasksQuery.isRefetching]);
+ }, [tasksQuery.isSuccess, tasksQuery.isRefetching]);
 
  // Task filtering
  const onFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -389,7 +387,7 @@ const TasksPage: NextPage = () => {
          ref={provided.innerRef}
          {...provided.droppableProps}
         >
-         <TaskList tasks={tasksSelected} setOpenModal={setOpenModal} />
+         {tasksSelected && <TaskList tasks={tasksSelected} setOpenModal={setOpenModal} />}
          {provided.placeholder}
         </div>
        )}
@@ -412,7 +410,7 @@ const TasksPage: NextPage = () => {
          ref={provided.innerRef}
          {...provided.droppableProps}
         >
-         <TaskList tasks={tasksInProgress} setOpenModal={setOpenModal} />
+         {tasksInProgress && <TaskList tasks={tasksInProgress} setOpenModal={setOpenModal} />}
          {provided.placeholder}
         </div>
        )}
@@ -435,7 +433,7 @@ const TasksPage: NextPage = () => {
          ref={provided.innerRef}
          {...provided.droppableProps}
         >
-         <TaskList tasks={tasksInReview} setOpenModal={setOpenModal} />
+         {tasksInReview && <TaskList tasks={tasksInReview} setOpenModal={setOpenModal} />}
          {provided.placeholder}
         </div>
        )}
@@ -458,7 +456,7 @@ const TasksPage: NextPage = () => {
          ref={provided.innerRef}
          {...provided.droppableProps}
         >
-         <TaskList tasks={tasksCompleted} setOpenModal={setOpenModal} />
+         {tasksCompleted && <TaskList tasks={tasksCompleted} setOpenModal={setOpenModal} />}
          {provided.placeholder}
         </div>
        )}

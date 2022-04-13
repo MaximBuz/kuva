@@ -1,7 +1,7 @@
 // React & Next
 import React from 'react';
 import { NextPage } from 'next';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 // Components
 import TaskRowNonDraggable from '../../../components/cards/TaskRowNonDraggable';
