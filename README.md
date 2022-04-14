@@ -49,7 +49,7 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-The **kuva.** project management platform is was my first elaborate personal project.
+The **kuva.** project management platform was my first elaborate personal project. This repo ist the TypeScript refactored version.
 
 Here are the currently implemented main use-cases:
 * Create, manage, update and delete tasks
