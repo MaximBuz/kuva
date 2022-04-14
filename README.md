@@ -112,7 +112,7 @@ See the prototype in action with some of these usage examples!
 
 Maxim Buz - [LinkedIn](https://www.linkedin.com/in/maxim-buz-17a2a717b/) - mbuz.maxim@gmail.com
 
-Project Link: [https://github.com/MaximBuz/kuva/](https://github.com/MaximBuz/kuva/)
+Project Link: [https://github.com/MaximBuz/kuva-project-management/](https://github.com/MaximBuz/kuva-project-management/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
