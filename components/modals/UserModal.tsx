@@ -41,10 +41,12 @@ export default function UserModal({
       return {
         user: doc(collection(firestore, 'users'), teamMember.user.uid),
         role: roleRef.current.value,
+        uid: collaborator.user.uid,
       };
     });
     mutation.mutate({
       collaborators: newCollaborators,
+      collaboratorIds: newCollaborators.map((collaborator) => collaborator.uid),
     });
     refresh();
     toast.success('Updated project role!');
@@ -59,10 +61,12 @@ export default function UserModal({
         return {
           user: doc(collection(firestore, 'users'), teamMember.user.uid),
           role: roleRef.current.value,
+          uid: collaborator.user.uid,
         };
       });
     mutation.mutate({
       collaborators: newCollaborators,
+      collaboratorIds: newCollaborators.map((collaborator) => collaborator.uid),
     });
     refresh();
     toast.success('Removed team member from project!');
