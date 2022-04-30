@@ -53,9 +53,14 @@ export default function UserModal({
   };
 
   async function deleteCollaborator() {
-    const newCollaborators = collaborators.filter(
-      (teamMember: ICollaboratorWithData) => teamMember.user.uid != collaborator.user.uid
-    );
+    const newCollaborators = collaborators
+      .filter((teamMember: ICollaboratorWithData) => teamMember.user.uid != collaborator.user.uid)
+      .map((teamMember: ICollaboratorWithData) => {
+        return {
+          user: doc(collection(firestore, 'users'), teamMember.user.uid),
+          role: roleRef.current.value,
+        };
+      });
     mutation.mutate({
       collaborators: newCollaborators,
     });
