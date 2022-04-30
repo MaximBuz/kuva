@@ -41,7 +41,7 @@ export default function UserModal({
     return {
      user: doc(collection(firestore, 'users'), teamMember.user.uid),
      role: roleRef.current.value,
-    };
+    }
   });
   mutation.mutate({
    collaborators: newCollaborators,
