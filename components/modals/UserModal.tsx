@@ -38,11 +38,19 @@ export default function UserModal({
   const handleRoleSubmit = (e: SyntheticEvent): void => {
     e.preventDefault();
     const newCollaborators = collaborators.map((teamMember: ICollaboratorWithData) => {
-      return {
-        user: doc(collection(firestore, 'users'), teamMember.user.uid),
-        role: roleRef.current.value,
-        uid: collaborator.user.uid,
-      };
+      if (teamMember.uid == collaborator.uid) {
+        return {
+          user: doc(collection(firestore, 'users'), teamMember.user.uid),
+          role: roleRef.current.value,
+          uid: collaborator.user.uid,
+        };
+      } else {
+        return {
+          user: doc(collection(firestore, 'users'), teamMember.user.uid),
+          role: teamMember.role,
+          uid: collaborator.user.uid,
+        };
+      }
     });
     mutation.mutate({
       collaborators: newCollaborators,
@@ -58,11 +66,19 @@ export default function UserModal({
     const newCollaborators = collaborators
       .filter((teamMember: ICollaboratorWithData) => teamMember.user.uid != collaborator.user.uid)
       .map((teamMember: ICollaboratorWithData) => {
-        return {
-          user: doc(collection(firestore, 'users'), teamMember.user.uid),
-          role: roleRef.current.value,
-          uid: collaborator.user.uid,
-        };
+        if (teamMember.uid == collaborator.uid) {
+          return {
+            user: doc(collection(firestore, 'users'), teamMember.user.uid),
+            role: roleRef.current.value,
+            uid: collaborator.user.uid,
+          };
+        } else {
+          return {
+            user: doc(collection(firestore, 'users'), teamMember.user.uid),
+            role: teamMember.role,
+            uid: collaborator.user.uid,
+          };
+        }
       });
     mutation.mutate({
       collaborators: newCollaborators,
