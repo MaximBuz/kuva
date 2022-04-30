@@ -130,13 +130,13 @@ const SignUpPage = () => {
         title: 'Your first project',
         user: userObject.user.uid,
         avatar: '',
+        collaboratorIds: [userObject.user.uid],
         collaborators: [
           {
             user: doc(collection(firestore, 'users'), userObject.user.uid),
             role: 'Creator',
           },
         ],
-        collaboratorIds: [userObject.user.uid],
       });
 
       /* Create a bunch of new tasks for the example project */
