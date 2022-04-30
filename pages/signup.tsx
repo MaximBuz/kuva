@@ -69,6 +69,7 @@ const SignUpPage = () => {
         timestamp: Timestamp.now(),
         title: 'Your first project',
         user: userObject.user.uid,
+        collaboratorIds: [userObject.user.uid],
         collaborators: [
           {
             user: doc(collection(firestore, 'users'), userObject.user.uid),
