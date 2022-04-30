@@ -163,7 +163,6 @@ export default function Modal({ closeModal }: { closeModal: Function }) {
  async function handleSubmit(e: React.FormEvent) {
   e.preventDefault();
   try {
-   console.log('tryblock');
    setError('');
    setLoading(true);
    /* here submit to firebase */
@@ -184,7 +183,6 @@ export default function Modal({ closeModal }: { closeModal: Function }) {
     ],
    });
   } catch {
-   console.log('catchblock');
    setError('Failed to sign in');
   }
   closeModal();

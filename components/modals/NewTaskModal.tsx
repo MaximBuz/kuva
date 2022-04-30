@@ -241,7 +241,6 @@ function Modal({
  async function handleSubmit(e: React.FormEvent) {
   e.preventDefault();
   try {
-   console.log('tryblock');
    setError('');
    setLoading(true);
    mutation.mutate({
@@ -249,7 +248,6 @@ function Modal({
    });
    queryClient.invalidateQueries(['tasks']);
   } catch {
-   console.log('catchblock');
    setError('Failed to submit form');
   }
   closeModal();

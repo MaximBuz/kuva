@@ -92,7 +92,6 @@ const SignUpPage = () => {
 
    Router.replace('/');
   } catch (error) {
-   console.log(error);
    setError('Failed to sign in');
   }
   setLoading(false);
@@ -155,7 +154,6 @@ const SignUpPage = () => {
 
    Router.replace('/');
   } catch (error) {
-   console.log(error);
    setError('Failed to sign in');
   }
   setLoading(false);

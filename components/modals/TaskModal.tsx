@@ -41,7 +41,6 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
    const assignedSnap = await getDoc(task.data.assignedTo);
    // now get the collaborators from the references in the project doc
    const assignedUser = assignedSnap.data();
-   console.log(assignedUser);
    // update project with the projectdata and overwrite collaborators with real user data
    setAssignedUser(assignedUser);
   }
@@ -55,7 +54,6 @@ export default function TaskModal({ closeModal, taskId }: { closeModal: Function
    const authorSnap = await getDoc(doc(collection(firestore, 'users'), task.data.user));
    // now get the collaborators from the references in the project doc
    const author = authorSnap.data();
-   console.log(author);
    // update project with the projectdata and overwrite collaborators with real user data
    setAuthor(author);
   }
