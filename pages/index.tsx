@@ -30,7 +30,7 @@ const Home: NextPage = () => {
  const { currentUser } = useAuth();
 
  // Data
- const projectsRef = query(collection(firestore, 'projects'), where('user', '==', currentUser.uid));
+ const projectsRef = query(collection(firestore, 'projects'), where('collaboratorIds', "array-contains", currentUser.uid));
  const projectsSnap = useFirestoreQuery(['projects'], projectsRef);
  const projects: IProjectArray = [];
  projectsSnap?.data?.forEach((doc) => projects.push({ id: doc.id, data: doc.data() as IProjectData }));
