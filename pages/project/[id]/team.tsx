@@ -53,7 +53,6 @@ const TeamPage: NextPage = () => {
  };
 
  useEffect(() => {
-  console.log('fired');
   getCollaborators();
  }, [collaborators]);
 

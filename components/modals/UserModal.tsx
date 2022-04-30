@@ -4,7 +4,7 @@ import ReactDom from 'react-dom';
 
 // Firebase
 import { useFirestoreDocumentMutation } from '@react-query-firebase/firestore';
-import { doc } from 'firebase/firestore';
+import { collection, doc } from 'firebase/firestore';
 import { firestore } from '../../utils/firebase';
 
 // Auth
@@ -38,13 +38,10 @@ export default function UserModal({
  const handleRoleSubmit = (e: SyntheticEvent): void => {
   e.preventDefault();
   const newCollaborators = collaborators.map((teamMember: ICollaboratorWithData) => {
-   if (teamMember.user.uid == collaborator.user.uid) {
     return {
-     user: doc(firestore, 'users', teamMember.user.uid),
+     user: doc(collection(firestore, 'users'), teamMember.user.uid),
      role: roleRef.current.value,
     };
-   }
-   return teamMember;
   });
   mutation.mutate({
    collaborators: newCollaborators,
